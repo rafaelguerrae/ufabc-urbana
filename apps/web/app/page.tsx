@@ -3,22 +3,14 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <ul>
-          <li>
-            <code>todo</code>
-          </li>
-        </ul>
-      </main>
-      <footer className={styles.footer}>
-        <a
+      <main className={styles.main}> <a
           href="https://github.com/rafaelguerrae/ufabc-urbana"
           target="_blank"
           rel="noopener noreferrer"
         >
-          GitHub
+        <img src="/ufabc-urbana.png" alt="UFABC Urbana" className={styles.image} />
         </a>
-      </footer>
+      </main>
     </div>
   );
 }
