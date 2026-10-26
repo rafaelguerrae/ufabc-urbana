@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "UFABC Urbana",
-  description: "todo",
+  description: "Explore how urbanization and vegetation relate to surface temperature across São Paulo districts.",
 };
 
 export default function RootLayout({

@@ -1,0 +1,22 @@
+.root {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.map {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 800px) {
+  .root {
+    flex-direction: column-reverse;
+  }
+
+  .map {
+    flex: none;
+    height: 55vh;
+  }
+}
