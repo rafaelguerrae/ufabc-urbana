@@ -1,15 +1,8 @@
 .card {
-  position: absolute;
-  right: 12px;
-  bottom: 40px;
-  width: 360px;
-  max-width: calc(100vw - 24px);
   padding: 16px;
-  background: var(--panel);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.18);
-  backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -91,12 +84,3 @@
   line-height: 1.4;
 }
 
-@media (max-width: 700px) {
-  .card {
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: none;
-    bottom: 12px;
-  }
-}

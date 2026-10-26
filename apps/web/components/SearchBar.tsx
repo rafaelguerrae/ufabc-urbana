@@ -67,6 +67,10 @@ export function SearchBar({ onSelect }: SearchBarProps) {
 
   return (
     <div className={styles.wrap}>
+      <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
       <input
         className={styles.input}
         type="search"
@@ -75,7 +79,7 @@ export function SearchBar({ onSelect }: SearchBarProps) {
         aria-controls={listId}
         aria-autocomplete="list"
         aria-label="Buscar uma rua, endereço ou bairro em São Paulo"
-        placeholder="Busque uma rua ou endereço"
+        placeholder="Busque"
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);

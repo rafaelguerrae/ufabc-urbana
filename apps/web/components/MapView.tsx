@@ -13,7 +13,11 @@ import type { SearchResult } from "../lib/geocode";
 import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "../lib/indicators";
 import { loadRaster, type RasterData } from "../lib/raster";
 import { ControlPanel } from "./ControlPanel";
-import { PlaceCard, type Place } from "./PlaceCard";
+import type { Place } from "./PlaceCard";
+import { AboutDialog } from "./AboutDialog";
+import { LearnDialog } from "./LearnDialog";
+import { RightPanel } from "./RightPanel";
+import { TopBar } from "./TopBar";
 import styles from "./MapView.module.css";
 
 // Worker file is copied into /public by scripts/copy-maplibre-worker.mjs.
@@ -22,6 +26,7 @@ setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 type DistrictCollection = FeatureCollection<Polygon | MultiPolygon, DistrictProperties>;
 
 const BASEMAP = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const MOBILE_QUERY = "(max-width: 700px)";
 const INITIAL_VIEW = { longitude: -46.63, latitude: -23.68, zoom: 9.6, pitch: 0, bearing: 0 };
 
 export function MapView() {
@@ -33,6 +38,21 @@ export function MapView() {
   const [districtIndicator, setDistrictIndicator] = useState<IndicatorKey>("lst_c");
   const [place, setPlace] = useState<Place | null>(null);
   const [beforeId, setBeforeId] = useState<string | undefined>();
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [learnOpen, setLearnOpen] = useState(false);
+
+  // On small screens the panels are bottom sheets, so only one can be open.
+  const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
+  const toggleLeft = () => {
+    if (!leftOpen && isMobile()) setRightOpen(false);
+    setLeftOpen(!leftOpen);
+  };
+  const toggleRight = () => {
+    if (!rightOpen && isMobile()) setLeftOpen(false);
+    setRightOpen(!rightOpen);
+  };
 
   useEffect(() => {
     fetch("/data/districts.geojson")
@@ -43,6 +63,8 @@ export function MapView() {
       .then(setRaster)
       .catch((e: unknown) => setLoadError(e instanceof Error ? e.message : "Falha ao carregar a grade de temperatura"));
   }, []);
+
+  const districtList = useMemo(() => districts?.features.map((f) => f.properties) ?? null, [districts]);
 
   const districtIndicatorDef = getIndicator(districtIndicator);
 
@@ -68,6 +90,8 @@ export function MapView() {
       const district = districts?.features.find((f: Feature<Polygon | MultiPolygon, DistrictProperties>) =>
         booleanPointInPolygon(pt, f),
       );
+      if (window.matchMedia(MOBILE_QUERY).matches) setLeftOpen(false);
+      setRightOpen(true);
       setPlace({
         lng,
         lat,
@@ -101,7 +125,7 @@ export function MapView() {
   const bounds = raster?.info.bounds;
 
   return (
-    <div className={styles.root}>
+    <div className={rightOpen ? `${styles.root} ${styles.rightOpen}` : styles.root}>
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW}
@@ -112,7 +136,7 @@ export function MapView() {
         maxPitch={70}
         attributionControl={{ compact: true }}
       >
-        <NavigationControl position="top-right" visualizePitch />
+        <NavigationControl position="bottom-right" visualizePitch />
 
         {view !== "districts" && raster && bounds && (
           <Source
@@ -165,18 +189,40 @@ export function MapView() {
         )}
       </Map>
 
-      <ControlPanel
-        view={view}
-        onViewChange={setView}
-        districtIndicator={districtIndicator}
-        onDistrictIndicatorChange={setDistrictIndicator}
-        districtRange={districtRange}
-        raster={raster?.info ?? null}
-        loading={!loadError && (!districts || !raster)}
-        error={loadError}
+      <TopBar
+        leftOpen={leftOpen}
+        rightOpen={rightOpen}
+        onToggleLeft={toggleLeft}
+        onToggleRight={toggleRight}
+        onOpenLearn={() => setLearnOpen(true)}
+        onOpenAbout={() => setAboutOpen(true)}
         onSearchSelect={onSearchSelect}
       />
-      {place && <PlaceCard place={place} raster={raster?.info ?? null} onClose={() => setPlace(null)} />}
+
+      <ControlPanel
+          open={leftOpen}
+          view={view}
+          onViewChange={setView}
+          districtIndicator={districtIndicator}
+          onDistrictIndicatorChange={setDistrictIndicator}
+          districtRange={districtRange}
+          raster={raster?.info ?? null}
+          loading={!loadError && (!districts || !raster)}
+          error={loadError}
+        />
+        <RightPanel
+          open={rightOpen}
+          place={place}
+          raster={raster?.info ?? null}
+          districts={districtList}
+          districtIndicator={districtIndicator}
+          onClose={() => {
+            setRightOpen(false);
+            setPlace(null);
+          }}
+        />
+      {learnOpen && <LearnDialog onClose={() => setLearnOpen(false)} />}
+      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }

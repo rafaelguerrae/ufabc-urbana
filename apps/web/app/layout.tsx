@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>
+      <body cz-shortcut-listen="true">
         {children}
       </body>
     </html>

@@ -13,12 +13,11 @@ export interface Place {
 interface PlaceCardProps {
   place: Place;
   raster: RasterInfo | null;
-  onClose: () => void;
 }
 
 const monthYear = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" });
 
-export function PlaceCard({ place, raster, onClose }: PlaceCardProps) {
+export function PlaceCard({ place, raster }: PlaceCardProps) {
   const { sample, district } = place;
   const lst = getIndicator("lst_c");
   const ndvi = getIndicator("ndvi");
@@ -36,9 +35,6 @@ export function PlaceCard({ place, raster, onClose }: PlaceCardProps) {
             {district ? `Distrito ${district.name}` : "Fora do município de São Paulo"} · {coords}
           </p>
         </div>
-        <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar">
-          ×
-        </button>
       </div>
 
       {sample ? (
