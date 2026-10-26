@@ -1,0 +1,163 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.layers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layer,
+.layerActive {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.layer:hover {
+  background: var(--hover);
+}
+
+.layerActive {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.layer:focus-visible,
+.layerActive:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.layerName {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.layerHint {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.select select {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legendBar {
+  height: 12px;
+  border-radius: 6px;
+}
+
+.legendLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.details {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.details summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.details > * + * {
+  margin-top: 8px;
+}
+
+.details summary + * {
+  margin-top: 10px;
+}
+
+.badgeRow {
+  margin: 0;
+}
+
+.badgeObserved,
+.badgeDerived {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.badgeObserved {
+  background: var(--badge-observed-bg);
+  color: var(--badge-observed-fg);
+}
+
+.badgeDerived {
+  background: var(--badge-derived-bg);
+  color: var(--badge-derived-fg);
+}
+
+.meta {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.meta dt {
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.meta dd {
+  color: var(--muted);
+}
+
+.error {
+  color: #ef4444;
+  font-size: 0.85rem;
+}

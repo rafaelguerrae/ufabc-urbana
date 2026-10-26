@@ -1,6 +1,22 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: #f6f7f9;
+  --surface: #ffffff;
+  --foreground: #1f2328;
+  --muted: #565d66;
+  --border: #c3c8d0;
+  --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgb(37 99 235 / 0.12);
+  --hover: #e8eaee;
+  --button: #eef0f3;
+  --button-hover: #e1e4e9;
+  --panel: rgb(246 247 249 / 0.97);
+  --shadow: 0 4px 16px rgb(0 0 0 / 0.1);
+  --badge-observed-bg: #dcfce7;
+  --badge-observed-fg: #14532d;
+  --badge-derived-bg: #dbeafe;
+  --badge-derived-fg: #1e3a8a;
 }
 
 html,
@@ -12,15 +28,11 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
 }

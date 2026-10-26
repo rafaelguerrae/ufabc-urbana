@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "UFABC Urbana",
-  description: "todo",
+  description: "Descubra por que algumas partes de São Paulo são mais quentes e como a vegetação se relaciona com o calor na cidade.",
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="pt-BR">
+      <body cz-shortcut-listen="true">
         {children}
       </body>
     </html>

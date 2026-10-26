@@ -1,0 +1,95 @@
+.wrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.95rem;
+  height: 44px;
+  padding: 0 14px 0 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.icon {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  top: 13px;
+  color: var(--foreground);
+  z-index: 2;
+  pointer-events: none;
+  transition: color 0.18s ease;
+}
+
+.wrap:focus-within .icon {
+  color: var(--accent);
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.list:empty {
+  display: none;
+}
+
+.item,
+.itemActive {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.item:hover,
+.itemActive {
+  background: var(--hover);
+}
+
+.itemLabel {
+  font-size: 0.9rem;
+}
+
+.itemDetail {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.note {
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}

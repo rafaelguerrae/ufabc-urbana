@@ -1,0 +1,67 @@
+{
+  "retrieved_at": "2026-10-26T01:02:17+00:00",
+  "source": "MapBiomas Collection 11 coverage v3 + Landsat 8/9 Collection 2 Level 2 (ST_B10)",
+  "gee_project": "bulky-491021",
+  "coverage_asset": "projects/mapbiomas-public/assets/brazil/lulc/collection11/mapbiomas_brazil_collection11_coverage_v3",
+  "coverage_year": 2024,
+  "class_groups": {
+    "urban": [
+      24
+    ],
+    "woody": [
+      3,
+      4,
+      5,
+      9,
+      49
+    ]
+  },
+  "lst_period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "ndvi_method": "same cloud-masked median composite; (SR_B5-SR_B4)/(SR_B5+SR_B4) with SR scale 0.0000275, offset -0.2",
+  "ndvi_threshold": 0.5,
+  "lst_method": "median of cloud-masked daytime scenes; ST_B10 * 0.00341802 + 149.0 K, converted to Celsius",
+  "landsat_scenes_in_period": 26,
+  "aggregation": "mean per IBGE 2022 district, scale 30 m",
+  "districts": 96,
+  "districts_missing_lst": 0,
+  "spearman": {
+    "urban": {
+      "urban": 1.0,
+      "woody": -0.903,
+      "ndvi": -0.836,
+      "ndvi_high_share": -0.887,
+      "lst_c": 0.754
+    },
+    "woody": {
+      "urban": -0.903,
+      "woody": 1.0,
+      "ndvi": 0.808,
+      "ndvi_high_share": 0.85,
+      "lst_c": -0.715
+    },
+    "ndvi": {
+      "urban": -0.836,
+      "woody": 0.808,
+      "ndvi": 1.0,
+      "ndvi_high_share": 0.953,
+      "lst_c": -0.866
+    },
+    "ndvi_high_share": {
+      "urban": -0.887,
+      "woody": 0.85,
+      "ndvi": 0.953,
+      "ndvi_high_share": 1.0,
+      "lst_c": -0.837
+    },
+    "lst_c": {
+      "urban": 0.754,
+      "woody": -0.715,
+      "ndvi": -0.866,
+      "ndvi_high_share": -0.837,
+      "lst_c": 1.0
+    }
+  }
+}

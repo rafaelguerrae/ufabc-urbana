@@ -1,0 +1,26 @@
+.root {
+  position: relative;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #111, 0 2px 8px rgb(0 0 0 / 0.4);
+}
+
+/* Keep the zoom controls clear of the right panel. */
+.rightOpen :global(.maplibregl-ctrl-bottom-right) {
+  right: 432px;
+}
+
+@media (max-width: 700px) {
+  .root :global(.maplibregl-ctrl-bottom-right) {
+    display: none;
+  }
+}
