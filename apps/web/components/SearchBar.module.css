@@ -1,0 +1,71 @@
+.wrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  overflow: hidden;
+}
+
+.list:empty {
+  display: none;
+}
+
+.item,
+.itemActive {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.item:hover,
+.itemActive {
+  background: var(--hover);
+}
+
+.itemLabel {
+  font-size: 0.9rem;
+}
+
+.itemDetail {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.note {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}

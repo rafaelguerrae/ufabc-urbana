@@ -26,4 +26,6 @@ uv run python -m src.sources.ibge      # IBGE Census 2022 sectors (about 182 MB 
 uv run python -m src.sources.geosampa  # GeoSampa density and vegetation samples
 uv run python -m src.sources.inmet     # INMET stations and 2023 hourly data (about 107 MB download)
 uv run python -m src.sources.gee       # needs: uv run earthengine authenticate (free non-commercial project)
+uv run python -m src.export_web      # districts.geojson for apps/web (needs the IBGE download and the gee sample)
+uv run python -m src.export_raster   # 30 m LST/NDVI overlays and lookup image for apps/web (needs GEE)
 ```

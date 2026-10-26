@@ -31,14 +31,14 @@ export interface Indicator {
 export const INDICATORS: Indicator[] = [
   {
     key: "lst_c",
-    label: "Surface temperature",
+    label: "Temperatura da superfície",
     unit: "°C",
     decimals: 1,
     dataType: "derived",
-    source: "Landsat 8/9 Collection 2 Level 2 (ST_B10), via Google Earth Engine",
-    period: "Dec 2023 – Mar 2024, median of 26 cloud-masked daytime scenes",
+    source: "Satélites Landsat 8 e 9 (banda térmica ST_B10), processados no Google Earth Engine",
+    period: "Dez 2023 a mar 2024 (verão): mediana de 26 imagens de dia, sem nuvens",
     description:
-      "Temperature of the land surface (not the air), averaged over the district. Satellite passes happen around 10:30 local time, so this does not describe nights or heat waves.",
+      "Temperatura do chão, dos telhados e do asfalto, medida por satélite. Não é a temperatura do ar que sentimos. O satélite passa por volta das 10h30, então o mapa não mostra a noite nem dias de onda de calor.",
     ramp: [
       [255, 255, 178],
       [254, 204, 92],
@@ -49,14 +49,14 @@ export const INDICATORS: Indicator[] = [
   },
   {
     key: "ndvi",
-    label: "Vegetation index (NDVI)",
-    unit: "index (−1 to 1)",
+    label: "Vegetação (índice NDVI)",
+    unit: "índice de −1 a 1",
     decimals: 2,
     dataType: "derived",
-    source: "Landsat 8/9 Collection 2 Level 2 (SR_B4, SR_B5), via Google Earth Engine",
-    period: "Dec 2023 – Mar 2024, median of 26 cloud-masked scenes",
+    source: "Satélites Landsat 8 e 9 (bandas SR_B4 e SR_B5), processados no Google Earth Engine",
+    period: "Dez 2023 a mar 2024 (verão): mediana de 26 imagens sem nuvens",
     description:
-      "Greenness of the surface, averaged over the district. Higher values mean denser green vegetation, but it also reacts to grass and wet soil, so it is not a measure of tree canopy.",
+      "Mede o quanto a superfície é verde. Quanto maior o valor, mais vegetação. O índice também sobe com gramado e solo úmido, então não mede só a copa das árvores.",
     ramp: [
       [255, 255, 204],
       [194, 230, 153],
@@ -67,14 +67,14 @@ export const INDICATORS: Indicator[] = [
   },
   {
     key: "urban",
-    label: "Urban area share",
-    unit: "% of district",
+    label: "Área urbanizada",
+    unit: "% do distrito",
     decimals: 1,
     dataType: "derived",
-    source: "MapBiomas Collection 11, coverage v3 (class 24, urban area)",
+    source: "MapBiomas, Coleção 11 (classe 24, área urbanizada)",
     period: "2024",
     description:
-      "Share of the district classified as urban area at 30 m. Dense urban fabric counts as urban even where it has street trees, so many central districts reach 100%.",
+      "Parte do distrito classificada como área urbana em mapas de 30 m. Bairros muito densos contam como urbanos mesmo com árvores nas ruas, por isso muitos distritos centrais chegam a 100%.",
     ramp: [
       [247, 247, 247],
       [204, 204, 204],
@@ -85,13 +85,13 @@ export const INDICATORS: Indicator[] = [
   },
   {
     key: "population_density",
-    label: "Population density",
-    unit: "inhabitants / km²",
+    label: "Densidade demográfica",
+    unit: "hab./km²",
     decimals: 0,
     dataType: "observed",
-    source: "IBGE Census 2022, aggregated from census sectors",
+    source: "IBGE, Censo Demográfico 2022 (somado a partir dos setores censitários)",
     period: "2022",
-    description: "Residents counted in the 2022 Census divided by district area.",
+    description: "Moradores contados no Censo 2022 divididos pela área do distrito.",
     ramp: [
       [239, 243, 255],
       [189, 215, 231],
@@ -103,8 +103,8 @@ export const INDICATORS: Indicator[] = [
 ];
 
 export const DATA_TYPE_LABEL: Record<DataType, string> = {
-  observed: "Observed (census count)",
-  derived: "Derived from satellite data",
+  observed: "Dado observado (contagem do Censo)",
+  derived: "Estimado a partir de imagens de satélite",
 };
 
 export function getIndicator(key: IndicatorKey): Indicator {
@@ -112,7 +112,7 @@ export function getIndicator(key: IndicatorKey): Indicator {
 }
 
 export function formatValue(indicator: Indicator, value: number): string {
-  return value.toLocaleString("en-US", {
+  return value.toLocaleString("pt-BR", {
     minimumFractionDigits: indicator.decimals,
     maximumFractionDigits: indicator.decimals,
   });
@@ -132,3 +132,11 @@ export function colorAt(indicator: Indicator, t: number): [number, number, numbe
     Math.round(a[2] + (b[2] - a[2]) * f),
   ];
 }
+
+export type ViewMode = "lst_c" | "ndvi" | "districts";
+
+export const VIEW_LABEL: Record<ViewMode, string> = {
+  lst_c: "Calor (30 m)",
+  ndvi: "Vegetação (30 m)",
+  districts: "Médias por distrito",
+};

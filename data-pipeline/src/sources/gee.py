@@ -37,6 +37,17 @@ def mask_clouds(img: ee.Image) -> ee.Image:
     return ee.Image.cat(lst_c, ndvi).updateMask(clear)
 
 
+def composite(region: ee.FeatureCollection | ee.Geometry) -> tuple[ee.Image, int]:
+    """Cloud-masked median LST (lst_c) and NDVI (ndvi) for the summer period, plus the scene count."""
+    landsat = (
+        ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+        .merge(ee.ImageCollection("LANDSAT/LC09/C02/T1_L2"))
+        .filterDate(LST_START, LST_END)
+        .filterBounds(region)
+    )
+    return landsat.map(mask_clouds).median(), landsat.size().getInfo()
+
+
 def main() -> None:
     ee.Initialize(project=PROJECT)
     d = districts()
@@ -47,16 +58,9 @@ def main() -> None:
         cover.remap(URBAN, [1], 0).rename("urban"),
         cover.remap(WOODY, [1] * len(WOODY), 0).rename("woody"),
     )
-    landsat = (
-        ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
-        .merge(ee.ImageCollection("LANDSAT/LC09/C02/T1_L2"))
-        .filterDate(LST_START, LST_END)
-        .filterBounds(fc)
-    )
-    scenes = landsat.size().getInfo()
-    composite = landsat.map(mask_clouds).median()
-    green = composite.select("ndvi").gte(NDVI_THRESHOLD).rename("ndvi_high_share")
-    lst = ee.Image.cat(composite, green)
+    median, scenes = composite(fc)
+    green = median.select("ndvi").gte(NDVI_THRESHOLD).rename("ndvi_high_share")
+    lst = ee.Image.cat(median, green)
 
     stats = ee.Image.cat(fractions, lst).reduceRegions(
         collection=fc, reducer=ee.Reducer.mean(), scale=30, crs="EPSG:4326"

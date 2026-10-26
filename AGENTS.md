@@ -5,7 +5,8 @@ Guidance for AI agents working in this repository.
 ## Project
 
 - The project is always named **ufabc-urbana** (repo and package names) or **UFABC Urbana** (display name). Do not use "Cidade em Temperatura" or other former working titles.
-- Everything is written in **English**: code, comments, docs, UI copy and commit messages. Portuguese appears only inside bibliographic citations (titles of cited papers, source URLs).
+- Code, comments, docs and commit messages are written in **English**.
+- All user-facing text in `apps/web` (UI copy, labels, errors, metadata) is **Brazilian Portuguese (pt-BR)**, written in plain language for people with no background on urban heat islands or vegetation. Number formatting uses the `pt-BR` locale.
 - Topic: urban heat islands and the role of vegetation in the urban microclimate. Do not widen it to generic "urban climate".
 - Study area: municipality of São Paulo first; keep the pipeline expandable to the Metropolitan Region of São Paulo (RMSP).
 
@@ -14,7 +15,8 @@ Guidance for AI agents working in this repository.
 - Turborepo + pnpm monorepo. `apps/web` is Next.js (App Router, strict TypeScript). Shared code lives in `packages/*`.
 - `data-pipeline/` holds Python scripts (managed with uv) that turn public datasets into static GeoJSON/JSON consumed by `apps/web` (for example from `apps/web/public/data/`).
 - No database or API server for now. Add one only if the feasibility work shows static files are insufficient.
-- Planned map stack (see `temp-plan.md`): `react-map-gl` + MapLibre GL JS, `deck.gl` layers, Tremor charts.
+- Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay and a district GeoJSON choropleth), CARTO Positron basemap, Photon geocoding. `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
+- Data flow: `data-pipeline` (Earth Engine + IBGE) writes `apps/web/public/data/districts.geojson` and `public/data/raster/*` (`uv run python -m src.export_web`, `uv run python -m src.export_raster`). The web app only reads these static files.
 
 ## Data-integrity rules
 
