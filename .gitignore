@@ -34,3 +34,12 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Temp folders
+tmp
+temp
+
+# Data pipeline
+data-pipeline/raw/
+data-pipeline/.venv/
+__pycache__/
