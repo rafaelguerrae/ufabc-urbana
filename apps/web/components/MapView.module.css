@@ -103,6 +103,11 @@
   }
 }
 
+/* "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly. */
+.details {
+  display: none;
+}
+
 /* Keep the zoom controls clear of the right panel. */
 .rightOpen :global(.maplibregl-ctrl-bottom-right) {
   right: 432px;
@@ -113,8 +118,44 @@
     display: none;
   }
 
-  /* Panels are bottom sheets on small screens, so the button stays put. */
+  /* Panels are bottom sheets on small screens: the button rides on top of the open sheet
+     (--sheet-height is set by SheetPanel) and stays reachable even when the sheet is full screen. */
+  .reset {
+    z-index: 8;
+    bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
+  }
+
   .resetShifted {
     left: 12px;
+  }
+
+  .details {
+    position: absolute;
+    left: 64px;
+    z-index: 8;
+    bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
+    height: 44px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 0;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1.4);
+  }
+
+  .details:active {
+    transform: scale(0.96);
+  }
+
+  .details:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }

@@ -92,8 +92,9 @@ export function MapView() {
       const district = districts?.features.find((f: Feature<Polygon | MultiPolygon, DistrictProperties>) =>
         booleanPointInPolygon(pt, f),
       );
+      // On mobile the details open on demand ("Ver detalhes"), so the selected point stays visible on the map.
       if (window.matchMedia(MOBILE_QUERY).matches) setLeftOpen(false);
-      setRightOpen(true);
+      else setRightOpen(true);
       setPlace({
         lng,
         lat,
@@ -276,6 +277,19 @@ export function MapView() {
         </svg>
       </button>
 
+      {place && !rightOpen && (
+        <button
+          type="button"
+          className={styles.details}
+          onClick={() => {
+            setLeftOpen(false);
+            setRightOpen(true);
+          }}
+        >
+          Ver detalhes
+        </button>
+      )}
+
       <TopBar
         leftOpen={leftOpen}
         rightOpen={rightOpen}
@@ -288,6 +302,7 @@ export function MapView() {
 
       <ControlPanel
           open={leftOpen}
+          onClose={() => setLeftOpen(false)}
           view={view}
           onViewChange={setView}
           districtIndicator={districtIndicator}

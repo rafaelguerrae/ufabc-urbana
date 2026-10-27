@@ -9,6 +9,7 @@ import { DistrictRanking } from "./charts/DistrictRanking";
 import { DistrictScatter } from "./charts/DistrictScatter";
 import { PlaceCard, type Place } from "./PlaceCard";
 import panel from "./Panel.module.css";
+import { SheetPanel } from "./SheetPanel";
 
 interface RightPanelProps {
   open: boolean;
@@ -34,12 +35,7 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
   );
 
   return (
-    <aside
-      id="right-panel"
-      className={`${panel.panel} ${panel.right} ${open ? "" : panel.hidden}`}
-      aria-label="Local selecionado e gráficos"
-      aria-hidden={!open}
-    >
+    <SheetPanel side="right" id="right-panel" label="Local selecionado e gráficos" open={open} onClose={onClose}>
       <div className={panel.closeBar}>
         <button type="button" className={panel.close} onClick={onClose} aria-label="Fechar painel" title="Fechar">
           ×
@@ -76,6 +72,6 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
       ) : (
         <p className={panel.note}>Carregando dados…</p>
       )}
-    </aside>
+    </SheetPanel>
   );
 }

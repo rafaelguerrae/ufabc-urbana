@@ -14,6 +14,7 @@ import {
 } from "../lib/indicators";
 import type { RasterInfo } from "../lib/raster";
 import { LayerIcon } from "./LayerIcon";
+import { SheetPanel } from "./SheetPanel";
 import panel from "./Panel.module.css";
 import styles from "./ControlPanel.module.css";
 
@@ -26,6 +27,7 @@ interface ControlPanelProps {
   raster: RasterInfo | null;
   scenesLabel: string | null;
   open: boolean;
+  onClose: () => void;
   loading: boolean;
   error: string | null;
 }
@@ -49,12 +51,7 @@ export function ControlPanel(props: ControlPanelProps) {
     .join(",")})`;
 
   return (
-    <aside
-      id="left-panel"
-      className={`${panel.panel} ${panel.left} ${props.open ? "" : panel.hidden}`}
-      aria-label="Camadas do mapa"
-      aria-hidden={!props.open}
-    >
+    <SheetPanel side="left" id="left-panel" label="Camadas do mapa" open={props.open} onClose={props.onClose}>
       <header>
         <div className={styles.brand}>
           <Image src="/ufabc-urbana.png" alt="" width={56} height={56} className={styles.logo} priority />
@@ -166,6 +163,6 @@ export function ControlPanel(props: ControlPanelProps) {
           temperatura do ar. O mapa não mostra previsões nem simulações.
         </p>
       </details>
-    </aside>
+    </SheetPanel>
   );
 }
