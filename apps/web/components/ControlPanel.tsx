@@ -13,6 +13,8 @@ import {
   type ViewMode,
 } from "../lib/indicators";
 import type { RasterInfo } from "../lib/raster";
+import { LayerIcon } from "./LayerIcon";
+import { SheetPanel } from "./SheetPanel";
 import panel from "./Panel.module.css";
 import styles from "./ControlPanel.module.css";
 
@@ -23,7 +25,9 @@ interface ControlPanelProps {
   onDistrictIndicatorChange: (key: IndicatorKey) => void;
   districtRange: { min: number; max: number };
   raster: RasterInfo | null;
+  scenesLabel: string | null;
   open: boolean;
+  onClose: () => void;
   loading: boolean;
   error: string | null;
 }
@@ -33,7 +37,7 @@ const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
 const VIEW_HINT: Record<ViewMode, string> = {
   lst_c: "Onde a superfície esquenta mais · cada quadrado ≈ 30 m",
   ndvi: "Onde há mais plantas · cada quadrado ≈ 30 m",
-  districts: "Compare os 96 distritos",
+  districts: "Compare os distritos e bairros",
 };
 
 export function ControlPanel(props: ControlPanelProps) {
@@ -47,20 +51,15 @@ export function ControlPanel(props: ControlPanelProps) {
     .join(",")})`;
 
   return (
-    <aside
-      id="left-panel"
-      className={`${panel.panel} ${panel.left} ${props.open ? "" : panel.hidden}`}
-      aria-label="Camadas do mapa"
-      aria-hidden={!props.open}
-    >
+    <SheetPanel side="left" id="left-panel" label="Camadas do mapa" open={props.open} onClose={props.onClose}>
       <header>
         <div className={styles.brand}>
           <Image src="/ufabc-urbana.png" alt="" width={56} height={56} className={styles.logo} priority />
           <h1 className={styles.title}>UFABC Urbana</h1>
         </div>
         <p className={panel.note}>
-          Por que algumas partes de São Paulo são mais quentes que outras? Onde há muito concreto e pouca vegetação, a
-          cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
+          Por que algumas partes de São Paulo, São Bernardo do Campo e Santo André são mais quentes que outras? Onde há
+          muito concreto e pouca vegetação, a cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
         </p>
       </header>
 
@@ -76,8 +75,13 @@ export function ControlPanel(props: ControlPanelProps) {
               className={v === view ? styles.layerActive : styles.layer}
               onClick={() => props.onViewChange(v)}
             >
-              <span className={styles.layerName}>{VIEW_LABEL[v]}</span>
-              <span className={styles.layerHint}>{VIEW_HINT[v]}</span>
+              <span className={styles.layerIcon}>
+                <LayerIcon view={v} />
+              </span>
+              <span className={styles.layerText}>
+                <span className={styles.layerName}>{VIEW_LABEL[v]}</span>
+                <span className={styles.layerHint}>{VIEW_HINT[v]}</span>
+              </span>
             </button>
           ))}
         </div>
@@ -142,11 +146,14 @@ export function ControlPanel(props: ControlPanelProps) {
           <dt>Fonte</dt>
           <dd>{indicator.source}</dd>
           <dt>Período</dt>
-          <dd>{indicator.period}</dd>
+          <dd>
+            {indicator.period}
+            {view !== "districts" && props.scenesLabel ? ` · ${props.scenesLabel} imagens` : ""}
+          </dd>
           <dt>Resolução</dt>
           <dd>
             {view === "districts"
-              ? "Distritos do IBGE de 2022 (96 no município)"
+              ? "Distritos do IBGE de 2022 em São Paulo (96) e bairros do IBGE de 2022 em São Bernardo do Campo (34) e Santo André (113). Os tamanhos não são comparáveis."
               : "Grade de 30 m; o sensor térmico mede cerca de 100 m e a imagem é reamostrada"}
           </dd>
         </dl>
@@ -156,6 +163,6 @@ export function ControlPanel(props: ControlPanelProps) {
           temperatura do ar. O mapa não mostra previsões nem simulações.
         </p>
       </details>
-    </aside>
+    </SheetPanel>
   );
 }

@@ -1,0 +1,45 @@
+{
+  "retrieved_at": "2026-10-27T00:12:31+00:00",
+  "city": "sao-bernardo-do-campo",
+  "bounds": {
+    "west": -46.65220765017911,
+    "south": -23.96792403312514,
+    "east": -46.41020151263731,
+    "north": -23.640975176864316
+  },
+  "width": 898,
+  "height": 1326,
+  "pixel_size_m_projected": [
+    30.0,
+    30.0
+  ],
+  "valid_pixels": 548835,
+  "lst": {
+    "encoding": [
+      15.0,
+      55.0
+    ],
+    "scale": [
+      27.18625259399414,
+      45.115478515625
+    ],
+    "unit": "°C"
+  },
+  "ndvi": {
+    "encoding": [
+      -0.2,
+      1.0
+    ],
+    "scale": [
+      -0.21302917569875718,
+      0.8835841464996339
+    ],
+    "unit": "index"
+  },
+  "period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "scenes": 26,
+  "source": "Landsat 8/9 Collection 2 Level 2 via GEE, same composite as gee.py"
+}

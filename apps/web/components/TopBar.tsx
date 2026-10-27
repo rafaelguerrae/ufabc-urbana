@@ -59,9 +59,7 @@ export function TopBar(props: TopBarProps) {
             <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z" />
             <path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" />
           </svg>
-          <span className={styles.dot} aria-hidden>
-            <span className={styles.pulse} />
-          </span>
+          <span className={styles.dot} aria-hidden />
         </button>
         <button
           type="button"

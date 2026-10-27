@@ -78,7 +78,7 @@ export function SearchBar({ onSelect }: SearchBarProps) {
         aria-expanded={open && results.length > 0}
         aria-controls={listId}
         aria-autocomplete="list"
-        aria-label="Buscar uma rua, endereço ou bairro em São Paulo"
+        aria-label="Buscar uma rua, endereço ou bairro em São Paulo, São Bernardo do Campo ou Santo André"
         placeholder="Busque"
         value={query}
         onChange={(e) => {
@@ -103,7 +103,7 @@ export function SearchBar({ onSelect }: SearchBarProps) {
             </li>
           ))}
           {status === "loading" && <li className={styles.note}>Buscando…</li>}
-          {status === "empty" && <li className={styles.note}>Nenhum local encontrado em São Paulo.</li>}
+          {status === "empty" && <li className={styles.note}>Nenhum local encontrado nos municípios do mapa.</li>}
           {status === "error" && <li className={styles.note}>A busca está indisponível agora. Você ainda pode clicar no mapa.</li>}
         </ul>
       )}

@@ -9,12 +9,13 @@ interface DistrictRankingProps {
   districts: DistrictProperties[];
   indicatorKey: IndicatorKey;
   selectedCode: string | null;
+  unitPlural: string;
 }
 
 const TOP = 10;
 const ROW = 26;
 
-export function DistrictRanking({ districts, indicatorKey, selectedCode }: DistrictRankingProps) {
+export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlural }: DistrictRankingProps) {
   const indicator = getIndicator(indicatorKey);
   const sorted = [...districts].sort((a, b) => b[indicatorKey] - a[indicatorKey]);
   const min = sorted.at(-1)?.[indicatorKey] ?? 0;
@@ -30,9 +31,11 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode }: Distr
 
   return (
     <figure className={styles.figure}>
-      <figcaption className={styles.title}>Distritos com os maiores valores</figcaption>
+      <figcaption className={styles.title}>
+        {unitPlural.charAt(0).toUpperCase() + unitPlural.slice(1)} com os maiores valores
+      </figcaption>
       <p className={styles.sub}>
-        {indicator.label} ({indicator.unit}), entre {districts.length} distritos.
+        {indicator.label} ({indicator.unit}), entre {districts.length} {unitPlural}.
       </p>
       <div className={styles.plot} style={{ height: rows.length * ROW + 24 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -79,7 +82,7 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode }: Distr
       </div>
       <p className={styles.caption}>
         As cores seguem a mesma escala do mapa.
-        {selectedRank >= 0 ? ` Distrito selecionado: ${selectedRank + 1}º de ${districts.length}.` : ""}
+        {selectedRank >= 0 ? ` Selecionado: ${selectedRank + 1}º de ${districts.length}.` : ""}
       </p>
     </figure>
   );

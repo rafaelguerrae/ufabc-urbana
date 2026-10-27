@@ -8,6 +8,8 @@ import styles from "./Chart.module.css";
 interface DistrictScatterProps {
   districts: DistrictProperties[];
   selectedCode: string | null;
+  unitPlural: string;
+  cityName: string;
 }
 
 interface Point {
@@ -32,7 +34,7 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: { paylo
   );
 }
 
-export function DistrictScatter({ districts, selectedCode }: DistrictScatterProps) {
+export function DistrictScatter({ districts, selectedCode, unitPlural, cityName }: DistrictScatterProps) {
   const others: Point[] = [];
   const selected: Point[] = [];
   for (const d of districts) {
@@ -41,8 +43,8 @@ export function DistrictScatter({ districts, selectedCode }: DistrictScatterProp
 
   return (
     <figure className={styles.figure}>
-      <figcaption className={styles.title}>Calor e vegetação nos distritos</figcaption>
-      <p className={styles.sub}>Cada ponto é um distrito de São Paulo.</p>
+      <figcaption className={styles.title}>Calor e vegetação: {unitPlural}</figcaption>
+      <p className={styles.sub}>Cada ponto é um {unitPlural === "bairros" ? "bairro" : "distrito"} de {cityName}.</p>
       <div className={styles.plot} style={{ height: 240 }}>
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 8, right: 12, bottom: 24, left: 0 }}>
@@ -72,9 +74,9 @@ export function DistrictScatter({ districts, selectedCode }: DistrictScatterProp
         </ResponsiveContainer>
       </div>
       <p className={styles.caption}>
-        Distritos com mais vegetação tendem a ter superfície mais fresca. É uma associação entre médias de {districts.length}{" "}
-        distritos, e não prova que a vegetação sozinha causa a diferença. Temperatura da superfície, não do ar.
-        {selectedCode ? " Em destaque: o distrito selecionado." : ""}
+        Áreas com mais vegetação tendem a ter superfície mais fresca. É uma associação entre médias de {districts.length}{" "}
+        {unitPlural}, e não prova que a vegetação sozinha causa a diferença. Temperatura da superfície, não do ar.
+        {selectedCode ? " Em destaque: o local selecionado." : ""}
       </p>
     </figure>
   );

@@ -1,5 +1,5 @@
 {
-  "retrieved_at": "2026-10-26T01:02:17+00:00",
+  "retrieved_at": "2026-10-27T00:10:06+00:00",
   "source": "MapBiomas Collection 11 coverage v3 + Landsat 8/9 Collection 2 Level 2 (ST_B10)",
   "gee_project": "bulky-491021",
   "coverage_asset": "projects/mapbiomas-public/assets/brazil/lulc/collection11/mapbiomas_brazil_collection11_coverage_v3",
@@ -23,45 +23,136 @@
   "ndvi_method": "same cloud-masked median composite; (SR_B5-SR_B4)/(SR_B5+SR_B4) with SR scale 0.0000275, offset -0.2",
   "ndvi_threshold": 0.5,
   "lst_method": "median of cloud-masked daytime scenes; ST_B10 * 0.00341802 + 149.0 K, converted to Celsius",
-  "landsat_scenes_in_period": 26,
-  "aggregation": "mean per IBGE 2022 district, scale 30 m",
-  "districts": 96,
-  "districts_missing_lst": 0,
-  "spearman": {
-    "urban": {
-      "urban": 1.0,
-      "woody": -0.903,
-      "ndvi": -0.836,
-      "ndvi_high_share": -0.887,
-      "lst_c": 0.754
+  "aggregation": "mean per IBGE 2022 unit, scale 30 m; units are districts (São Paulo) or bairros (ABC), not comparable in size",
+  "cities": {
+    "sao-paulo": {
+      "unit": "distrito",
+      "units": 96,
+      "units_missing_lst": 0,
+      "landsat_scenes_in_period": 26,
+      "spearman": {
+        "urban": {
+          "urban": 1.0,
+          "woody": -0.903,
+          "ndvi": -0.836,
+          "ndvi_high_share": -0.887,
+          "lst_c": 0.754
+        },
+        "woody": {
+          "urban": -0.903,
+          "woody": 1.0,
+          "ndvi": 0.808,
+          "ndvi_high_share": 0.85,
+          "lst_c": -0.715
+        },
+        "ndvi": {
+          "urban": -0.836,
+          "woody": 0.808,
+          "ndvi": 1.0,
+          "ndvi_high_share": 0.953,
+          "lst_c": -0.866
+        },
+        "ndvi_high_share": {
+          "urban": -0.887,
+          "woody": 0.85,
+          "ndvi": 0.953,
+          "ndvi_high_share": 1.0,
+          "lst_c": -0.837
+        },
+        "lst_c": {
+          "urban": 0.754,
+          "woody": -0.715,
+          "ndvi": -0.866,
+          "ndvi_high_share": -0.837,
+          "lst_c": 1.0
+        }
+      }
     },
-    "woody": {
-      "urban": -0.903,
-      "woody": 1.0,
-      "ndvi": 0.808,
-      "ndvi_high_share": 0.85,
-      "lst_c": -0.715
+    "sao-bernardo-do-campo": {
+      "unit": "bairro",
+      "units": 35,
+      "units_missing_lst": 0,
+      "landsat_scenes_in_period": 26,
+      "spearman": {
+        "urban": {
+          "urban": 1.0,
+          "woody": -0.924,
+          "ndvi": -0.8,
+          "ndvi_high_share": -0.811,
+          "lst_c": 0.926
+        },
+        "woody": {
+          "urban": -0.924,
+          "woody": 1.0,
+          "ndvi": 0.932,
+          "ndvi_high_share": 0.927,
+          "lst_c": -0.865
+        },
+        "ndvi": {
+          "urban": -0.8,
+          "woody": 0.932,
+          "ndvi": 1.0,
+          "ndvi_high_share": 0.98,
+          "lst_c": -0.75
+        },
+        "ndvi_high_share": {
+          "urban": -0.811,
+          "woody": 0.927,
+          "ndvi": 0.98,
+          "ndvi_high_share": 1.0,
+          "lst_c": -0.756
+        },
+        "lst_c": {
+          "urban": 0.926,
+          "woody": -0.865,
+          "ndvi": -0.75,
+          "ndvi_high_share": -0.756,
+          "lst_c": 1.0
+        }
+      }
     },
-    "ndvi": {
-      "urban": -0.836,
-      "woody": 0.808,
-      "ndvi": 1.0,
-      "ndvi_high_share": 0.953,
-      "lst_c": -0.866
-    },
-    "ndvi_high_share": {
-      "urban": -0.887,
-      "woody": 0.85,
-      "ndvi": 0.953,
-      "ndvi_high_share": 1.0,
-      "lst_c": -0.837
-    },
-    "lst_c": {
-      "urban": 0.754,
-      "woody": -0.715,
-      "ndvi": -0.866,
-      "ndvi_high_share": -0.837,
-      "lst_c": 1.0
+    "santo-andre": {
+      "unit": "bairro",
+      "units": 114,
+      "units_missing_lst": 0,
+      "landsat_scenes_in_period": 26,
+      "spearman": {
+        "urban": {
+          "urban": 1.0,
+          "woody": -0.973,
+          "ndvi": -0.757,
+          "ndvi_high_share": -0.799,
+          "lst_c": 0.786
+        },
+        "woody": {
+          "urban": -0.973,
+          "woody": 1.0,
+          "ndvi": 0.775,
+          "ndvi_high_share": 0.797,
+          "lst_c": -0.79
+        },
+        "ndvi": {
+          "urban": -0.757,
+          "woody": 0.775,
+          "ndvi": 1.0,
+          "ndvi_high_share": 0.953,
+          "lst_c": -0.781
+        },
+        "ndvi_high_share": {
+          "urban": -0.799,
+          "woody": 0.797,
+          "ndvi": 0.953,
+          "ndvi_high_share": 1.0,
+          "lst_c": -0.794
+        },
+        "lst_c": {
+          "urban": 0.786,
+          "woody": -0.79,
+          "ndvi": -0.781,
+          "ndvi_high_share": -0.794,
+          "lst_c": 1.0
+        }
+      }
     }
   }
 }

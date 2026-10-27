@@ -1,3 +1,4 @@
+import { CITY_LIST_TEXT, unitOf, unitTitle } from "../lib/cities";
 import { formatValue, getIndicator, type DistrictProperties } from "../lib/indicators";
 import type { RasterInfo, RasterSample } from "../lib/raster";
 import styles from "./PlaceCard.module.css";
@@ -32,7 +33,7 @@ export function PlaceCard({ place, raster }: PlaceCardProps) {
         <div>
           <h2 className={styles.title}>{place.label}</h2>
           <p className={styles.sub}>
-            {district ? `Distrito ${district.name}` : "Fora do município de São Paulo"} · {coords}
+            {district ? unitTitle(district) : `Fora da área do mapa (${CITY_LIST_TEXT})`} · {coords}
           </p>
         </div>
       </div>
@@ -45,7 +46,7 @@ export function PlaceCard({ place, raster }: PlaceCardProps) {
             {diff !== null && (
               <p className={styles.caption}>
                 {formatValue({ ...lst, decimals: 1 }, Math.abs(diff))} °C {diff >= 0 ? "mais quente" : "mais fresco"} que a
-                média do distrito {district?.name}
+                média {district ? unitOf(district) : ""}
               </p>
             )}
           </div>
@@ -56,13 +57,13 @@ export function PlaceCard({ place, raster }: PlaceCardProps) {
         </div>
       ) : (
         <p className={styles.caption}>
-          Sem dado de satélite aqui: o ponto fica fora do município ou não havia imagem sem nuvens.
+          Sem dado de satélite aqui: o ponto fica fora dos municípios do mapa ou não havia imagem sem nuvens.
         </p>
       )}
 
       {district && (
         <dl className={styles.districtList}>
-          <dt>Média do distrito {district.name}</dt>
+          <dt>Média {unitOf(district)}</dt>
           <dd>
             {formatValue(lst, district.lst_c)} °C · NDVI {formatValue(ndvi, district.ndvi)}
           </dd>

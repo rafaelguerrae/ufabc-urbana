@@ -14,6 +14,100 @@
   box-shadow: 0 0 0 2px #111, 0 2px 8px rgb(0 0 0 / 0.4);
 }
 
+/* Fixed UFABC campus markers: a green dot; the name shows on hover or focus. */
+.campus {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 1px #15803d, 0 2px 8px rgb(0 0 0 / 0.4);
+  cursor: pointer;
+  font: inherit;
+}
+
+.campus:focus-visible {
+  outline: 2px solid #15803d;
+  outline-offset: 3px;
+}
+
+.campusLabel {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+}
+
+.campus:hover .campusLabel,
+.campus:focus-visible .campusLabel {
+  opacity: 1;
+}
+
+/* Reset-view button, bottom left; sits beside the left panel when that is open on desktop. */
+.reset {
+  position: absolute;
+  bottom: 24px;
+  left: 12px;
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--button);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.18s ease,
+    transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1.4);
+}
+
+.reset:hover {
+  background: var(--hover);
+}
+
+.reset:active {
+  transform: scale(0.94);
+}
+
+.reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.resetShifted {
+  left: 424px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reset {
+    transition: none;
+  }
+}
+
+/* "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly. */
+.details {
+  display: none;
+}
+
 /* Keep the zoom controls clear of the right panel. */
 .rightOpen :global(.maplibregl-ctrl-bottom-right) {
   right: 432px;
@@ -22,5 +116,46 @@
 @media (max-width: 700px) {
   .root :global(.maplibregl-ctrl-bottom-right) {
     display: none;
+  }
+
+  /* Panels are bottom sheets on small screens: the button rides on top of the open sheet
+     (--sheet-height is set by SheetPanel) and stays reachable even when the sheet is full screen. */
+  .reset {
+    z-index: 8;
+    bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
+  }
+
+  .resetShifted {
+    left: 12px;
+  }
+
+  .details {
+    position: absolute;
+    left: 64px;
+    z-index: 8;
+    bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
+    height: 44px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 0;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1.4);
+  }
+
+  .details:active {
+    transform: scale(0.96);
+  }
+
+  .details:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }

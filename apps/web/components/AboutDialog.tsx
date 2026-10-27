@@ -35,12 +35,15 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
           </button>
         </div>
         <p>
-          Este mapa mostra como a temperatura da superfície e a vegetação variam em São Paulo. Os valores vêm de imagens
+          Este mapa mostra como a temperatura da superfície e a vegetação variam em São Paulo, São Bernardo do Campo e Santo André. Os valores vêm de imagens
           de satélite e de dados oficiais; nada aqui é previsão ou simulação.
         </p>
         <ul>
           <li>Temperatura e vegetação: satélites Landsat 8 e 9, processados no Google Earth Engine.</li>
-          <li>Distritos e densidade demográfica: IBGE, Censo 2022.</li>
+          <li>
+            Distritos (São Paulo), bairros (São Bernardo do Campo e Santo André) e densidade demográfica: IBGE, Censo
+            2022. Os bairros são os do Censo e podem diferir dos bairros oficiais de cada prefeitura.
+          </li>
           <li>Área urbanizada: MapBiomas, Coleção 11.</li>
           <li>Busca de endereços: Photon, © colaboradores do OpenStreetMap.</li>
           <li>Mapa-base: © CARTO.</li>
@@ -53,7 +56,7 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
         </p>
         <p>
           Os dados mostram associações, não causas. A temperatura da superfície não é a temperatura do ar, e cada camada
-          tem sua própria escala (pixel de 30 m ou distrito).
+          tem sua própria escala (pixel de 30 m, distrito ou bairro). Distritos e bairros têm tamanhos muito diferentes, então compare cada cidade com ela mesma. Em São Bernardo do Campo e Santo André, a "área sem bairro" reúne trechos sem moradores que o IBGE não classificou em nenhum bairro.
         </p>
       </section>
     </div>

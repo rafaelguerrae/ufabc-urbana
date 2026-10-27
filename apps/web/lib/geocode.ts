@@ -6,8 +6,8 @@ export interface SearchResult {
   lat: number;
 }
 
-// Área de busca: município de São Paulo (oeste, sul, leste, norte).
-const BBOX = "-46.83,-24.01,-46.36,-23.35";
+// Área de busca: São Paulo, São Bernardo do Campo e Santo André (oeste, sul, leste, norte).
+const BBOX = "-46.83,-24.01,-46.27,-23.35";
 
 interface PhotonFeature {
   geometry: { coordinates: [number, number] };
