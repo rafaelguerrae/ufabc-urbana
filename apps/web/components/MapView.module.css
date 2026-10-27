@@ -14,6 +14,40 @@
   box-shadow: 0 0 0 2px #111, 0 2px 8px rgb(0 0 0 / 0.4);
 }
 
+/* Fixed UFABC campus markers: a labelled pin the user can click to read the data there. */
+.campus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.campus::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--accent), 0 2px 8px rgb(0 0 0 / 0.4);
+}
+
+.campusLabel {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+}
+
 /* Keep the zoom controls clear of the right panel. */
 .rightOpen :global(.maplibregl-ctrl-bottom-right) {
   right: 432px;

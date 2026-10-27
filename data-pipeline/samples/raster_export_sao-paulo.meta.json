@@ -1,0 +1,45 @@
+{
+  "retrieved_at": "2026-10-27T00:12:29+00:00",
+  "city": "sao-paulo",
+  "bounds": {
+    "west": -46.82630115224146,
+    "south": -24.008550010669474,
+    "east": -46.36492642231768,
+    "north": -23.3562641797723
+  },
+  "width": 1712,
+  "height": 2643,
+  "pixel_size_m_projected": [
+    30.0,
+    30.0
+  ],
+  "valid_pixels": 2028990,
+  "lst": {
+    "encoding": [
+      15.0,
+      55.0
+    ],
+    "scale": [
+      27.18625259399414,
+      45.115478515625
+    ],
+    "unit": "°C"
+  },
+  "ndvi": {
+    "encoding": [
+      -0.2,
+      1.0
+    ],
+    "scale": [
+      -0.21302917569875718,
+      0.8835841464996339
+    ],
+    "unit": "index"
+  },
+  "period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "scenes": 26,
+  "source": "Landsat 8/9 Collection 2 Level 2 via GEE, same composite as gee.py"
+}

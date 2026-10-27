@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
+import { CITIES, getCity, type CitySlug } from "../lib/cities";
 import type { DistrictProperties, IndicatorKey } from "../lib/indicators";
 import type { RasterInfo } from "../lib/raster";
 import { DistrictRanking } from "./charts/DistrictRanking";
@@ -18,6 +21,17 @@ interface RightPanelProps {
 
 export function RightPanel({ open, place, raster, districts, districtIndicator, onClose }: RightPanelProps) {
   const selectedCode = place?.district?.code ?? null;
+  const placeCity = place?.district?.city ?? null;
+  const [picked, setPicked] = useState<CitySlug | null>(null);
+  // Following a new place in another city resets a manual choice.
+  useEffect(() => setPicked(null), [placeCity]);
+  const city = getCity(picked ?? placeCity ?? "sao-paulo");
+  // Units differ in size across cities, and the no-bairro remainder has no residents,
+  // so charts compare real units within one city.
+  const cityUnits = useMemo(
+    () => districts?.filter((d) => d.city === city.slug && d.unit !== "area_sem_bairro") ?? null,
+    [districts, city.slug],
+  );
 
   return (
     <aside
@@ -39,10 +53,25 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
       )}
 
       <h2 className={panel.sectionTitle}>Gráficos</h2>
-      {districts ? (
+      <label className={panel.note}>
+        Comparar{" "}
+        <select value={city.slug} onChange={(e) => setPicked(e.target.value as CitySlug)} aria-label="Município dos gráficos">
+          {CITIES.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      {cityUnits ? (
         <>
-          <DistrictScatter districts={districts} selectedCode={selectedCode} />
-          <DistrictRanking districts={districts} indicatorKey={districtIndicator} selectedCode={selectedCode} />
+          <DistrictScatter districts={cityUnits} selectedCode={selectedCode} unitPlural={city.unitPlural} cityName={city.name} />
+          <DistrictRanking
+            districts={cityUnits}
+            indicatorKey={districtIndicator}
+            selectedCode={selectedCode}
+            unitPlural={city.unitPlural}
+          />
         </>
       ) : (
         <p className={panel.note}>Carregando dados…</p>

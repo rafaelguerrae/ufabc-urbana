@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "UFABC Urbana",
-  description: "Descubra por que algumas partes de São Paulo são mais quentes e como a vegetação se relaciona com o calor na cidade.",
+  description: "Descubra por que algumas partes de São Paulo, São Bernardo do Campo e Santo André são mais quentes e como a vegetação se relaciona com o calor.",
 };
 
 export default function RootLayout({

@@ -1,97 +1,246 @@
-CD_DIST,NM_DIST,lst_c,ndvi,ndvi_high_share,urban,woody
-355030801,Água Rasa,42.8,0.2,3.2,100.0,0.0
-355030802,Alto de Pinheiros,37.46,0.449,35.7,92.6,0.2
-355030803,Anhanguera,33.19,0.702,80.5,26.1,48.7
-355030804,Aricanduva,42.64,0.197,3.2,100.0,0.0
-355030805,Artur Alvim,40.9,0.244,6.5,100.0,0.0
-355030806,Barra Funda,40.08,0.273,12.2,98.4,0.0
-355030807,Bela Vista,39.18,0.275,9.8,100.0,0.0
-355030808,Belém,42.42,0.237,10.5,100.0,0.0
-355030809,Bom Retiro,41.99,0.243,9.9,98.5,0.0
-355030810,Brás,42.74,0.155,2.3,100.0,0.0
-355030811,Brasilândia,35.18,0.522,48.1,56.0,40.2
-355030812,Butantã,37.81,0.455,40.3,84.3,4.0
-355030813,Cachoeirinha,35.76,0.521,47.8,57.3,38.7
-355030814,Cambuci,45.35,0.225,6.9,100.0,0.0
-355030815,Campo Belo,38.9,0.302,11.7,100.0,0.0
-355030816,Campo Grande,37.95,0.362,25.0,92.3,0.0
-355030817,Campo Limpo,39.21,0.314,15.0,99.9,0.0
-355030818,Cangaiba,38.74,0.396,32.9,76.4,5.3
-355030819,Capão Redondo,40.86,0.28,8.9,100.0,0.0
-355030820,Carrão,42.98,0.233,10.2,94.6,0.2
-355030821,Casa Verde,40.22,0.239,6.2,99.6,0.0
-355030822,Cidade Ademar,39.56,0.231,3.3,100.0,0.0
-355030823,Cidade Dutra,35.69,0.378,31.9,58.1,5.5
-355030824,Cidade Lider,39.74,0.285,15.5,100.0,0.0
-355030825,Cidade Tiradentes,36.82,0.436,35.2,80.5,9.4
-355030826,Consolação,37.56,0.343,18.1,100.0,0.0
-355030827,Cursino,36.62,0.441,38.7,64.8,27.1
-355030828,Ermelino Matarazzo,41.23,0.323,19.5,87.6,5.8
-355030829,Freguesia do Ó,39.13,0.269,11.6,95.1,2.2
-355030830,Grajaú,32.77,0.465,54.9,28.8,25.5
-355030831,Guaianases,39.98,0.345,22.2,90.5,0.3
-355030832,Moema,37.67,0.377,25.4,90.5,0.8
-355030833,Iguatemi,35.08,0.486,46.3,72.5,12.1
-355030834,Ipiranga,42.73,0.233,7.3,100.0,0.0
-355030835,Itaim Bibi,38.5,0.298,10.7,98.3,0.0
-355030836,Itaim Paulista,42.18,0.244,5.4,100.0,0.0
-355030837,Itaquera,41.38,0.241,5.9,100.0,0.0
-355030838,Jabaquara,38.65,0.269,8.7,98.5,0.3
-355030839,Jaçanã,41.58,0.282,14.7,96.3,0.5
-355030840,Jaguara,40.25,0.285,14.3,98.5,0.0
-355030841,Jaguaré,38.55,0.328,19.7,97.2,0.0
-355030842,Jaraguá,34.56,0.55,54.9,54.4,28.2
-355030843,Jardim Ângela,34.98,0.404,38.7,52.7,10.5
-355030844,Jardim Helena,41.8,0.305,18.6,87.8,2.2
-355030845,Jardim Paulista,37.33,0.339,16.4,99.9,0.0
-355030846,Jardim São Luís,34.71,0.283,22.9,60.6,3.1
-355030847,José Bonifácio,36.87,0.477,45.4,74.8,10.1
-355030848,Lapa,39.6,0.276,9.5,99.1,0.0
-355030849,Liberdade,42.88,0.272,9.4,99.5,0.0
-355030850,Limão,41.73,0.219,3.4,99.2,0.0
-355030851,Mandaqui,35.19,0.565,55.0,48.5,41.9
-355030852,Marsilac,30.87,0.839,99.3,0.3,86.3
-355030853,Mooca,41.7,0.226,6.7,100.0,0.0
-355030854,Morumbi,37.37,0.463,39.1,94.7,0.9
-355030855,Parelheiros,31.8,0.721,86.7,10.8,52.9
-355030856,Pari,41.59,0.217,8.9,100.0,0.0
-355030857,Parque do Carmo,34.95,0.584,61.9,49.6,34.2
-355030858,Pedreira,34.76,0.38,32.9,56.3,6.2
-355030859,Penha,41.98,0.228,5.8,100.0,0.0
-355030860,Perdizes,38.07,0.296,7.9,100.0,0.0
-355030861,Perus,34.51,0.594,67.2,33.8,26.3
-355030862,Pinheiros,37.75,0.347,18.1,99.2,0.0
-355030863,Pirituba,37.87,0.391,31.1,79.9,6.2
-355030864,Ponte Rasa,41.71,0.205,2.8,100.0,0.0
-355030865,Raposo Tavares,36.85,0.442,38.7,82.6,7.9
-355030866,República,40.28,0.219,6.5,99.7,0.0
-355030867,Rio Pequeno,38.29,0.353,20.8,97.5,1.5
-355030868,Sacomã,40.19,0.261,10.4,100.0,0.0
-355030869,Santa Cecília,39.58,0.228,3.6,100.0,0.0
-355030870,Santana,39.83,0.313,18.8,94.2,1.3
-355030871,Santo Amaro,36.89,0.361,23.5,94.7,0.7
-355030872,São Lucas,42.88,0.211,4.9,100.0,0.0
-355030873,São Mateus,41.26,0.258,9.8,99.9,0.0
-355030874,São Miguel,41.94,0.29,16.7,93.8,1.1
-355030875,São Rafael,37.05,0.393,30.5,84.0,6.4
-355030876,Sapopemba,41.31,0.224,5.5,100.0,0.0
-355030877,Saúde,40.07,0.26,5.0,100.0,0.0
-355030878,Sé,41.14,0.228,10.5,100.0,0.0
-355030879,Socorro,35.31,0.267,19.6,64.9,0.1
-355030880,Tatuapé,40.23,0.234,7.8,100.0,0.0
-355030881,Tremembé,33.75,0.7,75.7,29.4,58.7
-355030882,Tucuruvi,39.82,0.329,21.1,89.0,7.7
-355030883,Vila Andrade,35.74,0.465,42.7,81.3,7.0
-355030884,Vila Curuçá,42.56,0.233,5.9,100.0,0.0
-355030885,Vila Formosa,41.64,0.236,7.4,99.6,0.2
-355030886,Vila Guilherme,41.41,0.211,6.1,100.0,0.0
-355030887,Vila Jacuí,41.69,0.249,7.6,99.0,0.0
-355030888,Vila Leopoldina,38.96,0.307,15.8,96.8,0.0
-355030889,Vila Maria,41.45,0.224,7.3,100.0,0.0
-355030890,Vila Mariana,39.07,0.284,8.2,100.0,0.0
-355030891,Vila Matilde,42.14,0.218,4.1,100.0,0.0
-355030892,Vila Medeiros,42.44,0.2,4.3,100.0,0.0
-355030893,Vila Prudente,41.03,0.243,9.7,100.0,0.0
-355030894,Vila Sônia,38.61,0.37,24.8,97.3,1.2
-355030895,São Domingos,39.0,0.329,20.0,99.2,0.2
-355030896,Lajeado,42.21,0.254,8.2,100.0,0.0
+city,code,lst_c,name,ndvi,ndvi_high_share,urban,woody
+sao-paulo,355030801,42.8,Água Rasa,0.2,3.2,100.0,0.0
+sao-paulo,355030802,37.46,Alto de Pinheiros,0.449,35.7,92.6,0.2
+sao-paulo,355030803,33.19,Anhanguera,0.702,80.5,26.1,48.7
+sao-paulo,355030804,42.64,Aricanduva,0.197,3.2,100.0,0.0
+sao-paulo,355030805,40.9,Artur Alvim,0.244,6.5,100.0,0.0
+sao-paulo,355030806,40.08,Barra Funda,0.273,12.2,98.4,0.0
+sao-paulo,355030807,39.18,Bela Vista,0.275,9.8,100.0,0.0
+sao-paulo,355030808,42.42,Belém,0.237,10.5,100.0,0.0
+sao-paulo,355030809,41.99,Bom Retiro,0.243,9.9,98.5,0.0
+sao-paulo,355030810,42.74,Brás,0.155,2.3,100.0,0.0
+sao-paulo,355030811,35.18,Brasilândia,0.522,48.1,56.0,40.2
+sao-paulo,355030812,37.81,Butantã,0.455,40.3,84.3,4.0
+sao-paulo,355030813,35.76,Cachoeirinha,0.521,47.8,57.3,38.7
+sao-paulo,355030814,45.35,Cambuci,0.225,6.9,100.0,0.0
+sao-paulo,355030815,38.9,Campo Belo,0.302,11.7,100.0,0.0
+sao-paulo,355030816,37.95,Campo Grande,0.362,25.0,92.3,0.0
+sao-paulo,355030817,39.21,Campo Limpo,0.314,15.0,99.9,0.0
+sao-paulo,355030818,38.74,Cangaiba,0.396,32.9,76.4,5.3
+sao-paulo,355030819,40.86,Capão Redondo,0.28,8.9,100.0,0.0
+sao-paulo,355030820,42.98,Carrão,0.233,10.2,94.6,0.2
+sao-paulo,355030821,40.22,Casa Verde,0.239,6.2,99.6,0.0
+sao-paulo,355030822,39.56,Cidade Ademar,0.231,3.3,100.0,0.0
+sao-paulo,355030823,35.69,Cidade Dutra,0.378,31.9,58.1,5.5
+sao-paulo,355030824,39.74,Cidade Lider,0.285,15.5,100.0,0.0
+sao-paulo,355030825,36.82,Cidade Tiradentes,0.436,35.2,80.5,9.4
+sao-paulo,355030826,37.56,Consolação,0.343,18.1,100.0,0.0
+sao-paulo,355030827,36.62,Cursino,0.441,38.7,64.8,27.1
+sao-paulo,355030828,41.23,Ermelino Matarazzo,0.323,19.5,87.6,5.8
+sao-paulo,355030829,39.13,Freguesia do Ó,0.269,11.6,95.1,2.2
+sao-paulo,355030830,32.77,Grajaú,0.465,54.9,28.8,25.5
+sao-paulo,355030831,39.98,Guaianases,0.345,22.2,90.5,0.3
+sao-paulo,355030832,37.67,Moema,0.377,25.4,90.5,0.8
+sao-paulo,355030833,35.08,Iguatemi,0.486,46.3,72.5,12.1
+sao-paulo,355030834,42.73,Ipiranga,0.233,7.3,100.0,0.0
+sao-paulo,355030835,38.5,Itaim Bibi,0.298,10.7,98.3,0.0
+sao-paulo,355030836,42.18,Itaim Paulista,0.244,5.4,100.0,0.0
+sao-paulo,355030837,41.38,Itaquera,0.241,5.9,100.0,0.0
+sao-paulo,355030838,38.65,Jabaquara,0.269,8.7,98.5,0.3
+sao-paulo,355030839,41.58,Jaçanã,0.282,14.7,96.3,0.5
+sao-paulo,355030840,40.25,Jaguara,0.285,14.3,98.5,0.0
+sao-paulo,355030841,38.55,Jaguaré,0.328,19.7,97.2,0.0
+sao-paulo,355030842,34.56,Jaraguá,0.55,54.9,54.4,28.2
+sao-paulo,355030843,34.98,Jardim Ângela,0.404,38.7,52.7,10.5
+sao-paulo,355030844,41.8,Jardim Helena,0.305,18.6,87.8,2.2
+sao-paulo,355030845,37.33,Jardim Paulista,0.339,16.4,99.9,0.0
+sao-paulo,355030846,34.71,Jardim São Luís,0.283,22.9,60.6,3.1
+sao-paulo,355030847,36.87,José Bonifácio,0.477,45.4,74.8,10.1
+sao-paulo,355030848,39.6,Lapa,0.276,9.5,99.1,0.0
+sao-paulo,355030849,42.88,Liberdade,0.272,9.4,99.5,0.0
+sao-paulo,355030850,41.73,Limão,0.219,3.4,99.2,0.0
+sao-paulo,355030851,35.19,Mandaqui,0.565,55.0,48.5,41.9
+sao-paulo,355030852,30.87,Marsilac,0.839,99.3,0.3,86.3
+sao-paulo,355030853,41.7,Mooca,0.226,6.7,100.0,0.0
+sao-paulo,355030854,37.37,Morumbi,0.463,39.1,94.7,0.9
+sao-paulo,355030855,31.8,Parelheiros,0.721,86.7,10.8,52.9
+sao-paulo,355030856,41.59,Pari,0.217,8.9,100.0,0.0
+sao-paulo,355030857,34.95,Parque do Carmo,0.584,61.9,49.6,34.2
+sao-paulo,355030858,34.76,Pedreira,0.38,32.9,56.3,6.2
+sao-paulo,355030859,41.98,Penha,0.228,5.8,100.0,0.0
+sao-paulo,355030860,38.07,Perdizes,0.296,7.9,100.0,0.0
+sao-paulo,355030861,34.51,Perus,0.594,67.2,33.8,26.3
+sao-paulo,355030862,37.75,Pinheiros,0.347,18.1,99.2,0.0
+sao-paulo,355030863,37.87,Pirituba,0.391,31.1,79.9,6.2
+sao-paulo,355030864,41.71,Ponte Rasa,0.205,2.8,100.0,0.0
+sao-paulo,355030865,36.85,Raposo Tavares,0.442,38.7,82.6,7.9
+sao-paulo,355030866,40.28,República,0.219,6.5,99.7,0.0
+sao-paulo,355030867,38.29,Rio Pequeno,0.353,20.8,97.5,1.5
+sao-paulo,355030868,40.19,Sacomã,0.261,10.4,100.0,0.0
+sao-paulo,355030869,39.58,Santa Cecília,0.228,3.6,100.0,0.0
+sao-paulo,355030870,39.83,Santana,0.313,18.8,94.2,1.3
+sao-paulo,355030871,36.89,Santo Amaro,0.361,23.5,94.7,0.7
+sao-paulo,355030872,42.88,São Lucas,0.211,4.9,100.0,0.0
+sao-paulo,355030873,41.26,São Mateus,0.258,9.8,99.9,0.0
+sao-paulo,355030874,41.94,São Miguel,0.29,16.7,93.8,1.1
+sao-paulo,355030875,37.05,São Rafael,0.393,30.5,84.0,6.4
+sao-paulo,355030876,41.31,Sapopemba,0.224,5.5,100.0,0.0
+sao-paulo,355030877,40.07,Saúde,0.26,5.0,100.0,0.0
+sao-paulo,355030878,41.14,Sé,0.228,10.5,100.0,0.0
+sao-paulo,355030879,35.31,Socorro,0.267,19.6,64.9,0.1
+sao-paulo,355030880,40.23,Tatuapé,0.234,7.8,100.0,0.0
+sao-paulo,355030881,33.75,Tremembé,0.7,75.7,29.4,58.7
+sao-paulo,355030882,39.82,Tucuruvi,0.329,21.1,89.0,7.7
+sao-paulo,355030883,35.74,Vila Andrade,0.465,42.7,81.3,7.0
+sao-paulo,355030884,42.56,Vila Curuçá,0.233,5.9,100.0,0.0
+sao-paulo,355030885,41.64,Vila Formosa,0.236,7.4,99.6,0.2
+sao-paulo,355030886,41.41,Vila Guilherme,0.211,6.1,100.0,0.0
+sao-paulo,355030887,41.69,Vila Jacuí,0.249,7.6,99.0,0.0
+sao-paulo,355030888,38.96,Vila Leopoldina,0.307,15.8,96.8,0.0
+sao-paulo,355030889,41.45,Vila Maria,0.224,7.3,100.0,0.0
+sao-paulo,355030890,39.07,Vila Mariana,0.284,8.2,100.0,0.0
+sao-paulo,355030891,42.14,Vila Matilde,0.218,4.1,100.0,0.0
+sao-paulo,355030892,42.44,Vila Medeiros,0.2,4.3,100.0,0.0
+sao-paulo,355030893,41.03,Vila Prudente,0.243,9.7,100.0,0.0
+sao-paulo,355030894,38.61,Vila Sônia,0.37,24.8,97.3,1.2
+sao-paulo,355030895,39.0,São Domingos,0.329,20.0,99.2,0.2
+sao-paulo,355030896,42.21,Lajeado,0.254,8.2,100.0,0.0
+sao-bernardo-do-campo,3548708001,40.89,Taboão,0.289,15.1,100.0,0.0
+sao-bernardo-do-campo,3548708002,41.27,Paulicéia,0.24,9.9,100.0,0.0
+sao-bernardo-do-campo,3548708003,40.92,Rudge Ramos,0.263,10.0,100.0,0.0
+sao-bernardo-do-campo,3548708004,41.87,Anchieta,0.301,15.5,100.0,0.0
+sao-bernardo-do-campo,3548708005,41.47,Jordanópolis,0.259,10.4,100.0,0.0
+sao-bernardo-do-campo,3548708006,41.34,Planalto,0.272,12.9,100.0,0.0
+sao-bernardo-do-campo,3548708007,42.28,Independência,0.272,9.8,100.0,0.0
+sao-bernardo-do-campo,3548708008,41.7,Alves Dias,0.328,18.8,90.0,4.0
+sao-bernardo-do-campo,3548708009,38.75,Cooperativa,0.423,38.2,83.2,6.2
+sao-bernardo-do-campo,3548708010,40.49,Baeta Neves,0.312,15.3,100.0,0.0
+sao-bernardo-do-campo,3548708011,41.52,Centro,0.269,9.2,100.0,0.0
+sao-bernardo-do-campo,3548708012,41.76,Assunção,0.255,9.7,100.0,0.0
+sao-bernardo-do-campo,3548708013,40.24,Nova Petrópolis,0.28,11.2,100.0,0.0
+sao-bernardo-do-campo,3548708014,40.9,Santa Terezinha,0.302,11.5,100.0,0.0
+sao-bernardo-do-campo,3548708015,40.57,Dos Casa,0.291,13.8,99.8,0.0
+sao-bernardo-do-campo,3548708016,41.97,Ferrazópolis,0.298,13.7,100.0,0.0
+sao-bernardo-do-campo,3548708017,40.44,Demarchi,0.364,25.9,95.1,4.1
+sao-bernardo-do-campo,3548708018,33.47,Montanhão,0.624,67.0,42.7,46.1
+sao-bernardo-do-campo,3548708019,34.26,Botujuru,0.641,71.4,38.3,39.3
+sao-bernardo-do-campo,3548708020,31.65,Balneária,0.704,86.5,14.9,37.9
+sao-bernardo-do-campo,3548708021,33.92,Dos Alvarenga,0.604,65.8,43.1,30.0
+sao-bernardo-do-campo,3548708022,34.75,Batistini,0.629,70.2,39.0,30.3
+sao-bernardo-do-campo,3548708023,30.48,Varginha,0.815,96.7,2.2,77.5
+sao-bernardo-do-campo,3548708024,32.49,Rio Grande,0.732,84.2,23.9,56.0
+sao-bernardo-do-campo,3548708025,32.47,Dos Finco,0.726,87.2,18.4,44.8
+sao-bernardo-do-campo,3548708026,30.86,Zanzala,0.801,97.4,1.6,64.8
+sao-bernardo-do-campo,3548708027,30.35,Alto da Serra,0.821,99.1,0.4,85.8
+sao-bernardo-do-campo,3548708028,30.35,Rio Pequeno,0.832,99.1,0.0,88.8
+sao-bernardo-do-campo,3548708029,30.09,Dos Imigrantes,0.83,99.5,0.3,91.3
+sao-bernardo-do-campo,3548708030,29.84,Capivari,0.819,97.2,0.9,81.0
+sao-bernardo-do-campo,3548708031,29.64,Tatetos,0.806,96.3,1.9,70.6
+sao-bernardo-do-campo,3548708032,31.21,Taquacetuba,0.802,98.4,1.0,46.3
+sao-bernardo-do-campo,3548708033,30.12,Curucuto,0.847,99.7,0.2,89.2
+sao-bernardo-do-campo,3548708036,36.28,Santa Cruz,0.541,51.4,68.2,7.4
+sao-bernardo-do-campo,3548708_sem_bairro,27.93,Área sem bairro (sem moradores),-0.073,9.4,0.1,2.5
+santo-andre,3547809002,40.89,Vila Metalúrgica,0.275,15.1,100.0,0.0
+santo-andre,3547809003,41.32,Vila Camilópolis,0.216,5.6,100.0,0.0
+santo-andre,3547809004,41.42,Jardim Utinga,0.27,8.0,100.0,0.0
+santo-andre,3547809005,42.12,Jardim das Maravilhas,0.235,5.2,100.0,0.0
+santo-andre,3547809006,43.37,Vila Lucinda,0.21,4.0,100.0,0.0
+santo-andre,3547809007,41.8,Jardim Santo Antônio,0.198,0.9,100.0,0.0
+santo-andre,3547809008,40.81,Vila Francisco Matarazzo,0.199,1.8,100.0,0.0
+santo-andre,3547809009,42.26,Parque Oratório,0.2,1.9,100.0,0.0
+santo-andre,3547809010,38.72,Parque das Nações,0.188,0.3,100.0,0.0
+santo-andre,3547809011,40.58,Santa Terezinha,0.188,0.6,100.0,0.0
+santo-andre,3547809014,40.37,Campestre,0.252,8.6,100.0,0.0
+santo-andre,3547809016,40.41,Bangú,0.239,6.6,100.0,0.0
+santo-andre,3547809018,39.28,Jardim,0.292,13.2,100.0,0.0
+santo-andre,3547809019,40.85,Santa Maria,0.236,4.3,100.0,0.0
+santo-andre,3547809020,41.59,Vila Palmares,0.193,1.6,100.0,0.0
+santo-andre,3547809021,41.27,Vila Sacadura Cabral,0.195,2.5,100.0,0.0
+santo-andre,3547809022,39.42,Vila Alpina,0.267,6.1,100.0,0.0
+santo-andre,3547809023,38.65,Vila Guiomar,0.346,22.8,100.0,0.0
+santo-andre,3547809024,41.82,Centro,0.213,4.8,100.0,0.0
+santo-andre,3547809025,42.73,Casa Branca,0.214,4.4,100.0,0.0
+santo-andre,3547809027,40.57,Parque Marajoara,0.257,10.2,100.0,0.0
+santo-andre,3547809028,45.02,Vila Homero Thon,0.211,1.7,100.0,0.0
+santo-andre,3547809029,43.09,Vila América,0.23,4.2,100.0,0.0
+santo-andre,3547809031,42.18,Vila Alzira,0.239,4.4,100.0,0.0
+santo-andre,3547809032,40.61,Vila Assunção,0.252,7.2,100.0,0.0
+santo-andre,3547809033,38.02,Vila Bastos,0.278,7.2,100.0,0.0
+santo-andre,3547809034,39.84,Jardim Bela Vista,0.228,2.0,100.0,0.0
+santo-andre,3547809035,39.27,Vila Alice,0.257,5.1,100.0,0.0
+santo-andre,3547809036,39.69,Vila Príncipe de Gales,0.338,20.5,100.0,0.0
+santo-andre,3547809037,40.29,Vila Valparaíso,0.248,6.2,100.0,0.0
+santo-andre,3547809038,42.47,Vila Floresta,0.229,3.5,100.0,0.0
+santo-andre,3547809039,39.89,Vila Gilda,0.229,2.7,100.0,0.0
+santo-andre,3547809040,37.28,Paraíso,0.46,45.0,100.0,0.0
+santo-andre,3547809041,42.94,Vila Pires,0.228,3.5,100.0,0.0
+santo-andre,3547809042,42.69,Vila Humaitá,0.26,11.4,100.0,0.0
+santo-andre,3547809043,44.0,Vila Guarani,0.245,8.5,100.0,0.0
+santo-andre,3547809044,42.26,Jardim Marek,0.247,6.6,99.8,0.0
+santo-andre,3547809045,36.69,Cidade São Jorge,0.439,39.0,56.3,11.8
+santo-andre,3547809046,40.93,Parque Gerassi,0.351,26.8,90.3,1.1
+santo-andre,3547809047,40.86,Vila Progresso,0.386,34.3,100.0,0.0
+santo-andre,3547809048,41.34,Vila Helena,0.209,1.7,100.0,0.0
+santo-andre,3547809049,41.8,Vila Scarpelli,0.204,2.4,100.0,0.0
+santo-andre,3547809050,42.66,Jardim Bom Pastor,0.251,10.0,100.0,0.0
+santo-andre,3547809051,41.49,Jardim Stella,0.247,7.5,100.0,0.0
+santo-andre,3547809052,40.65,Jardim Cristiane,0.269,8.3,99.9,0.1
+santo-andre,3547809053,41.51,Vila Linda,0.22,3.9,100.0,0.0
+santo-andre,3547809054,42.16,Vila Junqueira,0.242,3.7,100.0,0.0
+santo-andre,3547809055,40.26,Jardim Ipanema,0.314,12.7,100.0,0.0
+santo-andre,3547809056,36.43,Vila Guaraciaba,0.478,44.4,64.2,11.8
+santo-andre,3547809057,36.63,Condomínio Maracanã,0.362,22.6,93.8,5.7
+santo-andre,3547809058,42.32,Vila Tibiriçá,0.204,1.3,100.0,0.0
+santo-andre,3547809059,40.9,Vila Suíça,0.253,2.7,100.0,0.0
+santo-andre,3547809060,41.71,Vila Lutécia,0.263,5.8,100.0,0.0
+santo-andre,3547809061,41.89,Jardim Santa Cristina,0.212,0.0,100.0,0.0
+santo-andre,3547809062,41.06,Jardim do Estádio,0.245,3.6,100.0,0.0
+santo-andre,3547809063,39.71,Jardim Alvorada,0.371,24.9,100.0,0.0
+santo-andre,3547809064,38.5,Jardim Las Vegas,0.452,40.6,72.9,21.7
+santo-andre,3547809065,40.34,Sítio dos Vianas,0.331,19.6,100.0,0.0
+santo-andre,3547809066,41.81,Vila Luzita,0.21,0.5,100.0,0.0
+santo-andre,3547809067,39.27,Jardim Santo André,0.277,8.3,100.0,0.0
+santo-andre,3547809069,41.4,Jardim Irene,0.298,9.5,100.0,0.0
+santo-andre,3547809071,33.0,Cata Preta,0.705,81.4,23.1,55.6
+santo-andre,3547809072,30.09,Parque do Pedroso,0.828,97.9,4.1,86.5
+santo-andre,3547809073,32.94,Recreio da Borda do Campo,0.667,84.8,56.7,24.8
+santo-andre,3547809074,30.69,Três Divisas,0.834,97.8,1.3,93.7
+santo-andre,3547809077,31.04,Waisberg I,0.84,99.7,0.6,93.4
+santo-andre,3547809078,29.67,Waisberg II,0.851,99.6,0.0,97.5
+santo-andre,3547809079,29.78,Sítio dos Teco,0.844,99.2,4.3,92.8
+santo-andre,3547809080,30.47,Parque Represa Billings II,0.757,92.2,23.6,41.1
+santo-andre,3547809081,31.33,Jardim Clube de Campo,0.752,97.6,20.5,28.8
+santo-andre,3547809082,30.6,Sítio Taquaral,0.775,97.6,13.9,56.2
+santo-andre,3547809083,31.13,Parque Represa Billings III,0.763,95.2,22.9,50.3
+santo-andre,3547809084,41.19,Parque Novo Oratório,0.232,6.5,100.0,0.0
+santo-andre,3547809085,40.81,Jardim Santo Alberto,0.215,3.1,100.0,0.0
+santo-andre,3547809086,40.58,Jardim Ana Maria,0.269,8.9,100.0,0.0
+santo-andre,3547809087,38.01,Pólo Petroquímico de Capuava,0.421,35.1,93.6,0.0
+santo-andre,3547809088,39.75,Jardim Itapoan,0.249,6.2,100.0,0.0
+santo-andre,3547809089,40.18,Parque Capuava,0.272,8.0,100.0,0.0
+santo-andre,3547809090,41.15,Parque Erasmo Assunção,0.267,8.9,100.0,0.0
+santo-andre,3547809091,40.61,Vila Curuçá,0.221,3.2,100.0,0.0
+santo-andre,3547809092,41.24,Parque Jaçatuba,0.288,17.5,100.0,0.0
+santo-andre,3547809093,43.19,Parque João Ramalho,0.222,2.6,100.0,0.0
+santo-andre,3547809094,41.73,Jardim Rina,0.257,8.5,100.0,0.0
+santo-andre,3547809095,39.12,Jardim Alzira Franco,0.402,34.4,100.0,0.0
+santo-andre,3547809098,29.48,Acampamento Anchieta,0.836,99.6,0.3,91.9
+santo-andre,3547809099,29.2,Jardim Guaripocaba,0.842,100.0,0.0,94.5
+santo-andre,3547809100,30.2,Parque das Garças,0.804,99.2,0.0,47.5
+santo-andre,3547809101,29.9,Parque Rio Grande,0.839,99.9,0.0,95.6
+santo-andre,3547809103,30.29,Parque América,0.844,99.9,1.3,91.2
+santo-andre,3547809104,28.39,Rio Grande,0.868,100.0,0.0,99.8
+santo-andre,3547809106,30.76,Campo Grande,0.818,95.4,8.5,78.8
+santo-andre,3547809107,29.79,Estância Rio Grande,0.846,100.0,0.0,88.7
+santo-andre,3547809108,29.35,Jardim Joaquim Eugênio de Lima,0.855,99.9,0.4,96.5
+santo-andre,3547809113,30.99,Paranapiacaba,0.763,90.2,32.3,62.2
+santo-andre,3547809115,37.83,Jardim Cipreste,0.428,36.2,87.7,1.5
+santo-andre,3547809116,42.32,Jardim Guarará,0.234,1.1,100.0,0.0
+santo-andre,3547809117,37.53,Jardim Jamaica,0.318,19.6,100.0,0.0
+santo-andre,3547809118,36.82,Jardim Santo André CDHU,0.456,37.3,78.7,13.2
+santo-andre,3547809119,41.25,Jardim Telles de Menezes,0.289,10.9,100.0,0.0
+santo-andre,3547809120,37.24,Jardim Vila Rica,0.375,20.8,87.0,13.0
+santo-andre,3547809121,44.0,Novo Homero Thon,0.266,11.0,100.0,0.0
+santo-andre,3547809122,39.74,Pinheirinho,0.206,1.3,100.0,0.0
+santo-andre,3547809123,39.44,Vila Aquilino,0.327,17.0,100.0,0.0
+santo-andre,3547809124,39.6,Vila João Ramalho,0.314,12.0,99.9,0.1
+santo-andre,3547809125,41.23,Vila Vitória,0.269,6.4,100.0,0.0
+santo-andre,3547809126,43.99,Centreville,0.195,0.2,100.0,0.0
+santo-andre,3547809127,34.42,Miami / Riviera,0.567,55.9,73.8,21.8
+santo-andre,3547809128,29.38,Rio Bonito,0.854,99.9,0.8,91.2
+santo-andre,3547809129,29.1,Rio Mogi,0.853,99.6,0.7,97.2
+santo-andre,3547809130,28.5,Araçaúva,0.869,100.0,0.0,97.0
+santo-andre,3547809131,29.75,Rio Pequeno,0.836,100.0,0.0,79.6
+santo-andre,3547809132,40.39,Várzea do Tamanduateí,0.384,30.3,100.0,0.0
+santo-andre,3547809500,45.26,Silveira,0.214,1.2,100.0,0.0
+santo-andre,3547809_sem_bairro,28.36,Área sem bairro (sem moradores),0.137,19.1,0.6,6.3

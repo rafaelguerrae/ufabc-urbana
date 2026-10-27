@@ -1,9 +1,12 @@
 """Export the 30 m land-surface temperature and NDVI grid as static images for apps/web.
 
-Outputs in apps/web/public/data/raster/:
+Outputs in apps/web/public/data/raster/<city-slug>/ (one set per city):
 - lst.png, ndvi.png: colored RGBA overlays (transparent where there is no valid pixel)
 - values.png: data image for point lookups (R = LST, G = NDVI, A = 255 where valid)
 - raster.json: image bounds, size, value encoding, color scale and provenance
+
+The color scale is the 2nd-98th percentile of all cities' pixels pooled together, so the same
+color means the same value in every city.
 """
 
 import json
@@ -17,6 +20,7 @@ import rasterio
 from PIL import Image
 from rasterio.warp import transform_bounds
 
+from .cities import CITIES, City
 from .common import write_meta
 from .export_web import OUT
 from .sources.gee import LST_END, LST_START, PROJECT, composite, districts
@@ -63,33 +67,36 @@ def encode(values: np.ndarray, enc: tuple[float, float]) -> np.ndarray:
     return np.clip((values - enc[0]) / (enc[1] - enc[0]) * 255, 0, 255).round().astype(np.uint8)
 
 
-def main() -> None:
-    ee.Initialize(project=PROJECT)
-    city = districts().dissolve()
-    geom = ee.Geometry(json.loads(city.geometry.to_json())["features"][0]["geometry"])
-    west, south, east, north = city.total_bounds
+def fetch_city(city: City) -> dict:
+    unit_polygons = districts(city).dissolve()
+    geom = ee.Geometry(json.loads(unit_polygons.geometry.to_json())["features"][0]["geometry"])
+    west, south, east, north = unit_polygons.total_bounds
     region = ee.Geometry.Rectangle([west, south, east, north])
 
     median, scenes = composite(region)
     image = median.select(["lst_c", "ndvi"]).clip(geom).unmask(-9999).toFloat()
-
-    RASTER_OUT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         tif = download_geotiff(image, region, Path(tmp) / "grid.tif")
         with rasterio.open(tif) as src:
             lst, ndvi = src.read(1).astype(float), src.read(2).astype(float)
-            bounds = transform_bounds(src.crs, "EPSG:4326", *src.bounds)
-            height, width = src.height, src.width
-            res = src.res
+            return {
+                "lst": lst,
+                "ndvi": ndvi,
+                "valid": (lst > -9000) & (ndvi > -9000),
+                "bounds": transform_bounds(src.crs, "EPSG:4326", *src.bounds),
+                "height": src.height,
+                "width": src.width,
+                "res": src.res,
+                "scenes": scenes,
+            }
 
-    valid = (lst > -9000) & (ndvi > -9000)
-    lst_v, ndvi_v = lst[valid], ndvi[valid]
-    scale = {
-        "lst": [float(np.percentile(lst_v, 2)), float(np.percentile(lst_v, 98))],
-        "ndvi": [float(np.percentile(ndvi_v, 2)), float(np.percentile(ndvi_v, 98))],
-    }
-    colorize(lst, valid, *scale["lst"], RAMPS["lst"]).save(RASTER_OUT / "lst.png", optimize=True)
-    colorize(ndvi, valid, *scale["ndvi"], RAMPS["ndvi"]).save(RASTER_OUT / "ndvi.png", optimize=True)
+
+def write_city(city: City, grid: dict, scale: dict) -> None:
+    out = RASTER_OUT / city.slug
+    out.mkdir(parents=True, exist_ok=True)
+    lst, ndvi, valid, bounds = grid["lst"], grid["ndvi"], grid["valid"], grid["bounds"]
+    colorize(lst, valid, *scale["lst"], RAMPS["lst"]).save(out / "lst.png", optimize=True)
+    colorize(ndvi, valid, *scale["ndvi"], RAMPS["ndvi"]).save(out / "ndvi.png", optimize=True)
     data = np.dstack(
         [
             np.where(valid, encode(lst, LST_ENC), 0),
@@ -98,24 +105,42 @@ def main() -> None:
             np.where(valid, 255, 0).astype(np.uint8),
         ]
     ).astype(np.uint8)
-    Image.fromarray(data, "RGBA").save(RASTER_OUT / "values.png", optimize=True)
+    Image.fromarray(data, "RGBA").save(out / "values.png", optimize=True)
 
     info = {
+        "city": city.slug,
         "bounds": {"west": bounds[0], "south": bounds[1], "east": bounds[2], "north": bounds[3]},
-        "width": width,
-        "height": height,
-        "pixel_size_m_projected": list(res),
+        "width": grid["width"],
+        "height": grid["height"],
+        "pixel_size_m_projected": list(grid["res"]),
         "valid_pixels": int(valid.sum()),
         "lst": {"encoding": list(LST_ENC), "scale": scale["lst"], "unit": "°C"},
         "ndvi": {"encoding": list(NDVI_ENC), "scale": scale["ndvi"], "unit": "index"},
         "period": [LST_START, LST_END],
-        "scenes": scenes,
+        "scenes": grid["scenes"],
     }
-    (RASTER_OUT / "raster.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
-    write_meta("raster_export", {**info, "source": "Landsat 8/9 Collection 2 Level 2 via GEE, same composite as gee.py"})
-    print(f"{width}x{height}px, {valid.sum():,} valid; LST {lst_v.min():.1f}..{lst_v.max():.1f}, scale {scale}")
-    for f in RASTER_OUT.iterdir():
-        print(f.name, f.stat().st_size // 1024, "KB")
+    (out / "raster.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
+    write_meta(
+        f"raster_export_{city.slug}",
+        {**info, "source": "Landsat 8/9 Collection 2 Level 2 via GEE, same composite as gee.py"},
+    )
+    print(f"{city.name}: {grid['width']}x{grid['height']}px, {valid.sum():,} valid")
+    for f in sorted(out.iterdir()):
+        print("  ", f.name, f.stat().st_size // 1024, "KB")
+
+
+def main() -> None:
+    ee.Initialize(project=PROJECT)
+    grids = {c.slug: fetch_city(c) for c in CITIES}
+    lst_all = np.concatenate([g["lst"][g["valid"]] for g in grids.values()])
+    ndvi_all = np.concatenate([g["ndvi"][g["valid"]] for g in grids.values()])
+    scale = {
+        "lst": [float(np.percentile(lst_all, 2)), float(np.percentile(lst_all, 98))],
+        "ndvi": [float(np.percentile(ndvi_all, 2)), float(np.percentile(ndvi_all, 98))],
+    }
+    print(f"shared scale {scale}; LST {lst_all.min():.1f}..{lst_all.max():.1f}")
+    for city in CITIES:
+        write_city(city, grids[city.slug], scale)
 
 
 if __name__ == "__main__":

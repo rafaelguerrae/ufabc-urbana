@@ -1,3 +1,5 @@
+import { CITIES, type CitySlug } from "./cities";
+
 export interface RasterInfo {
   bounds: { west: number; south: number; east: number; north: number };
   width: number;
@@ -16,7 +18,12 @@ export interface RasterSample {
 }
 
 export interface RasterData {
+  /** Per-city rasters, each with its own bounds. */
+  cities: { slug: CitySlug; info: RasterInfo }[];
+  /** Shared fields (color scale, period): the same for every city. */
   info: RasterInfo;
+  /** Number of satellite scenes, as text ("26" or "26 a 28" if cities differ). */
+  scenesLabel: string;
   sample: (lng: number, lat: number) => RasterSample | null;
 }
 
@@ -31,10 +38,16 @@ function loadImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
-/** Loads raster.json and the value image, and returns a point-sampling function. */
-export async function loadRaster(): Promise<RasterData> {
-  const info = (await (await fetch("/data/raster/raster.json")).json()) as RasterInfo;
-  const img = await loadImage("/data/raster/values.png");
+interface CityRaster {
+  slug: CitySlug;
+  info: RasterInfo;
+  sample: (lng: number, lat: number) => RasterSample | null;
+}
+
+async function loadCityRaster(slug: CitySlug): Promise<CityRaster> {
+  const dir = `/data/raster/${slug}`;
+  const info = (await (await fetch(`${dir}/raster.json`)).json()) as RasterInfo;
+  const img = await loadImage(`${dir}/values.png`);
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
   canvas.height = img.height;
@@ -72,5 +85,31 @@ export async function loadRaster(): Promise<RasterData> {
     return pixels === 0 ? null : { lst: lst / pixels, ndvi: ndvi / pixels, pixels };
   };
 
-  return { info, sample };
+  return { slug, info, sample };
+}
+
+/** Loads every city's raster.json and value image, and returns one point-sampling function. */
+export async function loadRaster(): Promise<RasterData> {
+  const rasters = await Promise.all(CITIES.map((c) => loadCityRaster(c.slug)));
+  const first = rasters[0]!.info;
+  const sameScale = rasters.every(
+    (r) => r.info.lst.scale.join() === first.lst.scale.join() && r.info.ndvi.scale.join() === first.ndvi.scale.join(),
+  );
+  if (!sameScale) throw new Error("As cidades usam escalas de cor diferentes");
+  const scenes = rasters.map((r) => r.info.scenes);
+  const lo = Math.min(...scenes);
+  const hi = Math.max(...scenes);
+  return {
+    cities: rasters.map(({ slug, info }) => ({ slug, info })),
+    info: first,
+    scenesLabel: lo === hi ? `${lo}` : `${lo} a ${hi}`,
+    // City boxes overlap; the first raster with a valid pixel at the point wins.
+    sample: (lng, lat) => {
+      for (const r of rasters) {
+        const s = r.sample(lng, lat);
+        if (s) return s;
+      }
+      return null;
+    },
+  };
 }

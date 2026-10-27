@@ -23,6 +23,7 @@ interface ControlPanelProps {
   onDistrictIndicatorChange: (key: IndicatorKey) => void;
   districtRange: { min: number; max: number };
   raster: RasterInfo | null;
+  scenesLabel: string | null;
   open: boolean;
   loading: boolean;
   error: string | null;
@@ -33,7 +34,7 @@ const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
 const VIEW_HINT: Record<ViewMode, string> = {
   lst_c: "Onde a superfície esquenta mais · cada quadrado ≈ 30 m",
   ndvi: "Onde há mais plantas · cada quadrado ≈ 30 m",
-  districts: "Compare os 96 distritos",
+  districts: "Compare os distritos e bairros",
 };
 
 export function ControlPanel(props: ControlPanelProps) {
@@ -59,8 +60,8 @@ export function ControlPanel(props: ControlPanelProps) {
           <h1 className={styles.title}>UFABC Urbana</h1>
         </div>
         <p className={panel.note}>
-          Por que algumas partes de São Paulo são mais quentes que outras? Onde há muito concreto e pouca vegetação, a
-          cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
+          Por que algumas partes de São Paulo, São Bernardo do Campo e Santo André são mais quentes que outras? Onde há
+          muito concreto e pouca vegetação, a cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
         </p>
       </header>
 
@@ -142,11 +143,14 @@ export function ControlPanel(props: ControlPanelProps) {
           <dt>Fonte</dt>
           <dd>{indicator.source}</dd>
           <dt>Período</dt>
-          <dd>{indicator.period}</dd>
+          <dd>
+            {indicator.period}
+            {view !== "districts" && props.scenesLabel ? ` · ${props.scenesLabel} imagens` : ""}
+          </dd>
           <dt>Resolução</dt>
           <dd>
             {view === "districts"
-              ? "Distritos do IBGE de 2022 (96 no município)"
+              ? "Distritos do IBGE de 2022 em São Paulo (96) e bairros do IBGE de 2022 em São Bernardo do Campo (34) e Santo André (113). Os tamanhos não são comparáveis."
               : "Grade de 30 m; o sensor térmico mede cerca de 100 m e a imagem é reamostrada"}
           </dd>
         </dl>

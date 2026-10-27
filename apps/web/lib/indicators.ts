@@ -1,6 +1,11 @@
+import type { CitySlug } from "./cities";
+
 export type DataType = "observed" | "derived";
 
 export interface DistrictProperties {
+  city: CitySlug;
+  /** Census unit: IBGE district (São Paulo), IBGE bairro (ABC) or the part of a city with no bairro. */
+  unit: "distrito" | "bairro" | "area_sem_bairro";
   code: string;
   name: string;
   lst_c: number;
@@ -36,7 +41,7 @@ export const INDICATORS: Indicator[] = [
     decimals: 1,
     dataType: "derived",
     source: "Satélites Landsat 8 e 9 (banda térmica ST_B10), processados no Google Earth Engine",
-    period: "Dez 2023 a mar 2024 (verão): mediana de 26 imagens de dia, sem nuvens",
+    period: "Dez 2023 a mar 2024 (verão): mediana das imagens de dia sem nuvens",
     description:
       "Temperatura do chão, dos telhados e do asfalto, medida por satélite. Não é a temperatura do ar que sentimos. O satélite passa por volta das 10h30, então o mapa não mostra a noite nem dias de onda de calor.",
     ramp: [
@@ -54,7 +59,7 @@ export const INDICATORS: Indicator[] = [
     decimals: 2,
     dataType: "derived",
     source: "Satélites Landsat 8 e 9 (bandas SR_B4 e SR_B5), processados no Google Earth Engine",
-    period: "Dez 2023 a mar 2024 (verão): mediana de 26 imagens sem nuvens",
+    period: "Dez 2023 a mar 2024 (verão): mediana das imagens sem nuvens",
     description:
       "Mede o quanto a superfície é verde. Quanto maior o valor, mais vegetação. O índice também sobe com gramado e solo úmido, então não mede só a copa das árvores.",
     ramp: [
@@ -68,13 +73,13 @@ export const INDICATORS: Indicator[] = [
   {
     key: "urban",
     label: "Área urbanizada",
-    unit: "% do distrito",
+    unit: "% da área",
     decimals: 1,
     dataType: "derived",
     source: "MapBiomas, Coleção 11 (classe 24, área urbanizada)",
     period: "2024",
     description:
-      "Parte do distrito classificada como área urbana em mapas de 30 m. Bairros muito densos contam como urbanos mesmo com árvores nas ruas, por isso muitos distritos centrais chegam a 100%.",
+      "Parte da área classificada como urbana em mapas de 30 m. Regiões muito densas contam como urbanas mesmo com árvores nas ruas, por isso muitas áreas centrais chegam a 100%.",
     ramp: [
       [247, 247, 247],
       [204, 204, 204],
@@ -91,7 +96,7 @@ export const INDICATORS: Indicator[] = [
     dataType: "observed",
     source: "IBGE, Censo Demográfico 2022 (somado a partir dos setores censitários)",
     period: "2022",
-    description: "Moradores contados no Censo 2022 divididos pela área do distrito.",
+    description: "Moradores contados no Censo 2022 divididos pela área do distrito ou bairro.",
     ramp: [
       [239, 243, 255],
       [189, 215, 231],
@@ -138,5 +143,5 @@ export type ViewMode = "lst_c" | "ndvi" | "districts";
 export const VIEW_LABEL: Record<ViewMode, string> = {
   lst_c: "Calor",
   ndvi: "Vegetação",
-  districts: "Médias por distrito",
+  districts: "Médias por distrito ou bairro",
 };

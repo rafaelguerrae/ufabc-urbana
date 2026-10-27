@@ -9,6 +9,7 @@ import { setWorkerUrl } from "maplibre-gl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Layer, Map, Marker, NavigationControl, Source, type MapRef } from "react-map-gl/maplibre";
 
+import { CAMPUSES } from "../lib/campuses";
 import type { SearchResult } from "../lib/geocode";
 import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "../lib/indicators";
 import { loadRaster, type RasterData } from "../lib/raster";
@@ -27,7 +28,7 @@ type DistrictCollection = FeatureCollection<Polygon | MultiPolygon, DistrictProp
 
 const BASEMAP = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 const MOBILE_QUERY = "(max-width: 700px)";
-const INITIAL_VIEW = { longitude: -46.63, latitude: -23.68, zoom: 9.6, pitch: 0, bearing: 0 };
+const INITIAL_VIEW = { longitude: -46.55, latitude: -23.68, zoom: 9.4, pitch: 0, bearing: 0 };
 
 export function MapView() {
   const mapRef = useRef<MapRef>(null);
@@ -58,7 +59,7 @@ export function MapView() {
     fetch("/data/districts.geojson")
       .then((r) => (r.ok ? (r.json() as Promise<DistrictCollection>) : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then(setDistricts)
-      .catch((e: unknown) => setLoadError(e instanceof Error ? e.message : "Falha ao carregar os dados dos distritos"));
+      .catch((e: unknown) => setLoadError(e instanceof Error ? e.message : "Falha ao carregar os dados dos distritos e bairros"));
     loadRaster()
       .then(setRaster)
       .catch((e: unknown) => setLoadError(e instanceof Error ? e.message : "Falha ao carregar a grade de temperatura"));
@@ -122,8 +123,6 @@ export function MapView() {
     }
   }, []);
 
-  const bounds = raster?.info.bounds;
-
   return (
     <div className={rightOpen ? `${styles.root} ${styles.rightOpen}` : styles.root}>
       <Map
@@ -138,27 +137,31 @@ export function MapView() {
       >
         <NavigationControl position="bottom-right" visualizePitch />
 
-        {view !== "districts" && raster && bounds && (
-          <Source
-            key={view}
-            id="heat"
-            type="image"
-            url={`/data/raster/${view === "lst_c" ? "lst" : "ndvi"}.png`}
-            coordinates={[
-              [bounds.west, bounds.north],
-              [bounds.east, bounds.north],
-              [bounds.east, bounds.south],
-              [bounds.west, bounds.south],
-            ]}
-          >
-            <Layer
-              id="heat-layer"
-              type="raster"
-              beforeId={beforeId}
-              paint={{ "raster-opacity": 0.78, "raster-resampling": "linear", "raster-fade-duration": 300 }}
-            />
-          </Source>
-        )}
+        {view !== "districts" &&
+          raster?.cities.map(({ slug, info }) => {
+            const b = info.bounds;
+            return (
+              <Source
+                key={`${slug}-${view}`}
+                id={`heat-${slug}`}
+                type="image"
+                url={`/data/raster/${slug}/${view === "lst_c" ? "lst" : "ndvi"}.png`}
+                coordinates={[
+                  [b.west, b.north],
+                  [b.east, b.north],
+                  [b.east, b.south],
+                  [b.west, b.south],
+                ]}
+              >
+                <Layer
+                  id={`heat-layer-${slug}`}
+                  type="raster"
+                  beforeId={beforeId}
+                  paint={{ "raster-opacity": 0.78, "raster-resampling": "linear", "raster-fade-duration": 300 }}
+                />
+              </Source>
+            );
+          })}
 
         {view === "districts" && districts && (
           <Source id="districts" type="geojson" data={districts}>
@@ -181,6 +184,23 @@ export function MapView() {
             />
           </Source>
         )}
+
+        {CAMPUSES.map((c) => (
+          <Marker key={c.id} longitude={c.lng} latitude={c.lat} anchor="bottom">
+            <button
+              type="button"
+              className={styles.campus}
+              aria-label={`Ver dados de ${c.name}`}
+              title={c.name}
+              onClick={(e) => {
+                e.stopPropagation();
+                choosePlace(c.lng, c.lat, c.name);
+              }}
+            >
+              <span className={styles.campusLabel}>{c.name.replace("UFABC · Campus ", "UFABC ")}</span>
+            </button>
+          </Marker>
+        ))}
 
         {place && (
           <Marker longitude={place.lng} latitude={place.lat} anchor="center">
@@ -207,6 +227,7 @@ export function MapView() {
           onDistrictIndicatorChange={setDistrictIndicator}
           districtRange={districtRange}
           raster={raster?.info ?? null}
+          scenesLabel={raster?.scenesLabel ?? null}
           loading={!loadError && (!districts || !raster)}
           error={loadError}
         />
