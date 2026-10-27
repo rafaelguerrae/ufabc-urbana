@@ -13,6 +13,7 @@ import {
   type ViewMode,
 } from "../lib/indicators";
 import type { RasterInfo } from "../lib/raster";
+import { LayerIcon } from "./LayerIcon";
 import panel from "./Panel.module.css";
 import styles from "./ControlPanel.module.css";
 
@@ -77,8 +78,13 @@ export function ControlPanel(props: ControlPanelProps) {
               className={v === view ? styles.layerActive : styles.layer}
               onClick={() => props.onViewChange(v)}
             >
-              <span className={styles.layerName}>{VIEW_LABEL[v]}</span>
-              <span className={styles.layerHint}>{VIEW_HINT[v]}</span>
+              <span className={styles.layerIcon}>
+                <LayerIcon view={v} />
+              </span>
+              <span className={styles.layerText}>
+                <span className={styles.layerName}>{VIEW_LABEL[v]}</span>
+                <span className={styles.layerHint}>{VIEW_HINT[v]}</span>
+              </span>
             </button>
           ))}
         </div>
