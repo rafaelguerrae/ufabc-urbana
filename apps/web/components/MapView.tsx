@@ -28,7 +28,7 @@ type DistrictCollection = FeatureCollection<Polygon | MultiPolygon, DistrictProp
 
 const BASEMAP = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 const MOBILE_QUERY = "(max-width: 700px)";
-const INITIAL_VIEW = { longitude: -46.55, latitude: -23.68, zoom: 9.4, pitch: 0, bearing: 0 };
+const INITIAL_VIEW = { longitude: -46.55, latitude: -23.68, zoom: 9.8, pitch: 0, bearing: 0 };
 
 export function MapView() {
   const mapRef = useRef<MapRef>(null);
@@ -43,6 +43,7 @@ export function MapView() {
   const [rightOpen, setRightOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
+  const [cameraDefault, setCameraDefault] = useState(true);
 
   // On small screens the panels are bottom sheets, so only one can be open.
   const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
@@ -104,13 +105,53 @@ export function MapView() {
     [districts, raster],
   );
 
-  const onSearchSelect = useCallback(
-    (r: SearchResult) => {
-      choosePlace(r.lng, r.lat, r.detail ? `${r.label} · ${r.detail}` : r.label);
-      mapRef.current?.flyTo({ center: [r.lng, r.lat], zoom: 15.5, pitch: 45, duration: 2500, essential: true });
+  // Select a place and fly to it with the same camera move for search results and campus markers.
+  const focusPlace = useCallback(
+    (lng: number, lat: number, label: string) => {
+      choosePlace(lng, lat, label);
+      mapRef.current?.flyTo({ center: [lng, lat], zoom: 15.5, pitch: 45, duration: 2500, essential: true });
     },
     [choosePlace],
   );
+
+  const onSearchSelect = useCallback(
+    (r: SearchResult) => focusPlace(r.lng, r.lat, r.detail ? `${r.label} · ${r.detail}` : r.label),
+    [focusPlace],
+  );
+
+  // Back to what a freshly loaded page shows: initial camera, heat layer, nothing selected, panels closed.
+  const resetMap = useCallback(() => {
+    setPlace(null);
+    setLeftOpen(false);
+    setRightOpen(false);
+    setView("lst_c");
+    setDistrictIndicator("lst_c");
+    mapRef.current?.flyTo({
+      center: [INITIAL_VIEW.longitude, INITIAL_VIEW.latitude],
+      zoom: INITIAL_VIEW.zoom,
+      pitch: INITIAL_VIEW.pitch,
+      bearing: INITIAL_VIEW.bearing,
+      duration: 1500,
+      essential: true,
+    });
+  }, []);
+
+  // Updated only when a camera move ends, so panning does not re-render the whole map.
+  const onMoveEnd = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const c = map.getCenter();
+    setCameraDefault(
+      Math.abs(c.lng - INITIAL_VIEW.longitude) < 0.002 &&
+        Math.abs(c.lat - INITIAL_VIEW.latitude) < 0.002 &&
+        Math.abs(map.getZoom() - INITIAL_VIEW.zoom) < 0.05 &&
+        Math.abs(map.getPitch() - INITIAL_VIEW.pitch) < 0.5 &&
+        Math.abs(map.getBearing() - INITIAL_VIEW.bearing) < 0.5,
+    );
+  }, []);
+
+  const isDefault =
+    cameraDefault && !place && !leftOpen && !rightOpen && view === "lst_c" && districtIndicator === "lst_c";
 
   const onLoad = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -130,6 +171,7 @@ export function MapView() {
         initialViewState={INITIAL_VIEW}
         mapStyle={BASEMAP}
         onLoad={onLoad}
+        onMoveEnd={onMoveEnd}
         onClick={(e) => choosePlace(e.lngLat.lng, e.lngLat.lat, "Ponto selecionado")}
         cursor="crosshair"
         maxPitch={70}
@@ -186,18 +228,19 @@ export function MapView() {
         )}
 
         {CAMPUSES.map((c) => (
-          <Marker key={c.id} longitude={c.lng} latitude={c.lat} anchor="bottom">
-            <button
-              type="button"
-              className={styles.campus}
-              aria-label={`Ver dados de ${c.name}`}
-              title={c.name}
-              onClick={(e) => {
-                e.stopPropagation();
-                choosePlace(c.lng, c.lat, c.name);
-              }}
-            >
-              <span className={styles.campusLabel}>{c.name.replace("UFABC · Campus ", "UFABC ")}</span>
+          <Marker
+            key={c.id}
+            longitude={c.lng}
+            latitude={c.lat}
+            anchor="center"
+            onClick={(e) => {
+              // Keep the click from also reaching the map, which would select the cursor position instead.
+              e.originalEvent.stopPropagation();
+              focusPlace(c.lng, c.lat, c.name);
+            }}
+          >
+            <button type="button" className={styles.campus} aria-label={`Ver dados de ${c.name}`}>
+              <span className={styles.campusLabel}>{c.name}</span>
             </button>
           </Marker>
         ))}
@@ -208,6 +251,30 @@ export function MapView() {
           </Marker>
         )}
       </Map>
+
+      <button
+        type="button"
+        className={leftOpen ? `${styles.reset} ${styles.resetShifted}` : styles.reset}
+        onClick={resetMap}
+        aria-label="Voltar à visão inicial do mapa"
+        title="Voltar à visão inicial"
+      >
+        {/* Navigation arrow as in Apple Maps: filled in the default state, outlined otherwise. */}
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill={isDefault ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          focusable="false"
+        >
+          <polygon points="3 11 22 2 13 21 11 13 3 11" />
+        </svg>
+      </button>
 
       <TopBar
         leftOpen={leftOpen}
