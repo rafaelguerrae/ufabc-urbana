@@ -255,7 +255,7 @@ export function MapView() {
 
       <button
         type="button"
-        className={leftOpen ? `${styles.reset} ${styles.resetShifted}` : styles.reset}
+        className={styles.reset}
         onClick={resetMap}
         aria-label="Voltar à visão inicial do mapa"
         title="Voltar à visão inicial"
