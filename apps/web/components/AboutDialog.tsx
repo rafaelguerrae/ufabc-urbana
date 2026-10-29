@@ -45,8 +45,16 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
             2022. Os bairros são os do Censo e podem diferir dos bairros oficiais de cada prefeitura.
           </li>
           <li>Área urbanizada: MapBiomas, Coleção 11.</li>
+          <li>
+            Edifícios em 3D: contornos e alturas do OpenStreetMap, © colaboradores do OpenStreetMap (licença ODbL).
+            Só entram prédios com altura ou número de andares registrado por voluntários; a cobertura é desigual.
+          </li>
           <li>Busca de endereços: Photon, © colaboradores do OpenStreetMap.</li>
           <li>Mapa-base: © CARTO.</li>
+          <li>
+            Sua localização: só é pedida quando você toca no botão de localização e é usada apenas no seu navegador
+            para mostrar o ponto azul. Ela não é enviada nem guardada.
+          </li>
         </ul>
         <p>
           Código aberto:{" "}

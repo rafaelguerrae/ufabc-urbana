@@ -31,6 +31,21 @@ Viable with no new data source: the same IBGE state gpkg, Landsat C2 L2 scenes a
 - **Rasters.** One image per city under `public/data/raster/<slug>/` (all under 4 MB each, well under the Earth Engine download limit). The color scale is pooled across cities (LST 27.2-45.1 °C), so the same color means the same value everywhere; this shifted São Paulo's scale slightly from 27.8-45.4 °C.
 - **Not done:** license and attribution review (still open for all sources); validation of the bairro-level means against another source.
 
+## Building footprints for 3D (OpenStreetMap)
+
+Reproduce: `uv run python -m src.sources.osm` (Overpass rejects browser-like User-Agents; the script sends an identifying one). Provenance: `samples/osm_buildings.meta.json`. Checked 2026-10-28 on three ~2 km boxes (building ways only; multipolygon relations are skipped).
+
+| Area | Buildings | With `height` or `building:levels` |
+|---|---|---|
+| Campus Santo André | 1,417 | 367 (26%) |
+| Campus São Bernardo do Campo | 230 | 18 (8%) |
+| São Paulo center | 7,565 | 7,403 (98%) |
+
+- **License:** ODbL 1.0, attribution "© OpenStreetMap contributors" (still to be reviewed for public launch, like all sources).
+- **Finding:** height coverage is very uneven. It is good in central São Paulo and poor around the UFABC campuses. Heights are volunteer-entered tags, not a survey.
+- **Consequence:** the 3D layer cannot show real heights everywhere. Buildings without a height must be left flat or drawn at one fixed height labelled as unknown; heights are never filled in silently. GeoSampa building data is not yet checked as an alternative.
+- **Not yet measured:** the full building count and file size for the municipality, which decides between full-municipality PMTiles and a smaller area.
+
 ## Access notes
 
 - INMET rejects requests without a browser-like User-Agent (connection reset); the pipeline sets one in `src/common.py`. The 2023 zip is about 107 MB.

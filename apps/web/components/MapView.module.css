@@ -57,12 +57,14 @@
   opacity: 1;
 }
 
-/* Reset-view button, bottom left; sits beside the left panel when that is open on desktop. */
-.reset {
+/* Map buttons, top right, left of the three TopBar buttons (3 x 44px + 2 x 8px gaps + 12px edge + 8px gap):
+   "my location" first, "reset view" one slot further left. On mobile they move to the bottom right. */
+.reset,
+.locate {
   position: absolute;
-  bottom: 24px;
-  left: 12px;
-  z-index: 4;
+  top: 12px;
+  right: 168px;
+  z-index: 7;
   width: 44px;
   height: 44px;
   display: inline-flex;
@@ -75,32 +77,100 @@
   box-shadow: var(--shadow);
   cursor: pointer;
   transition:
-    left 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     background-color 0.18s ease,
     transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1.4);
 }
 
-.reset:hover {
+.reset {
+  right: 220px;
+}
+
+.reset:hover,
+.locate:hover {
   background: var(--hover);
 }
 
-.reset:active {
+.reset:active,
+.locate:active {
   transform: scale(0.94);
 }
 
-.reset:focus-visible {
+.reset:focus-visible,
+.locate:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-.resetShifted {
-  left: 424px;
+.locate:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.locateActive {
+  color: #2563eb;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reset {
+  .reset,
+  .locate {
     transition: none;
   }
+}
+
+/* The user's position: blue dot with a pulsing ring, as in most map apps. */
+.userDot {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px #1d4ed8, 0 2px 8px rgb(0 0 0 / 0.4);
+}
+
+.userDot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #2563eb;
+  animation: userPulse 2s ease-out infinite;
+}
+
+@keyframes userPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .userDot::after {
+    animation: none;
+    display: none;
+  }
+}
+
+.toast {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+  font-size: 0.85rem;
 }
 
 /* "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly. */
@@ -120,18 +190,33 @@
 
   /* Panels are bottom sheets on small screens: the button rides on top of the open sheet
      (--sheet-height is set by SheetPanel) and stays reachable even when the sheet is full screen. */
-  .reset {
+  .reset,
+  .locate {
     z-index: 8;
+    top: auto;
+    right: 12px;
     bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
   }
 
-  .resetShifted {
-    left: 12px;
+  /* Stacked one slot above the location button. */
+  .reset {
+    bottom: min(calc(var(--sheet-height, 0px) + 76px), calc(100dvh - 108px - env(safe-area-inset-top, 0px)));
+  }
+
+  /* While a bottom sheet is open (flagged by SheetPanel) the floating buttons are hidden. */
+  :global(html[data-sheet-open]) .reset,
+  :global(html[data-sheet-open]) .locate,
+  :global(html[data-sheet-open]) .toast {
+    display: none;
+  }
+
+  .toast {
+    bottom: min(calc(var(--sheet-height, 0px) + 84px), calc(100dvh - 120px - env(safe-area-inset-top, 0px)));
   }
 
   .details {
     position: absolute;
-    left: 64px;
+    left: 12px;
     z-index: 8;
     bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
     height: 44px;
@@ -158,4 +243,11 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+}
+
+/* The tour card takes the bottom of the screen, so the bottom buttons step aside while it runs. */
+.touring .reset,
+.touring .locate,
+.touring .details {
+  display: none;
 }

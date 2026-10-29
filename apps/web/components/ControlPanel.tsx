@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   DATA_TYPE_LABEL,
   INDICATORS,
+  VIEWS,
   VIEW_LABEL,
   colorAt,
   formatValue,
@@ -24,6 +25,10 @@ interface ControlPanelProps {
   districtIndicator: IndicatorKey;
   onDistrictIndicatorChange: (key: IndicatorKey) => void;
   districtRange: { min: number; max: number };
+  buildings3d: boolean;
+  onBuildings3dChange: (on: boolean) => void;
+  /** Undefined until the district data needed to build the tour has loaded. */
+  onStartTour?: () => void;
   raster: RasterInfo | null;
   scenesLabel: string | null;
   open: boolean;
@@ -31,8 +36,6 @@ interface ControlPanelProps {
   loading: boolean;
   error: string | null;
 }
-
-const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
 
 const VIEW_HINT: Record<ViewMode, string> = {
   lst_c: "Onde a superfície esquenta mais · cada quadrado ≈ 30 m",
@@ -61,6 +64,9 @@ export function ControlPanel(props: ControlPanelProps) {
           Por que algumas partes de São Paulo, São Bernardo do Campo e Santo André são mais quentes que outras? Onde há
           muito concreto e pouca vegetação, a cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
         </p>
+        <button type="button" className={styles.tourButton} onClick={props.onStartTour} disabled={!props.onStartTour}>
+          Fazer um tour guiado
+        </button>
       </header>
 
       <section className={panel.section} aria-label="Camada do mapa">
@@ -102,6 +108,25 @@ export function ControlPanel(props: ControlPanelProps) {
           </label>
         )}
       </section>
+
+      {view === "lst_c" && (
+        <section className={panel.section} aria-label="Edifícios em 3D">
+          <label className={styles.toggle}>
+            <input
+              type="checkbox"
+              checked={props.buildings3d}
+              onChange={(e) => props.onBuildings3dChange(e.target.checked)}
+            />
+            <span>Edifícios em 3D</span>
+          </label>
+          <p className={panel.note}>
+            Aproxime o mapa e incline a visão para ver. Só aparecem prédios com altura registrada no OpenStreetMap
+            (cobertura irregular: boa no centro de São Paulo, pequena perto dos campi da UFABC); os demais ficam planos
+            no mapa. A cor é a temperatura do chão sob o prédio, não a do telhado. Quando só o número de andares é
+            conhecido, a altura é estimada em 3 m por andar.
+          </p>
+        </section>
+      )}
 
       {props.loading && <p className={panel.note}>Carregando dados…</p>}
       {props.error && <p className={styles.error}>Não foi possível carregar os dados: {props.error}</p>}

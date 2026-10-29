@@ -1,0 +1,44 @@
+{
+  "retrieved_at": "2026-10-28T23:08:46+00:00",
+  "source": "OpenStreetMap via Overpass API",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "way[\"building\"](bbox); out tags geom;",
+  "license": "ODbL 1.0; attribution required: © OpenStreetMap contributors",
+  "box_half_width_deg": 0.01,
+  "areas": {
+    "santo-andre": {
+      "center": [
+        -23.6450844,
+        -46.5273059
+      ],
+      "buildings": 1417,
+      "with_height": 21,
+      "with_levels": 359,
+      "with_height_or_levels": 367,
+      "share_with_height_or_levels": 0.259
+    },
+    "sao-bernardo": {
+      "center": [
+        -23.6773888,
+        -46.5643578
+      ],
+      "buildings": 230,
+      "with_height": 6,
+      "with_levels": 14,
+      "with_height_or_levels": 18,
+      "share_with_height_or_levels": 0.078
+    },
+    "sao-paulo-centro": {
+      "center": [
+        -23.5505,
+        -46.6333
+      ],
+      "buildings": 7565,
+      "with_height": 7385,
+      "with_levels": 51,
+      "with_height_or_levels": 7403,
+      "share_with_height_or_levels": 0.979
+    }
+  },
+  "note": "Ways only (multipolygon relations are skipped). Heights are volunteer-entered tags, not a survey."
+}

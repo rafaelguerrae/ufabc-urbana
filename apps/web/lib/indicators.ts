@@ -140,6 +140,8 @@ export function colorAt(indicator: Indicator, t: number): [number, number, numbe
 
 export type ViewMode = "lst_c" | "ndvi" | "districts";
 
+export const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
+
 export const VIEW_LABEL: Record<ViewMode, string> = {
   lst_c: "Calor",
   ndvi: "Vegetação",

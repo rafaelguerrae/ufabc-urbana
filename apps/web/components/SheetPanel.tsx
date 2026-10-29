@@ -78,22 +78,26 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
     if (open) setSnap("half");
   }, [open]);
 
-  // Publish the open sheet's height so floating map buttons can sit above it (see MapView.module.css).
+  // Publish the open sheet's height (used by the floating map buttons, see MapView.module.css) and flag an open
+  // sheet on mobile so those buttons can hide instead of floating over its content.
   useEffect(() => {
     const root = document.documentElement;
     const el = ref.current;
     if (!open || !el) {
       root.style.setProperty("--sheet-height", "0px");
+      root.removeAttribute("data-sheet-open");
       return;
     }
     const observer = new ResizeObserver(([entry]) => {
       const h = entry?.borderBoxSize?.[0]?.blockSize ?? el.getBoundingClientRect().height;
       root.style.setProperty("--sheet-height", `${h}px`);
     });
+    root.toggleAttribute("data-sheet-open", isMobile());
     observer.observe(el);
     return () => {
       observer.disconnect();
       root.style.setProperty("--sheet-height", "0px");
+      root.removeAttribute("data-sheet-open");
     };
   }, [open]);
 
