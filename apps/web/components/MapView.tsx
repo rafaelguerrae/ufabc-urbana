@@ -13,18 +13,21 @@ import { CAMPUSES } from "../lib/campuses";
 import type { SearchResult } from "../lib/geocode";
 import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "../lib/indicators";
 import { loadRaster, type RasterData } from "../lib/raster";
+import { buildTour } from "../lib/tour";
 import { ControlPanel } from "./ControlPanel";
 import type { Place } from "./PlaceCard";
 import { AboutDialog } from "./AboutDialog";
 import { LearnDialog } from "./LearnDialog";
 import { RightPanel } from "./RightPanel";
 import { TopBar } from "./TopBar";
+import { TourCard } from "./TourCard";
 import styles from "./MapView.module.css";
 
 // Worker file is copied into /public by scripts/copy-maplibre-worker.mjs.
 setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 type DistrictCollection = FeatureCollection<Polygon | MultiPolygon, DistrictProperties>;
+type BuildingCollection = FeatureCollection<Polygon, { height_m: number; height_source: "height" | "levels"; lst_c: number | null }>;
 
 const BASEMAP = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 const MOBILE_QUERY = "(max-width: 700px)";
@@ -44,6 +47,9 @@ export function MapView() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
   const [cameraDefault, setCameraDefault] = useState(true);
+  const [tourIndex, setTourIndex] = useState<number | null>(null);
+  const [buildings3d, setBuildings3d] = useState(false);
+  const [buildings, setBuildings] = useState<BuildingCollection | null>(null);
 
   // On small screens the panels are bottom sheets, so only one can be open.
   const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
@@ -66,7 +72,52 @@ export function MapView() {
       .catch((e: unknown) => setLoadError(e instanceof Error ? e.message : "Falha ao carregar a grade de temperatura"));
   }, []);
 
+  // 3D buildings start on for desktop and off for mobile, where extrusions are heavier to draw.
+  useEffect(() => {
+    if (!window.matchMedia(MOBILE_QUERY).matches) setBuildings3d(true);
+  }, []);
+
+  // The footprints file is only fetched the first time the layer is switched on.
+  useEffect(() => {
+    if (!buildings3d || buildings) return;
+    fetch("/data/buildings.geojson")
+      .then((r) => (r.ok ? (r.json() as Promise<BuildingCollection>) : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(setBuildings)
+      .catch(() => setBuildings3d(false));
+  }, [buildings3d, buildings]);
+
   const districtList = useMemo(() => districts?.features.map((f) => f.properties) ?? null, [districts]);
+
+  const tourSteps = useMemo(() => buildTour(districts?.features ?? null), [districts]);
+  const tourFocus = tourIndex !== null ? tourSteps?.[tourIndex]?.focus : undefined;
+
+  const startTour = useCallback(() => {
+    setPlace(null);
+    setLeftOpen(false);
+    setRightOpen(false);
+    setView("lst_c");
+    setTourIndex(0);
+  }, []);
+
+  // Each step flies the camera: to its district, or back to the initial view.
+  useEffect(() => {
+    if (tourIndex === null || !tourSteps) return;
+    const map = mapRef.current;
+    if (!map) return;
+    const focus = tourSteps[tourIndex]?.focus;
+    // essential is false so the move is skipped for people who prefer reduced motion.
+    if (focus) {
+      const padding = isMobile() ? { top: 120, bottom: 300, left: 24, right: 24 } : { top: 100, bottom: 260, left: 60, right: 60 };
+      map.fitBounds(focus.bounds, { padding, duration: 2500, maxZoom: 13, essential: false });
+    } else {
+      map.flyTo({
+        center: [INITIAL_VIEW.longitude, INITIAL_VIEW.latitude],
+        zoom: INITIAL_VIEW.zoom,
+        duration: 2000,
+        essential: false,
+      });
+    }
+  }, [tourIndex, tourSteps]);
 
   const districtIndicatorDef = getIndicator(districtIndicator);
 
@@ -85,6 +136,18 @@ export function MapView() {
     ]);
     return ["interpolate", ["linear"], ["get", districtIndicator], ...stops] as unknown as string;
   }, [districtRange, districtIndicatorDef, districtIndicator]);
+
+  // Building color: ground temperature under the footprint on the same scale as the heat layer.
+  const buildingColor = useMemo(() => {
+    if (!raster) return "#9ca3af";
+    const [min, max] = raster.info.lst.scale;
+    const lst = getIndicator("lst_c");
+    const stops = [0, 0.25, 0.5, 0.75, 1].flatMap((t) => [
+      min + t * (max - min),
+      `rgb(${colorAt(lst, t).join(",")})`,
+    ]);
+    return ["case", ["==", ["get", "lst_c"], null], "#9ca3af", ["interpolate", ["linear"], ["get", "lst_c"], ...stops]] as unknown as string;
+  }, [raster]);
 
   const choosePlace = useCallback(
     (lng: number, lat: number, label: string) => {
@@ -166,14 +229,20 @@ export function MapView() {
   }, []);
 
   return (
-    <div className={rightOpen ? `${styles.root} ${styles.rightOpen}` : styles.root}>
+    <div
+      className={[styles.root, rightOpen && styles.rightOpen, tourIndex !== null && styles.touring]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW}
         mapStyle={BASEMAP}
         onLoad={onLoad}
         onMoveEnd={onMoveEnd}
-        onClick={(e) => choosePlace(e.lngLat.lng, e.lngLat.lat, "Ponto selecionado")}
+        onClick={(e) => {
+          if (tourIndex === null) choosePlace(e.lngLat.lng, e.lngLat.lat, "Ponto selecionado");
+        }}
         cursor="crosshair"
         maxPitch={70}
         attributionControl={{ compact: true }}
@@ -223,6 +292,32 @@ export function MapView() {
               id="districts-selected"
               type="line"
               filter={["==", ["get", "code"], place?.district?.code ?? ""]}
+              paint={{ "line-color": "#111111", "line-width": 3 }}
+            />
+          </Source>
+        )}
+
+        {view === "lst_c" && buildings3d && buildings && (
+          <Source id="buildings" type="geojson" data={buildings}>
+            <Layer
+              id="buildings-3d"
+              type="fill-extrusion"
+              minzoom={14}
+              paint={{
+                "fill-extrusion-color": buildingColor,
+                "fill-extrusion-height": ["get", "height_m"],
+                "fill-extrusion-opacity": 0.85,
+              }}
+            />
+          </Source>
+        )}
+
+        {tourFocus && districts && view !== "districts" && (
+          <Source id="tour-district" type="geojson" data={districts}>
+            <Layer
+              id="tour-district-line"
+              type="line"
+              filter={["==", ["get", "code"], tourFocus.code]}
               paint={{ "line-color": "#111111", "line-width": 3 }}
             />
           </Source>
@@ -307,6 +402,9 @@ export function MapView() {
           onViewChange={setView}
           districtIndicator={districtIndicator}
           onDistrictIndicatorChange={setDistrictIndicator}
+          buildings3d={buildings3d}
+          onBuildings3dChange={setBuildings3d}
+          onStartTour={tourSteps ? startTour : undefined}
           districtRange={districtRange}
           raster={raster?.info ?? null}
           scenesLabel={raster?.scenesLabel ?? null}
@@ -324,6 +422,9 @@ export function MapView() {
             setPlace(null);
           }}
         />
+      {tourIndex !== null && tourSteps && (
+        <TourCard steps={tourSteps} index={tourIndex} onIndexChange={setTourIndex} onClose={() => setTourIndex(null)} />
+      )}
       {learnOpen && <LearnDialog onClose={() => setLearnOpen(false)} />}
       {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>

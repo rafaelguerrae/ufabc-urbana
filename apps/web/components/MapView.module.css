@@ -153,3 +153,9 @@
     outline-offset: 2px;
   }
 }
+
+/* The tour card takes the bottom of the screen, so the bottom buttons step aside while it runs. */
+.touring .reset,
+.touring .details {
+  display: none;
+}

@@ -1,0 +1,38 @@
+{
+  "retrieved_at": "2026-10-28T23:17:50+00:00",
+  "source": "OpenStreetMap via Overpass API",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "license": "ODbL 1.0; attribution required: © OpenStreetMap contributors",
+  "areas": {
+    "santo-andre": [
+      -23.6450844,
+      -46.5273059
+    ],
+    "sao-bernardo": [
+      -23.6773888,
+      -46.5643578
+    ],
+    "sao-paulo-centro": [
+      -23.5505,
+      -46.6333
+    ]
+  },
+  "filter": "buildings with a height or building:levels tag only; others are not exported",
+  "level_height_m": 3.0,
+  "lst": "ground LST of the 30 m pixel under the footprint centroid, from the raster export (not roof temperature)",
+  "per_area": {
+    "santo-andre": {
+      "ways": 1417,
+      "exported": 367
+    },
+    "sao-bernardo": {
+      "ways": 230,
+      "exported": 18
+    },
+    "sao-paulo-centro": {
+      "ways": 7565,
+      "exported": 7403
+    }
+  },
+  "exported": 7788
+}
