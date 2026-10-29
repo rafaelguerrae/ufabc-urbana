@@ -21,6 +21,7 @@ import { LearnDialog } from "./LearnDialog";
 import { RightPanel } from "./RightPanel";
 import { TopBar } from "./TopBar";
 import { TourCard } from "./TourCard";
+import { ViewSwitch } from "./ViewSwitch";
 import styles from "./MapView.module.css";
 
 // Worker file is copied into /public by scripts/copy-maplibre-worker.mjs.
@@ -384,6 +385,8 @@ export function MapView() {
           Ver detalhes
         </button>
       )}
+
+      {tourIndex === null && <ViewSwitch view={view} onChange={setView} panelOpen={leftOpen || rightOpen} />}
 
       <TopBar
         leftOpen={leftOpen}

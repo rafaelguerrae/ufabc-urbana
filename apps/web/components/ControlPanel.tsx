@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   DATA_TYPE_LABEL,
   INDICATORS,
+  VIEWS,
   VIEW_LABEL,
   colorAt,
   formatValue,
@@ -35,8 +36,6 @@ interface ControlPanelProps {
   loading: boolean;
   error: string | null;
 }
-
-const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
 
 const VIEW_HINT: Record<ViewMode, string> = {
   lst_c: "Onde a superfície esquenta mais · cada quadrado ≈ 30 m",
