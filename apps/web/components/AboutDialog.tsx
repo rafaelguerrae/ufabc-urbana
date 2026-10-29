@@ -51,6 +51,10 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
           </li>
           <li>Busca de endereços: Photon, © colaboradores do OpenStreetMap.</li>
           <li>Mapa-base: © CARTO.</li>
+          <li>
+            Sua localização: só é pedida quando você toca no botão de localização e é usada apenas no seu navegador
+            para mostrar o ponto azul. Ela não é enviada nem guardada.
+          </li>
         </ul>
         <p>
           Código aberto:{" "}

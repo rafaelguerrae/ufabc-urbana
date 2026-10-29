@@ -86,6 +86,10 @@
     bottom: min(calc(var(--sheet-height, 0px) + 24px), calc(100dvh - 56px - env(safe-area-inset-top, 0px)));
   }
 
+  :global(html[data-sheet-open]) .wrap {
+    display: none;
+  }
+
   .text {
     display: none;
   }

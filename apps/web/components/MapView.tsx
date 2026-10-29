@@ -14,6 +14,7 @@ import type { SearchResult } from "../lib/geocode";
 import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "../lib/indicators";
 import { loadRaster, type RasterData } from "../lib/raster";
 import { buildTour } from "../lib/tour";
+import { useUserLocation } from "../lib/useUserLocation";
 import { ControlPanel } from "./ControlPanel";
 import type { Place } from "./PlaceCard";
 import { AboutDialog } from "./AboutDialog";
@@ -48,6 +49,8 @@ export function MapView() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
   const [cameraDefault, setCameraDefault] = useState(true);
+  const { position: userPosition, status: locationStatus, start: startLocation } = useUserLocation();
+  const [locationNote, setLocationNote] = useState<string | null>(null);
   const [tourIndex, setTourIndex] = useState<number | null>(null);
   const [buildings3d, setBuildings3d] = useState(false);
   const [buildings, setBuildings] = useState<BuildingCollection | null>(null);
@@ -183,6 +186,24 @@ export function MapView() {
     (r: SearchResult) => focusPlace(r.lng, r.lat, r.detail ? `${r.label} · ${r.detail}` : r.label),
     [focusPlace],
   );
+
+  // First click asks the browser for permission; once granted the dot follows the user and clicks fly to it.
+  const onLocateClick = useCallback(() => {
+    const go = (p: { lng: number; lat: number }) => focusPlace(p.lng, p.lat, "Minha localização");
+    if (userPosition) go(userPosition);
+    else startLocation(go);
+  }, [focusPlace, userPosition, startLocation]);
+
+  useEffect(() => {
+    if (locationStatus !== "denied" && locationStatus !== "unavailable") return;
+    setLocationNote(
+      locationStatus === "denied"
+        ? "Não foi possível acessar sua localização. Ative a permissão nas configurações do navegador."
+        : "Não foi possível descobrir sua localização agora. Tente de novo em instantes.",
+    );
+    const timer = window.setTimeout(() => setLocationNote(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [locationStatus]);
 
   // Back to what a freshly loaded page shows: initial camera, heat layer, nothing selected, panels closed.
   const resetMap = useCallback(() => {
@@ -342,6 +363,12 @@ export function MapView() {
           </Marker>
         ))}
 
+        {userPosition && (
+          <Marker longitude={userPosition.lng} latitude={userPosition.lat} anchor="center" style={{ pointerEvents: "none" }}>
+            <div className={styles.userDot} aria-hidden />
+          </Marker>
+        )}
+
         {place && (
           <Marker longitude={place.lng} latitude={place.lat} anchor="center">
             <div className={styles.pin} aria-hidden />
@@ -356,12 +383,40 @@ export function MapView() {
         aria-label="Voltar à visão inicial do mapa"
         title="Voltar à visão inicial"
       >
-        {/* Navigation arrow as in Apple Maps: filled in the default state, outlined otherwise. */}
+        {/* Folded map: tinted in the default state, outlined otherwise (a solid fill would hide the fold lines). */}
         <svg
           width="20"
           height="20"
           viewBox="0 0 24 24"
           fill={isDefault ? "currentColor" : "none"}
+          fillOpacity={0.25}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+          focusable="false"
+        >
+          <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" />
+          <path d="M15 5.764v15" />
+          <path d="M9 3.236v15" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        className={locationStatus === "active" ? `${styles.locate} ${styles.locateActive}` : styles.locate}
+        onClick={onLocateClick}
+        disabled={locationStatus === "asking"}
+        aria-label="Ir para a minha localização"
+        title="Minha localização"
+      >
+        {/* Navigation arrow as in Apple Maps: filled blue while the location is being followed. */}
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill={locationStatus === "active" ? "currentColor" : "none"}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
@@ -372,6 +427,12 @@ export function MapView() {
           <polygon points="3 11 22 2 13 21 11 13 3 11" />
         </svg>
       </button>
+
+      {locationNote && (
+        <p className={styles.toast} role="status">
+          {locationNote}
+        </p>
+      )}
 
       {place && !rightOpen && (
         <button
