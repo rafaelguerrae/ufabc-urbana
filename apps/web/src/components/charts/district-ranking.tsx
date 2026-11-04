@@ -2,7 +2,7 @@
 
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { colorAt, formatValue, getIndicator, type DistrictProperties, type IndicatorKey } from "../../lib/indicators";
+import { colorAt, formatValue, getIndicator, type DistrictProperties, type IndicatorKey } from "#lib/indicators";
 
 interface DistrictRankingProps {
   districts: DistrictProperties[];

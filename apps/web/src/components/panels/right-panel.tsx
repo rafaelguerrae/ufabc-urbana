@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { CITIES, getCity, type CitySlug } from "../../lib/cities";
-import type { DistrictProperties, IndicatorKey } from "../../lib/indicators";
-import type { RasterInfo } from "../../lib/raster";
-import { DistrictRanking } from "../charts/district-ranking";
-import { DistrictScatter } from "../charts/district-scatter";
-import { PlaceCard, type Place } from "../cards/place-card";
+import { CITIES, getCity, type CitySlug } from "#lib/cities";
+import type { DistrictProperties, IndicatorKey } from "#lib/indicators";
+import type { RasterInfo } from "#lib/raster";
+import { DistrictRanking } from "#components/charts/district-ranking";
+import { DistrictScatter } from "#components/charts/district-scatter";
+import { PlaceCard, type Place } from "#components/cards/place-card";
 import { SheetPanel } from "./sheet-panel";
 
 interface RightPanelProps {

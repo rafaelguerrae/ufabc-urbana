@@ -1,6 +1,6 @@
 # Learning path: sources and supported claims
 
-Verified on 2026-11-03 by reading each page (abstract or official page). Full texts of the papers were **not** read; claims are limited to what the abstract or page states. Lesson text lives in `apps/web/lib/learn.ts`.
+Verified on 2026-11-03 by reading each page (abstract or official page). Full texts of the papers were **not** read; claims are limited to what the abstract or page states. Lesson text lives in `apps/web/src/lib/learn.ts`.
 
 | id | Source | What it supports | What it does NOT support |
 | --- | --- | --- | --- |

@@ -20,8 +20,9 @@ Guidance for AI agents working in this repository.
 
 ## Code conventions (`apps/web`)
 
-- Group components by role under `apps/web/components/`: `panels/` (side panels and the bottom-sheet shell), `cards/` (info and guide cards), `controls/` (top bar, search, layer switch), `charts/`, and `common/` for anything that fits no group or is shared across groups (for example `AboutDialog`, `LayerIcon`). `MapView` stays at the top level as the composition root. Create a new group only when two or more components share a role; otherwise use `common/`.
+- Group components by role under `apps/web/src/components/`: `panels/` (side panels and the bottom-sheet shell), `cards/` (info and guide cards), `controls/` (top bar, search, layer switch), `charts/`, and `common/` for anything that fits no group or is shared across groups (for example `about-dialog`, `layer-icon`). `map-view.tsx` stays at the top level as the composition root. Create a new group only when two or more components share a role; otherwise use `common/`.
 - File and folder names are **kebab-case** (`place-card.tsx`, `use-user-location.ts`). Component, hook and type names inside the files keep their usual casing (`PlaceCard`, `useUserLocation`). Python files in `data-pipeline/` stay snake_case because they are import names.
+- The Next.js `app/` directory stays at the `apps/web` root; shared source lives in `apps/web/src/` (`components/`, `lib/`). Imports across directories use `#` as the alias for `src/` (declared in `apps/web/tsconfig.json` `paths`): `#components/cards/place-card`, `#lib/cities`. Do not use `@/` or `../`. Files in the same directory still import each other with `./`.
 - Styling is Tailwind only; see Architecture.
 
 ## Data-integrity rules

@@ -2,7 +2,7 @@
 
 import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from "recharts";
 
-import { formatValue, getIndicator, type DistrictProperties } from "../../lib/indicators";
+import { formatValue, getIndicator, type DistrictProperties } from "#lib/indicators";
 
 interface DistrictScatterProps {
   districts: DistrictProperties[];

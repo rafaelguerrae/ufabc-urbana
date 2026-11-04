@@ -1,6 +1,6 @@
-import { unitTitle } from "../../lib/cities";
-import { formatValue, getIndicator, type DistrictProperties } from "../../lib/indicators";
-import type { RasterSample } from "../../lib/raster";
+import { unitTitle } from "#lib/cities";
+import { formatValue, getIndicator, type DistrictProperties } from "#lib/indicators";
+import type { RasterSample } from "#lib/raster";
 
 export interface ComparePin {
   lng: number;

@@ -1,6 +1,6 @@
-import { CITY_LIST_TEXT, unitOf, unitTitle } from "../../lib/cities";
-import { formatValue, getIndicator, type DistrictProperties } from "../../lib/indicators";
-import type { RasterInfo, RasterSample } from "../../lib/raster";
+import { CITY_LIST_TEXT, unitOf, unitTitle } from "#lib/cities";
+import { formatValue, getIndicator, type DistrictProperties } from "#lib/indicators";
+import type { RasterInfo, RasterSample } from "#lib/raster";
 
 export interface Place {
   lng: number;

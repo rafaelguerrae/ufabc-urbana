@@ -12,9 +12,9 @@ import {
   getIndicator,
   type IndicatorKey,
   type ViewMode,
-} from "../../lib/indicators";
-import type { RasterInfo } from "../../lib/raster";
-import { LayerIcon } from "../common/layer-icon";
+} from "#lib/indicators";
+import type { RasterInfo } from "#lib/raster";
+import { LayerIcon } from "#components/common/layer-icon";
 import { SheetPanel } from "./sheet-panel";
 
 interface ControlPanelProps {

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import type { TourStep } from "../../lib/tour";
+import type { TourStep } from "#lib/tour";
 
 interface TourCardProps {
   steps: TourStep[];

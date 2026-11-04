@@ -1,6 +1,6 @@
 "use client";
 
-import type { SearchResult } from "../../lib/geocode";
+import type { SearchResult } from "#lib/geocode";
 import { SearchBar } from "./search-bar";
 
 interface TopBarProps {

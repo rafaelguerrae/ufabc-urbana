@@ -2,8 +2,8 @@
 
 import { useRef, type KeyboardEvent } from "react";
 
-import { VIEWS, type ViewMode } from "../../lib/indicators";
-import { LayerIcon } from "../common/layer-icon";
+import { VIEWS, type ViewMode } from "#lib/indicators";
+import { LayerIcon } from "#components/common/layer-icon";
 
 // Shorter than VIEW_LABEL, which has room for a hint in the side panel.
 const LABEL: Record<ViewMode, string> = {

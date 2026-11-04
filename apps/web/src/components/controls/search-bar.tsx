@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 
-import { searchPlaces, type SearchResult } from "../../lib/geocode";
+import { searchPlaces, type SearchResult } from "#lib/geocode";
 
 interface SearchBarProps {
   onSelect: (result: SearchResult) => void;

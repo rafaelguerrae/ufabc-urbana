@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-import { unitTitle, getCity } from "../../lib/cities";
-import { LESSONS, REFERENCES, type MapTarget } from "../../lib/learn";
-import type { RasterInfo } from "../../lib/raster";
-import { CompareCard, type ComparePin, type PinId } from "../cards/compare-card";
-import { PlaceCard, type Place } from "../cards/place-card";
+import { unitTitle, getCity } from "#lib/cities";
+import { LESSONS, REFERENCES, type MapTarget } from "#lib/learn";
+import type { RasterInfo } from "#lib/raster";
+import { CompareCard, type ComparePin, type PinId } from "#components/cards/compare-card";
+import { PlaceCard, type Place } from "#components/cards/place-card";
 import { SheetPanel } from "./sheet-panel";
 
 const HINT_DELAY_MS = 8000;
