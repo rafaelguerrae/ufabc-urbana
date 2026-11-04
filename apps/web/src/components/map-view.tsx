@@ -364,9 +364,9 @@ export function MapView() {
       searchInputRef.current?.select();
     } },
     { key: "Escape", handler: closeTopmost },
-    { key: "l", handler: single(toggleLeft) },
+    { key: "s", handler: single(toggleLeft) },
     { key: "g", handler: single(toggleRight) },
-    { key: "t", handler: single(openLearn) },
+    { key: "l", handler: single(openLearn) },
     ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: single(() => tourIndex === null && setView(v)) })),
     { key: "b", handler: single(() => view === "lst_c" && setBuildings3d((on) => !on)) },
     { key: "r", handler: single(() => tourIndex === null && resetMap()) },

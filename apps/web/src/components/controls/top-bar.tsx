@@ -38,8 +38,8 @@ export function TopBar(props: TopBarProps) {
           aria-expanded={props.leftOpen}
           aria-controls="left-panel"
           aria-label="Menu de camadas"
-          aria-keyshortcuts="L"
-          title="Camadas (L)"
+          aria-keyshortcuts="S"
+          title="Camadas (S)"
           onClick={props.onToggleLeft}
         >
           <svg {...iconProps}>
@@ -58,8 +58,8 @@ export function TopBar(props: TopBarProps) {
           aria-expanded={props.learnOpen}
           aria-controls="learn-panel"
           aria-label="Trilha de aprendizado"
-          aria-keyshortcuts="T"
-          title="Trilha de aprendizado (T)"
+          aria-keyshortcuts="L"
+          title="Trilha de aprendizado (L)"
           onClick={props.onOpenLearn}
         >
           <svg {...iconProps}>
