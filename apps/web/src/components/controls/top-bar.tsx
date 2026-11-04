@@ -1,9 +1,12 @@
 "use client";
 
+import type { RefObject } from "react";
+
 import type { SearchResult } from "#lib/geocode";
 import { SearchBar } from "./search-bar";
 
 interface TopBarProps {
+  searchInputRef: RefObject<HTMLInputElement | null>;
   leftOpen: boolean;
   rightOpen: boolean;
   onToggleLeft: () => void;
@@ -35,7 +38,8 @@ export function TopBar(props: TopBarProps) {
           aria-expanded={props.leftOpen}
           aria-controls="left-panel"
           aria-label="Menu de camadas"
-          title="Camadas"
+          aria-keyshortcuts="L"
+          title="Camadas (L)"
           onClick={props.onToggleLeft}
         >
           <svg {...iconProps}>
@@ -43,7 +47,7 @@ export function TopBar(props: TopBarProps) {
           </svg>
         </button>
         <div className="w-[340px] max-w-full mobile:w-auto mobile:flex-1">
-          <SearchBar onSelect={props.onSearchSelect} />
+          <SearchBar onSelect={props.onSearchSelect} inputRef={props.searchInputRef} />
         </div>
       </div>
 
@@ -54,7 +58,8 @@ export function TopBar(props: TopBarProps) {
           aria-expanded={props.learnOpen}
           aria-controls="learn-panel"
           aria-label="Trilha de aprendizado"
-          title="Trilha de aprendizado"
+          aria-keyshortcuts="T"
+          title="Trilha de aprendizado (T)"
           onClick={props.onOpenLearn}
         >
           <svg {...iconProps}>
@@ -68,7 +73,8 @@ export function TopBar(props: TopBarProps) {
           aria-expanded={props.rightOpen}
           aria-controls="right-panel"
           aria-label="Gráficos"
-          title="Gráficos"
+          aria-keyshortcuts="G"
+          title="Gráficos (G)"
           onClick={props.onToggleRight}
         >
           <svg {...iconProps}>

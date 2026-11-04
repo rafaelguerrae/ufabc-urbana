@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState, type RefObject } from "react";
 
 import { searchPlaces, type SearchResult } from "#lib/geocode";
 
 interface SearchBarProps {
   onSelect: (result: SearchResult) => void;
+  inputRef?: RefObject<HTMLInputElement | null>;
 }
 
-export function SearchBar({ onSelect }: SearchBarProps) {
+export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export function SearchBar({ onSelect }: SearchBarProps) {
     onSelect(r);
   }
 
-  function onKeyDown(e: React.KeyboardEvent) {
+  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActive((a) => Math.min(a + 1, results.length - 1));
@@ -61,6 +62,7 @@ export function SearchBar({ onSelect }: SearchBarProps) {
       choose(results[active >= 0 ? active : 0]!);
     } else if (e.key === "Escape") {
       setOpen(false);
+      e.currentTarget.blur();
     }
   }
 
@@ -71,6 +73,8 @@ export function SearchBar({ onSelect }: SearchBarProps) {
         <path d="m20 20-3.5-3.5" />
       </svg>
       <input
+        ref={inputRef}
+        aria-keyshortcuts="Control+P"
         className="h-11 w-full rounded-xl border border-border bg-panel pr-3.5 pl-[42px] text-[0.95rem] text-foreground shadow-panel backdrop-blur-sm transition-[border-color,box-shadow] duration-[180ms] ease-[ease] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
         type="search"
         role="combobox"
