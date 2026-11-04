@@ -57,6 +57,16 @@ export const REFERENCES: Reference[] = [
     citation: "USGS. Landsat Normalized Difference Vegetation Index.",
     url: "https://www.usgs.gov/landsat-missions/landsat-normalized-difference-vegetation-index",
   },
+  {
+    id: "usgs-et",
+    citation: "USGS (2015). The EarthWord: Evapotranspiration.",
+    url: "https://www.usgs.gov/news/earthword-evapotranspiration",
+  },
+  {
+    id: "nasa-albedo",
+    citation: "NASA Earthdata. Albedo.",
+    url: "https://www.earthdata.nasa.gov/topics/land-surface/albedo",
+  },
 ];
 
 export const LESSONS: Lesson[] = [
@@ -103,7 +113,7 @@ export const LESSONS: Lesson[] = [
       hint: "Procure o contorno preto com o círculo pulsando. No mapa de vegetação, os tons mais escuros indicam mais plantas.",
       done: "Compare a temperatura e o índice de vegetação daqui com os da área quente que você viu antes.",
     },
-    sources: ["epa", "souza2017"],
+    sources: ["epa", "usgs-et", "souza2017"],
   },
   {
     id: "materiais",
@@ -119,7 +129,7 @@ export const LESSONS: Lesson[] = [
       hint: "Escolha A ou B no painel e toque no mapa onde quiser, por exemplo numa praça ou numa avenida movimentada.",
       done: "Os números são do ponto exato que você escolheu. Diferenças entre dois pontos podem ter outras causas além da vegetação.",
     },
-    sources: ["epa", "souza2017"],
+    sources: ["epa", "nasa-albedo", "souza2017"],
   },
   {
     id: "sombra",
