@@ -12,11 +12,17 @@ Guidance for AI agents working in this repository.
 
 ## Architecture
 
-- Turborepo + pnpm monorepo. `apps/web` is Next.js (App Router, strict TypeScript). Shared code lives in `packages/*`.
+- Turborepo + pnpm monorepo. `apps/web` is Next.js (App Router, strict TypeScript) styled with Tailwind CSS v4 (theme tokens, breakpoint and animation variants live in `apps/web/app/globals.css`; no CSS Modules). Shared code lives in `packages/*`.
 - `data-pipeline/` holds Python scripts (managed with uv) that turn public datasets into static GeoJSON/JSON consumed by `apps/web` (for example from `apps/web/public/data/`).
 - No database or API server for now. Add one only if the feasibility work shows static files are insufficient.
 - Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay and a district GeoJSON choropleth), CARTO Positron basemap, Photon geocoding. `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
 - Data flow: `data-pipeline` (Earth Engine + IBGE) writes `apps/web/public/data/districts.geojson` and `public/data/raster/*` (`uv run python -m src.export_web`, `uv run python -m src.export_raster`). The web app only reads these static files.
+
+## Code conventions (`apps/web`)
+
+- Group components by role under `apps/web/components/`: `panels/` (side panels and the bottom-sheet shell), `cards/` (info and guide cards), `controls/` (top bar, search, layer switch), `charts/`, and `common/` for anything that fits no group or is shared across groups (for example `AboutDialog`, `LayerIcon`). `MapView` stays at the top level as the composition root. Create a new group only when two or more components share a role; otherwise use `common/`.
+- File and folder names are **kebab-case** (`place-card.tsx`, `use-user-location.ts`). Component, hook and type names inside the files keep their usual casing (`PlaceCard`, `useUserLocation`). Python files in `data-pipeline/` stay snake_case because they are import names.
+- Styling is Tailwind only; see Architecture.
 
 ## Data-integrity rules
 

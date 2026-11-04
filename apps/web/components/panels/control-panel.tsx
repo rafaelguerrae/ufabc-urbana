@@ -12,12 +12,10 @@ import {
   getIndicator,
   type IndicatorKey,
   type ViewMode,
-} from "../lib/indicators";
-import type { RasterInfo } from "../lib/raster";
-import { LayerIcon } from "./LayerIcon";
-import { SheetPanel } from "./SheetPanel";
-import panel from "./Panel.module.css";
-import styles from "./ControlPanel.module.css";
+} from "../../lib/indicators";
+import type { RasterInfo } from "../../lib/raster";
+import { LayerIcon } from "../common/layer-icon";
+import { SheetPanel } from "./sheet-panel";
 
 interface ControlPanelProps {
   view: ViewMode;
@@ -56,46 +54,47 @@ export function ControlPanel(props: ControlPanelProps) {
   return (
     <SheetPanel side="left" id="left-panel" label="Camadas do mapa" open={props.open} onClose={props.onClose}>
       <header>
-        <div className={styles.brand}>
-          <Image src="/ufabc-urbana.png" alt="" width={56} height={56} className={styles.logo} priority />
-          <h1 className={styles.title}>UFABC Urbana</h1>
+        <div className="mb-2 flex items-center gap-3">
+          <Image src="/ufabc-urbana.png" alt="" width={56} height={56} className="size-14 flex-none" priority />
+          <h1 className="text-[1.5rem] font-bold">UFABC Urbana</h1>
         </div>
-        <p className={panel.note}>
+        <p className="text-[0.85rem] leading-normal text-muted">
           Por que algumas partes de São Paulo, São Bernardo do Campo e Santo André são mais quentes que outras? Onde há
           muito concreto e pouca vegetação, a cidade esquenta mais: é a chamada ilha de calor. Busque sua rua e compare.
         </p>
-        <button type="button" className={styles.tourButton} onClick={props.onStartTour} disabled={!props.onStartTour}>
+        <button type="button" className="mt-3 min-h-11 cursor-pointer rounded-xl border-0 bg-accent px-[18px] text-[0.9rem] font-semibold text-accent-contrast focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-default disabled:opacity-50" onClick={props.onStartTour} disabled={!props.onStartTour}>
           Fazer um tour guiado
         </button>
       </header>
 
-      <section className={panel.section} aria-label="Camada do mapa">
-        <h2 className={panel.sectionTitle}>Camada</h2>
-        <div className={styles.layers} role="radiogroup" aria-label="Camada do mapa">
+      <section className="flex flex-col gap-2.5" aria-label="Camada do mapa">
+        <h2 className="text-[0.75rem] font-bold tracking-[0.04em] text-muted uppercase">Camada</h2>
+        <div className="flex flex-col gap-2" role="radiogroup" aria-label="Camada do mapa">
           {VIEWS.map((v) => (
             <button
               key={v}
               type="button"
               role="radio"
               aria-checked={v === view}
-              className={v === view ? styles.layerActive : styles.layer}
+              className={`flex w-full cursor-pointer flex-row items-center gap-3 rounded-xl border px-3.5 py-3 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent text-foreground ${v === view ? "border-accent bg-accent-soft shadow-[inset_0_0_0_1px_var(--color-accent)]" : "border-border bg-surface hover:bg-hover"}`}
               onClick={() => props.onViewChange(v)}
             >
-              <span className={styles.layerIcon}>
+              <span className={`grid size-10 flex-none place-items-center rounded-[10px] ${v === view ? "bg-accent text-accent-contrast" : "bg-hover text-muted"}`}>
                 <LayerIcon view={v} />
               </span>
-              <span className={styles.layerText}>
-                <span className={styles.layerName}>{VIEW_LABEL[v]}</span>
-                <span className={styles.layerHint}>{VIEW_HINT[v]}</span>
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-[0.95rem] font-semibold">{VIEW_LABEL[v]}</span>
+                <span className="text-[0.8rem] text-muted">{VIEW_HINT[v]}</span>
               </span>
             </button>
           ))}
         </div>
 
         {view === "districts" && (
-          <label className={styles.select}>
+          <label className="flex flex-col gap-1 text-[0.8rem] text-muted">
             <span>Indicador</span>
             <select
+              className="rounded-lg border border-border bg-surface px-2.5 py-2 text-foreground"
               value={districtIndicator}
               onChange={(e) => props.onDistrictIndicatorChange(e.target.value as IndicatorKey)}
             >
@@ -110,16 +109,17 @@ export function ControlPanel(props: ControlPanelProps) {
       </section>
 
       {view === "lst_c" && (
-        <section className={panel.section} aria-label="Edifícios em 3D">
-          <label className={styles.toggle}>
+        <section className="flex flex-col gap-2.5" aria-label="Edifícios em 3D">
+          <label className="flex cursor-pointer items-center gap-2 text-[0.9rem] font-semibold">
             <input
+              className="size-[18px] accent-accent"
               type="checkbox"
               checked={props.buildings3d}
               onChange={(e) => props.onBuildings3dChange(e.target.checked)}
             />
             <span>Edifícios em 3D</span>
           </label>
-          <p className={panel.note}>
+          <p className="text-[0.85rem] leading-normal text-muted">
             Aproxime o mapa e incline a visão para ver. Só aparecem prédios com altura registrada no OpenStreetMap
             (cobertura irregular: boa no centro de São Paulo, pequena perto dos campi da UFABC); os demais ficam planos
             no mapa. A cor é a temperatura do chão sob o prédio, não a do telhado. Quando só o número de andares é
@@ -128,14 +128,14 @@ export function ControlPanel(props: ControlPanelProps) {
         </section>
       )}
 
-      {props.loading && <p className={panel.note}>Carregando dados…</p>}
-      {props.error && <p className={styles.error}>Não foi possível carregar os dados: {props.error}</p>}
+      {props.loading && <p className="text-[0.85rem] leading-normal text-muted">Carregando dados…</p>}
+      {props.error && <p className="text-[0.85rem] text-[#ef4444]">Não foi possível carregar os dados: {props.error}</p>}
 
       {range && (
-        <section className={`${panel.card} ${styles.legend}`} aria-label="Legenda">
-          <h2 className={panel.sectionTitle}>{indicator.label}</h2>
-          <div className={styles.legendBar} style={{ background: gradient }} aria-hidden />
-          <div className={styles.legendLabels}>
+        <section className={`rounded-xl border border-border bg-surface p-3.5 flex flex-col gap-2`} aria-label="Legenda">
+          <h2 className="text-[0.75rem] font-bold tracking-[0.04em] text-muted uppercase">{indicator.label}</h2>
+          <div className="h-3 rounded-md" style={{ background: gradient }} aria-hidden />
+          <div className="flex justify-between text-[0.75rem] text-muted">
             <span>
               {formatValue(indicator, range.min)} {indicator.unit}
             </span>
@@ -146,28 +146,28 @@ export function ControlPanel(props: ControlPanelProps) {
         </section>
       )}
 
-      <details className={styles.details}>
+      <details className="rounded-xl border border-border bg-surface px-3.5 py-3 [&>*+*]:mt-2 [&>summary]:cursor-pointer [&>summary]:text-[0.9rem] [&>summary]:font-semibold [&>summary+*]:mt-2.5">
         <summary>O que é uma ilha de calor?</summary>
-        <p className={panel.note}>
+        <p className="text-[0.85rem] leading-normal text-muted">
           Ilha de calor urbana é quando partes da cidade ficam mais quentes que as áreas ao redor. Concreto, asfalto e
           telhados absorvem e guardam o calor do sol. Árvores e outras plantas fazem sombra e liberam água pelas folhas,
           o que ajuda a esfriar o ambiente. Por isso, em geral, lugares mais verdes tendem a ser mais frescos.
         </p>
-        <p className={panel.note}>
+        <p className="text-[0.85rem] leading-normal text-muted">
           No mapa, quanto mais vermelha a cor, mais quente está a superfície vista pelo satélite. Compare avenidas, praças
           e parques do seu bairro.
         </p>
       </details>
 
-      <details className={styles.details}>
+      <details className="rounded-xl border border-border bg-surface px-3.5 py-3 [&>*+*]:mt-2 [&>summary]:cursor-pointer [&>summary]:text-[0.9rem] [&>summary]:font-semibold [&>summary+*]:mt-2.5">
         <summary>Sobre esta camada</summary>
-        <p className={styles.badgeRow}>
-          <span className={indicator.dataType === "observed" ? styles.badgeObserved : styles.badgeDerived}>
+        <p>
+          <span className={`inline-block rounded px-2 py-0.5 text-[0.75rem] font-semibold ${indicator.dataType === "observed" ? "bg-badge-observed-bg text-badge-observed-fg" : "bg-badge-derived-bg text-badge-derived-fg"}`}>
             {DATA_TYPE_LABEL[indicator.dataType]}
           </span>
         </p>
-        <p className={panel.note}>{indicator.description}</p>
-        <dl className={styles.meta}>
+        <p className="text-[0.85rem] leading-normal text-muted">{indicator.description}</p>
+        <dl className="text-[0.8rem] leading-[1.4] [&_dd]:text-muted [&_dt]:mt-1.5 [&_dt]:font-semibold">
           <dt>Fonte</dt>
           <dd>{indicator.source}</dd>
           <dt>Período</dt>
@@ -182,7 +182,7 @@ export function ControlPanel(props: ControlPanelProps) {
               : "Grade de 30 m; o sensor térmico mede cerca de 100 m e a imagem é reamostrada"}
           </dd>
         </dl>
-        <p className={panel.note}>
+        <p className="text-[0.85rem] leading-normal text-muted">
           Áreas mais verdes e menos construídas tendem a ser mais frescas nos dados, mas isso é uma associação: não prova
           que um único fator causa a diferença, e outros fatores também influenciam. A temperatura da superfície não é a
           temperatura do ar. O mapa não mostra previsões nem simulações.

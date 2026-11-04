@@ -2,8 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 
-import { searchPlaces, type SearchResult } from "../lib/geocode";
-import styles from "./SearchBar.module.css";
+import { searchPlaces, type SearchResult } from "../../lib/geocode";
 
 interface SearchBarProps {
   onSelect: (result: SearchResult) => void;
@@ -66,13 +65,13 @@ export function SearchBar({ onSelect }: SearchBarProps) {
   }
 
   return (
-    <div className={styles.wrap}>
-      <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <div className="group relative">
+      <svg className="pointer-events-none absolute top-[13px] left-3.5 z-[2] size-[18px] text-foreground transition-colors duration-[180ms] ease-[ease] group-focus-within:text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" />
       </svg>
       <input
-        className={styles.input}
+        className="h-11 w-full rounded-xl border border-border bg-panel pr-3.5 pl-[42px] text-[0.95rem] text-foreground shadow-panel backdrop-blur-sm transition-[border-color,box-shadow] duration-[180ms] ease-[ease] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
         type="search"
         role="combobox"
         aria-expanded={open && results.length > 0}
@@ -89,22 +88,22 @@ export function SearchBar({ onSelect }: SearchBarProps) {
         onKeyDown={onKeyDown}
       />
       {open && (
-        <ul id={listId} role="listbox" className={styles.list}>
+        <ul id={listId} role="listbox" className="absolute inset-x-0 top-[calc(100%+6px)] z-10 overflow-hidden rounded-xl border border-border bg-surface shadow-panel empty:hidden">
           {results.map((r, i) => (
             <li key={r.id} role="option" aria-selected={i === active}>
               <button
                 type="button"
-                className={i === active ? styles.itemActive : styles.item}
+                className={`flex w-full cursor-pointer flex-col border-0 px-3.5 py-2.5 text-left text-foreground hover:bg-hover ${i === active ? "bg-hover" : "bg-transparent"}`}
                 onClick={() => choose(r)}
               >
-                <span className={styles.itemLabel}>{r.label}</span>
-                {r.detail && <span className={styles.itemDetail}>{r.detail}</span>}
+                <span className="text-[0.9rem]">{r.label}</span>
+                {r.detail && <span className="text-[0.75rem] text-muted">{r.detail}</span>}
               </button>
             </li>
           ))}
-          {status === "loading" && <li className={styles.note}>Buscando…</li>}
-          {status === "empty" && <li className={styles.note}>Nenhum local encontrado nos municípios do mapa.</li>}
-          {status === "error" && <li className={styles.note}>A busca está indisponível agora. Você ainda pode clicar no mapa.</li>}
+          {status === "loading" && <li className="px-3.5 py-2.5 text-[0.8rem] text-muted">Buscando…</li>}
+          {status === "empty" && <li className="px-3.5 py-2.5 text-[0.8rem] text-muted">Nenhum local encontrado nos municípios do mapa.</li>}
+          {status === "error" && <li className="px-3.5 py-2.5 text-[0.8rem] text-muted">A busca está indisponível agora. Você ainda pode clicar no mapa.</li>}
         </ul>
       )}
     </div>

@@ -2,14 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { CITIES, getCity, type CitySlug } from "../lib/cities";
-import type { DistrictProperties, IndicatorKey } from "../lib/indicators";
-import type { RasterInfo } from "../lib/raster";
-import { DistrictRanking } from "./charts/DistrictRanking";
-import { DistrictScatter } from "./charts/DistrictScatter";
-import { PlaceCard, type Place } from "./PlaceCard";
-import panel from "./Panel.module.css";
-import { SheetPanel } from "./SheetPanel";
+import { CITIES, getCity, type CitySlug } from "../../lib/cities";
+import type { DistrictProperties, IndicatorKey } from "../../lib/indicators";
+import type { RasterInfo } from "../../lib/raster";
+import { DistrictRanking } from "../charts/district-ranking";
+import { DistrictScatter } from "../charts/district-scatter";
+import { PlaceCard, type Place } from "../cards/place-card";
+import { SheetPanel } from "./sheet-panel";
 
 interface RightPanelProps {
   open: boolean;
@@ -36,8 +35,8 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
 
   return (
     <SheetPanel side="right" id="right-panel" label="Local selecionado e gráficos" open={open} onClose={onClose}>
-      <div className={panel.closeBar}>
-        <button type="button" className={panel.close} onClick={onClose} aria-label="Fechar painel" title="Fechar">
+      <div className="sticky top-3 z-3 -mx-2 -mt-2 flex h-0 justify-end overflow-visible">
+        <button type="button" className="size-9 cursor-pointer rounded-[10px] border border-border bg-button text-[1.5rem] leading-none text-foreground shadow-panel transition-[background-color,scale] duration-[180ms] ease-[ease] hover:bg-button-hover active:scale-[0.92] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" onClick={onClose} aria-label="Fechar painel" title="Fechar">
           ×
         </button>
       </div>
@@ -45,11 +44,11 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
       {place ? (
         <PlaceCard place={place} raster={raster} />
       ) : (
-        <p className={panel.note}>Clique no mapa ou busque um endereço para ver a temperatura e a vegetação do local.</p>
+        <p className="text-[0.85rem] leading-normal text-muted">Clique no mapa ou busque um endereço para ver a temperatura e a vegetação do local.</p>
       )}
 
-      <h2 className={panel.sectionTitle}>Gráficos</h2>
-      <label className={panel.note}>
+      <h2 className="text-[0.75rem] font-bold tracking-[0.04em] text-muted uppercase">Gráficos</h2>
+      <label className="text-[0.85rem] leading-normal text-muted">
         Comparar{" "}
         <select value={city.slug} onChange={(e) => setPicked(e.target.value as CitySlug)} aria-label="Município dos gráficos">
           {CITIES.map((c) => (
@@ -70,7 +69,7 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
           />
         </>
       ) : (
-        <p className={panel.note}>Carregando dados…</p>
+        <p className="text-[0.85rem] leading-normal text-muted">Carregando dados…</p>
       )}
     </SheetPanel>
   );

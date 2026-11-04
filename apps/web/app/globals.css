@@ -1,22 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-foreground: #1f2328;
+  --color-muted: #565d66;
+  --color-border: #c3c8d0;
+  --color-accent: #2563eb;
+  --color-accent-contrast: #ffffff;
+  --color-accent-soft: rgb(37 99 235 / 0.12);
+  --color-hover: #e8eaee;
+  --color-button: #eef0f3;
+  --color-button-hover: #e1e4e9;
+  --color-panel: rgb(246 247 249 / 0.97);
+  --color-badge-observed-bg: #dcfce7;
+  --color-badge-observed-fg: #14532d;
+  --color-badge-derived-bg: #dbeafe;
+  --color-badge-derived-fg: #1e3a8a;
+
+  --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.1);
+
+  --animate-fade: fade 0.2s ease;
+  --animate-pop: pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-user-pulse: user-pulse 2s ease-out infinite;
+  --animate-target-pulse: target-pulse 1.6s ease-out infinite;
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+  }
+
+  @keyframes user-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  @keyframes target-pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+}
+
+/* Breakpoints used by the layout: phones (bottom sheet) and the mid range. */
+@custom-variant mobile (@media (max-width: 700px));
+@custom-variant midrange (@media (min-width: 701px) and (max-width: 1199px));
+/* Set on <html> by SheetPanel while a bottom sheet is open. */
+@custom-variant sheet-open {
+  html[data-sheet-open] & {
+    @slot;
+  }
+}
+
 :root {
   color-scheme: light;
-  --background: #f6f7f9;
-  --surface: #ffffff;
-  --foreground: #1f2328;
-  --muted: #565d66;
-  --border: #c3c8d0;
-  --accent: #2563eb;
-  --accent-contrast: #ffffff;
-  --accent-soft: rgb(37 99 235 / 0.12);
-  --hover: #e8eaee;
-  --button: #eef0f3;
-  --button-hover: #e1e4e9;
-  --panel: rgb(246 247 249 / 0.97);
-  --shadow: 0 4px 16px rgb(0 0 0 / 0.1);
-  --badge-observed-bg: #dcfce7;
-  --badge-observed-fg: #14532d;
-  --badge-derived-bg: #dbeafe;
-  --badge-derived-fg: #1e3a8a;
 }
 
 html,
@@ -26,13 +82,7 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--color-foreground);
+  background: var(--color-background);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }

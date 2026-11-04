@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 
-import styles from "./AboutDialog.module.css";
 
 interface AboutDialogProps {
   onClose: () => void;
@@ -18,19 +17,19 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
   }, [onClose]);
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
+    <div className="absolute inset-0 z-20 flex animate-fade items-center justify-center bg-black/45 p-4 motion-reduce:animate-none" onClick={onClose}>
       <section
-        className={styles.dialog}
+        className="flex max-h-full w-[520px] max-w-full animate-pop flex-col gap-3 overflow-y-auto rounded-2xl border border-border bg-background p-6 text-[0.9rem] leading-normal text-foreground shadow-panel motion-reduce:animate-none"
         role="dialog"
         aria-modal="true"
         aria-labelledby="about-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles.header}>
-          <h2 id="about-title" className={styles.title}>
+        <div className="flex items-center justify-between">
+          <h2 id="about-title" className="text-[1.25rem]">
             Sobre os dados
           </h2>
-          <button type="button" className={styles.close} onClick={onClose} aria-label="Fechar" autoFocus>
+          <button type="button" className="size-9 cursor-pointer rounded-lg border-0 bg-transparent text-[1.5rem] leading-none text-muted hover:bg-hover hover:text-foreground focus-visible:bg-hover focus-visible:text-foreground" onClick={onClose} aria-label="Fechar" autoFocus>
             ×
           </button>
         </div>
@@ -38,7 +37,7 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
           Este mapa mostra como a temperatura da superfície e a vegetação variam em São Paulo, São Bernardo do Campo e Santo André. Os valores vêm de imagens
           de satélite e de dados oficiais; nada aqui é previsão ou simulação.
         </p>
-        <ul>
+        <ul className="list-disc pl-5 text-muted">
           <li>Temperatura e vegetação: satélites Landsat 8 e 9, processados no Google Earth Engine.</li>
           <li>
             Distritos (São Paulo), bairros (São Bernardo do Campo e Santo André) e densidade demográfica: IBGE, Censo
@@ -58,7 +57,7 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
         </ul>
         <p>
           Código aberto:{" "}
-          <a href="https://github.com/rafaelguerrae/ufabc-urbana" target="_blank" rel="noopener noreferrer">
+          <a className="text-accent underline" href="https://github.com/rafaelguerrae/ufabc-urbana" target="_blank" rel="noopener noreferrer">
             github.com/rafaelguerrae/ufabc-urbana
           </a>
         </p>

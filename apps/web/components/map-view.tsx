@@ -16,18 +16,28 @@ import type { SearchResult } from "../lib/geocode";
 import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "../lib/indicators";
 import { loadRaster, type RasterData } from "../lib/raster";
 import { buildTour } from "../lib/tour";
-import { useUserLocation } from "../lib/useUserLocation";
-import { ControlPanel } from "./ControlPanel";
-import type { Place } from "./PlaceCard";
-import { AboutDialog } from "./AboutDialog";
+import { useUserLocation } from "../lib/use-user-location";
+import { ControlPanel } from "./panels/control-panel";
+import type { Place } from "./cards/place-card";
+import { AboutDialog } from "./common/about-dialog";
 import { LESSONS, pickExamples, pickTargets, type MapTarget } from "../lib/learn";
-import type { ComparePin, PinId } from "./CompareCard";
-import { LearnPanel, type CompareState } from "./LearnPanel";
-import { RightPanel } from "./RightPanel";
-import { TopBar } from "./TopBar";
-import { TourCard } from "./TourCard";
-import { ViewSwitch } from "./ViewSwitch";
-import styles from "./MapView.module.css";
+import type { ComparePin, PinId } from "./cards/compare-card";
+import { LearnPanel, type CompareState } from "./panels/learn-panel";
+import { RightPanel } from "./panels/right-panel";
+import { TopBar } from "./controls/top-bar";
+import { TourCard } from "./cards/tour-card";
+import { ViewSwitch } from "./controls/view-switch";
+
+const FOCUS_RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+// Floating bottom buttons ride on top of the open sheet (--sheet-height is set by SheetPanel).
+const SHEET_BOTTOM = "calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(safe-area-inset-top,0px))";
+// Map buttons, top right, left of the three TopBar buttons. On mobile they move to the bottom right and
+// hide while a bottom sheet is open (flagged on <html> by SheetPanel).
+const MAP_BUTTON = `absolute top-3 z-7 inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-button shadow-panel [transition:background-color_0.18s_ease,scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] hover:bg-hover active:scale-[0.94] motion-reduce:[transition:none] mobile:top-auto mobile:right-3 mobile:z-8 sheet-open:mobile:hidden ${FOCUS_RING}`;
+const RESET_BUTTON = `${MAP_BUTTON} right-[220px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
+const LOCATE_BUTTON = `${MAP_BUTTON} right-[168px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
+// "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly.
+const DETAILS_BUTTON = `hidden cursor-pointer items-center rounded-xl border-0 bg-accent px-[18px] text-[0.9rem] font-semibold text-accent-contrast shadow-panel transition-[scale] duration-[180ms] ease-[cubic-bezier(0.3,0.7,0.4,1.4)] mobile:absolute mobile:bottom-[min(${SHEET_BOTTOM})] mobile:left-3 mobile:z-8 mobile:inline-flex mobile:h-11 mobile:active:scale-[0.96] ${FOCUS_RING}`;
 
 // Worker file is copied into /public by scripts/copy-maplibre-worker.mjs.
 setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
@@ -346,7 +356,11 @@ export function MapView() {
 
   return (
     <div
-      className={[styles.root, (rightOpen || learnOpen) && styles.rightOpen, tourIndex !== null && styles.touring]
+      className={[
+        "relative h-dvh w-screen overflow-hidden mobile:[&_.maplibregl-ctrl-bottom-right]:hidden",
+        // Keep the zoom controls clear of the right panel.
+        (rightOpen || learnOpen) && "[&_.maplibregl-ctrl-bottom-right]:right-[432px]",
+      ]
         .filter(Boolean)
         .join(" ")}
     >
@@ -462,7 +476,7 @@ export function MapView() {
               choosePlace(target.lng, target.lat, unitTitle(target.unit));
             }}
           >
-            <button type="button" className={styles.target} aria-label={`Tocar em ${unitTitle(target.unit)}`} />
+            <button type="button" className="relative size-7 cursor-pointer rounded-full border-[3px] border-[#111] bg-white/50 p-0 after:absolute after:-inset-[3px] after:animate-target-pulse after:rounded-full after:border-[3px] after:border-accent after:content-[''] motion-reduce:after:animate-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent" aria-label={`Tocar em ${unitTitle(target.unit)}`} />
           </Marker>
         )}
 
@@ -471,7 +485,11 @@ export function MapView() {
           (["a", "b"] as const).map((id) => (
             <Marker key={id} longitude={compare[id].lng} latitude={compare[id].lat} anchor="center" style={{ pointerEvents: "none" }}>
               <div
-                className={[styles.comparePin, id === "a" ? styles.comparePinA : styles.comparePinB, compare.active === id && styles.comparePinActive]
+                className={[
+                  "flex size-7 items-center justify-center rounded-full border-[3px] border-white text-[0.8rem] font-bold text-white shadow-panel",
+                  id === "a" ? "bg-[#b91c1c]" : "bg-[#15803d]",
+                  compare.active === id && "outline-3 outline-offset-2 outline-accent",
+                ]
                   .filter(Boolean)
                   .join(" ")}
                 aria-hidden
@@ -493,28 +511,28 @@ export function MapView() {
               focusPlace(c.lng, c.lat, c.name);
             }}
           >
-            <button type="button" className={styles.campus} aria-label={`Ver dados de ${c.name}`}>
-              <span className={styles.campusLabel}>{c.name}</span>
+            <button type="button" className="group relative size-4 cursor-pointer rounded-full border-[3px] border-white bg-[#22c55e] p-0 shadow-[0_0_0_1px_#15803d,0_2px_8px_rgb(0_0_0/0.4)] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#15803d]" aria-label={`Ver dados de ${c.name}`}>
+              <span className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 rounded-lg border border-border bg-surface px-2.5 py-1 text-[12px] font-semibold whitespace-nowrap text-foreground opacity-0 shadow-[0_2px_8px_rgb(0_0_0/0.25)] transition-opacity duration-[120ms] group-hover:opacity-100 group-focus-visible:opacity-100">{c.name}</span>
             </button>
           </Marker>
         ))}
 
         {userPosition && (
           <Marker longitude={userPosition.lng} latitude={userPosition.lat} anchor="center" style={{ pointerEvents: "none" }}>
-            <div className={styles.userDot} aria-hidden />
+            <div className="relative size-4 rounded-full border-[3px] border-white bg-[#2563eb] shadow-[0_0_0_1px_#1d4ed8,0_2px_8px_rgb(0_0_0/0.4)] after:absolute after:-inset-[3px] after:animate-user-pulse after:rounded-full after:bg-[#2563eb] after:content-[''] motion-reduce:after:hidden" aria-hidden />
           </Marker>
         )}
 
         {place && (
           <Marker longitude={place.lng} latitude={place.lat} anchor="center">
-            <div className={styles.pin} aria-hidden />
+            <div className="size-[18px] rounded-full border-[3px] border-white bg-[#111] shadow-[0_0_0_2px_#111,0_2px_8px_rgb(0_0_0/0.4)]" aria-hidden />
           </Marker>
         )}
       </Map>
 
       <button
         type="button"
-        className={styles.reset}
+        className={tourIndex !== null ? "hidden" : RESET_BUTTON}
         onClick={resetMap}
         aria-label="Voltar à visão inicial do mapa"
         title="Voltar à visão inicial"
@@ -541,7 +559,7 @@ export function MapView() {
 
       <button
         type="button"
-        className={locationStatus === "active" ? `${styles.locate} ${styles.locateActive}` : styles.locate}
+        className={tourIndex !== null ? "hidden" : `${LOCATE_BUTTON} ${locationStatus === "active" ? "text-[#2563eb]" : "text-foreground"}`}
         onClick={onLocateClick}
         disabled={locationStatus === "asking"}
         aria-label="Ir para a minha localização"
@@ -565,7 +583,7 @@ export function MapView() {
       </button>
 
       {locationNote && (
-        <p className={styles.toast} role="status">
+        <p className="absolute bottom-6 left-1/2 z-9 w-max max-w-[calc(100%-24px)] -translate-x-1/2 rounded-xl border border-border bg-panel px-3.5 py-2.5 text-[0.85rem] text-foreground shadow-panel mobile:bottom-[min(calc(var(--sheet-height,0px)+84px),calc(100dvh-120px-env(safe-area-inset-top,0px)))] sheet-open:mobile:hidden" role="status">
           {locationNote}
         </p>
       )}
@@ -573,7 +591,7 @@ export function MapView() {
       {place && !rightOpen && (
         <button
           type="button"
-          className={styles.details}
+          className={tourIndex !== null ? "hidden" : DETAILS_BUTTON}
           onClick={() => {
             setLeftOpen(false);
             setRightOpen(true);

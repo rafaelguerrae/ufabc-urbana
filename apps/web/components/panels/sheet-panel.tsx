@@ -2,12 +2,28 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 
-import panel from "./Panel.module.css";
-
 type Snap = "peek" | "half" | "full";
 
 const ORDER: Snap[] = ["peek", "half", "full"];
-const SNAP_CLASS: Record<Snap, string> = { peek: panel.snapPeek!, half: panel.snapHalf!, full: panel.snapFull! };
+const SNAP_CLASS: Record<Snap, string> = {
+  peek: "mobile:h-[148px] mobile:rounded-t-2xl mobile:rounded-b-none",
+  half: "mobile:h-[55dvh] mobile:rounded-t-2xl mobile:rounded-b-none",
+  full: "mobile:z-7 mobile:h-dvh mobile:rounded-none", // above the top bar
+};
+const HANDLE_CLASS: Record<Snap, string> = {
+  peek: "",
+  half: "",
+  full: "mobile:box-content mobile:pt-[env(safe-area-inset-top)]",
+};
+const SIDE_CLASS = { left: "left-3 w-[400px]", right: "right-3 w-[420px]" } as const;
+const HIDDEN_TRANSFORM = {
+  left: "[transform:translateX(-24px)_scale(0.98)]",
+  right: "[transform:translateX(24px)_scale(0.98)]",
+} as const;
+const TRANSITION_SHOWN =
+  "[transition:transform_0.32s_cubic-bezier(0.22,1,0.36,1),opacity_0.24s_ease,height_0.3s_cubic-bezier(0.22,1,0.36,1),visibility_0s_linear_0s]";
+const TRANSITION_HIDDEN =
+  "[transition:transform_0.28s_cubic-bezier(0.64,0,0.78,0),opacity_0.2s_ease,height_0.3s_cubic-bezier(0.22,1,0.36,1),visibility_0s_linear_0.28s]";
 const PEEK_PX = 148;
 const HALF_RATIO = 0.55;
 const TAP_SLOP = 6; // px of movement that still counts as a tap
@@ -78,7 +94,7 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
     if (open) setSnap("half");
   }, [open]);
 
-  // Publish the open sheet's height (used by the floating map buttons, see MapView.module.css) and flag an open
+  // Publish the open sheet's height (used by the floating map buttons in MapView) and flag an open
   // sheet on mobile so those buttons can hide instead of floating over its content.
   useEffect(() => {
     const root = document.documentElement;
@@ -223,12 +239,16 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
     e.preventDefault();
   };
 
+  // While dragging, the height follows the finger, so it must not animate.
+  const transition = dragHeight !== null ? "[transition:none]" : open ? TRANSITION_SHOWN : TRANSITION_HIDDEN;
   const className = [
-    panel.panel,
-    panel[side],
-    open ? "" : panel.hidden,
+    "absolute top-[72px] bottom-3 z-5 flex flex-col gap-4 overflow-y-auto rounded-2xl border border-border bg-panel p-5 text-foreground shadow-panel backdrop-blur-sm",
+    "mobile:inset-x-0 mobile:top-auto mobile:bottom-0 mobile:w-auto mobile:gap-0 mobile:overflow-hidden mobile:border-b-0 mobile:p-0",
+    SIDE_CLASS[side],
+    transition,
+    "motion-reduce:[transition:none]",
+    open ? "" : `pointer-events-none invisible opacity-0 ${HIDDEN_TRANSFORM[side]} mobile:[transform:translateY(40px)]`,
     SNAP_CLASS[snap],
-    dragHeight !== null ? panel.dragging : "",
   ].join(" ");
 
   return (
@@ -242,7 +262,7 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
     >
       <button
         type="button"
-        className={panel.handle}
+        className={`hidden h-8 w-full flex-none cursor-grab touch-none items-center justify-center border-0 bg-none mobile:flex focus-visible:rounded-xl focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent ${HANDLE_CLASS[snap]}`}
         aria-label="Ajustar a altura do painel. Deslize para cima ou para baixo."
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -250,9 +270,9 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
         onPointerCancel={(e) => endDrag(e, true)}
         onKeyDown={onKeyDown}
       >
-        <span className={panel.grabber} aria-hidden />
+        <span className="h-[5px] w-10 rounded-[3px] bg-muted opacity-50" aria-hidden />
       </button>
-      <div ref={bodyRef} className={panel.body}>
+      <div ref={bodyRef} className="contents mobile:flex mobile:min-h-0 mobile:flex-1 mobile:flex-col mobile:gap-4 mobile:overflow-y-auto mobile:overscroll-contain mobile:px-5 mobile:pt-0 mobile:pb-[calc(20px+env(safe-area-inset-bottom))]">
         {children}
       </div>
     </aside>

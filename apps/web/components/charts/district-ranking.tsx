@@ -3,7 +3,6 @@
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { colorAt, formatValue, getIndicator, type DistrictProperties, type IndicatorKey } from "../../lib/indicators";
-import styles from "./Chart.module.css";
 
 interface DistrictRankingProps {
   districts: DistrictProperties[];
@@ -30,14 +29,14 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlu
   }
 
   return (
-    <figure className={styles.figure}>
-      <figcaption className={styles.title}>
+    <figure className="flex flex-col gap-1.5 rounded-xl border border-border bg-surface p-4">
+      <figcaption className="text-[0.95rem] font-semibold">
         {unitPlural.charAt(0).toUpperCase() + unitPlural.slice(1)} com os maiores valores
       </figcaption>
-      <p className={styles.sub}>
+      <p className="text-[0.78rem] leading-[1.4] text-muted">
         {indicator.label} ({indicator.unit}), entre {districts.length} {unitPlural}.
       </p>
-      <div className={styles.plot} style={{ height: rows.length * ROW + 24 }}>
+      <div className="mt-1.5 w-full" style={{ height: rows.length * ROW + 24 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows} layout="vertical" margin={{ top: 0, right: 56, bottom: 0, left: 0 }}>
             <XAxis type="number" hide domain={[0, "dataMax"]} />
@@ -46,16 +45,16 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlu
               dataKey="name"
               width={120}
               interval={0}
-              tick={{ fill: "var(--foreground)", fontSize: 11 }}
+              tick={{ fill: "var(--color-foreground)", fontSize: 11 }}
               tickLine={false}
               axisLine={false}
             />
             <Tooltip
-              cursor={{ fill: "var(--hover)" }}
+              cursor={{ fill: "var(--color-hover)" }}
               formatter={(v) => [`${formatValue(indicator, Number(v))} ${indicator.unit}`, indicator.label]}
-              contentStyle={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
-              labelStyle={{ color: "var(--foreground)" }}
-              itemStyle={{ color: "var(--foreground)" }}
+              contentStyle={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12 }}
+              labelStyle={{ color: "var(--color-foreground)" }}
+              itemStyle={{ color: "var(--color-foreground)" }}
             />
             <Bar
               dataKey="value"
@@ -63,7 +62,7 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlu
               isAnimationActive={false}
               label={{
                 position: "right",
-                fill: "var(--muted)",
+                fill: "var(--color-muted)",
                 fontSize: 11,
                 formatter: (v: unknown) => formatValue(indicator, Number(v)),
               }}
@@ -72,7 +71,7 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlu
                 <Cell
                   key={r.code}
                   fill={`rgb(${colorAt(indicator, (r.value - min) / span).join(",")})`}
-                  stroke={r.code === selectedCode ? "var(--accent)" : "none"}
+                  stroke={r.code === selectedCode ? "var(--color-accent)" : "none"}
                   strokeWidth={r.code === selectedCode ? 2 : 0}
                 />
               ))}
@@ -80,7 +79,7 @@ export function DistrictRanking({ districts, indicatorKey, selectedCode, unitPlu
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className={styles.caption}>
+      <p className="text-[0.78rem] leading-[1.4] text-muted">
         As cores seguem a mesma escala do mapa.
         {selectedRank >= 0 ? ` Selecionado: ${selectedRank + 1}º de ${districts.length}.` : ""}
       </p>
