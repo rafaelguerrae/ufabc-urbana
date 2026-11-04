@@ -1,4 +1,4 @@
-import { MapView } from "../components/MapView";
+import { MapView } from "#components/map-view";
 
 export default function Home() {
   return (

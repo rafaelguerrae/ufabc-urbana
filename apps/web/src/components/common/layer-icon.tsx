@@ -1,4 +1,4 @@
-import type { ViewMode } from "../lib/indicators";
+import type { ViewMode } from "#lib/indicators";
 
 const PATHS: Record<ViewMode, React.ReactNode> = {
   // Thermometer

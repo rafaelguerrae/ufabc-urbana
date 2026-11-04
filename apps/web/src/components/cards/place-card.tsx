@@ -1,7 +1,6 @@
-import { CITY_LIST_TEXT, unitOf, unitTitle } from "../lib/cities";
-import { formatValue, getIndicator, type DistrictProperties } from "../lib/indicators";
-import type { RasterInfo, RasterSample } from "../lib/raster";
-import styles from "./PlaceCard.module.css";
+import { CITY_LIST_TEXT, unitOf, unitTitle } from "#lib/cities";
+import { formatValue, getIndicator, type DistrictProperties } from "#lib/indicators";
+import type { RasterInfo, RasterSample } from "#lib/raster";
 
 export interface Place {
   lng: number;
@@ -28,41 +27,41 @@ export function PlaceCard({ place, raster }: PlaceCardProps) {
   const coords = `${place.lat.toLocaleString("pt-BR", { maximumFractionDigits: 4 })}, ${place.lng.toLocaleString("pt-BR", { maximumFractionDigits: 4 })}`;
 
   return (
-    <section className={styles.card} aria-label="Local selecionado">
-      <div className={styles.header}>
+    <section className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4" aria-label="Local selecionado">
+      <div className="flex justify-between gap-2">
         <div>
-          <h2 className={styles.title}>{place.label}</h2>
-          <p className={styles.sub}>
+          <h2 className="text-[1rem] leading-[1.3] font-semibold">{place.label}</h2>
+          <p className="mt-0.5 text-[0.75rem] text-muted">
             {district ? unitTitle(district) : `Fora da área do mapa (${CITY_LIST_TEXT})`} · {coords}
           </p>
         </div>
       </div>
 
       {sample ? (
-        <div className={styles.grid}>
+        <div className="grid grid-cols-[1.4fr_1fr] gap-3">
           <div>
-            <p className={styles.big}>≈ {formatValue(lst, sample.lst)} °C</p>
-            <p className={styles.caption}>Temperatura da superfície aqui por perto</p>
+            <p className="text-[1.5rem] font-bold tabular-nums">≈ {formatValue(lst, sample.lst)} °C</p>
+            <p className="text-[0.8rem] leading-[1.35] text-muted">Temperatura da superfície aqui por perto</p>
             {diff !== null && (
-              <p className={styles.caption}>
+              <p className="text-[0.8rem] leading-[1.35] text-muted">
                 {formatValue({ ...lst, decimals: 1 }, Math.abs(diff))} °C {diff >= 0 ? "mais quente" : "mais fresco"} que a
                 média {district ? unitOf(district) : ""}
               </p>
             )}
           </div>
           <div>
-            <p className={styles.big}>{formatValue(ndvi, sample.ndvi)}</p>
-            <p className={styles.caption}>Vegetação (NDVI): quanto maior, mais verde</p>
+            <p className="text-[1.5rem] font-bold tabular-nums">{formatValue(ndvi, sample.ndvi)}</p>
+            <p className="text-[0.8rem] leading-[1.35] text-muted">Vegetação (NDVI): quanto maior, mais verde</p>
           </div>
         </div>
       ) : (
-        <p className={styles.caption}>
+        <p className="text-[0.8rem] leading-[1.35] text-muted">
           Sem dado de satélite aqui: o ponto fica fora dos municípios do mapa ou não havia imagem sem nuvens.
         </p>
       )}
 
       {district && (
-        <dl className={styles.districtList}>
+        <dl className="text-[0.8rem] leading-[1.4] [&_dd]:text-muted [&_dt]:mt-1 [&_dt]:font-semibold">
           <dt>Média {unitOf(district)}</dt>
           <dd>
             {formatValue(lst, district.lst_c)} °C · NDVI {formatValue(ndvi, district.ndvi)}
@@ -74,7 +73,7 @@ export function PlaceCard({ place, raster }: PlaceCardProps) {
         </dl>
       )}
 
-      <p className={styles.footnote}>
+      <p className="text-[0.7rem] leading-[1.4] text-muted">
         Os valores de satélite são médias em cerca de 90 m ao redor do ponto, calculadas com imagens de dia de {period}.
         Descrevem a superfície do solo, não a temperatura do ar na rua.
       </p>
