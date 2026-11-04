@@ -91,6 +91,12 @@ export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
       />
+      {/* Shortcut hint, like docs search bars: hidden while focused, once there is text, and on touch layouts. */}
+      {!query && (
+        <kbd className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 rounded-md border border-border bg-button px-1.5 py-0.5 font-sans text-[0.7rem] font-semibold text-muted group-focus-within:hidden mobile:hidden" aria-hidden>
+          Ctrl P
+        </kbd>
+      )}
       {open && (
         <ul id={listId} role="listbox" className="absolute inset-x-0 top-[calc(100%+6px)] z-10 overflow-hidden rounded-xl border border-border bg-surface shadow-panel empty:hidden">
           {results.map((r, i) => (
