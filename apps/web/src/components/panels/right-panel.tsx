@@ -8,6 +8,7 @@ import type { RasterInfo } from "#lib/raster";
 import { DistrictRanking } from "#components/charts/district-ranking";
 import { DistrictScatter } from "#components/charts/district-scatter";
 import { PlaceCard, type Place } from "#components/cards/place-card";
+import { PanelHeader } from "./panel-header";
 import { SheetPanel } from "./sheet-panel";
 
 interface RightPanelProps {
@@ -35,11 +36,7 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
 
   return (
     <SheetPanel side="right" id="right-panel" label="Local selecionado e gráficos" open={open} onClose={onClose}>
-      <div className="sticky top-3 z-3 -mx-2 -mt-2 flex h-0 justify-end overflow-visible">
-        <button type="button" className="size-9 cursor-pointer rounded-[10px] border border-border bg-button text-[1.5rem] leading-none text-foreground shadow-panel transition-[background-color,scale] duration-[180ms] ease-[ease] hover:bg-button-hover active:scale-[0.92] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" onClick={onClose} aria-label="Fechar painel" title="Fechar">
-          ×
-        </button>
-      </div>
+      <PanelHeader title="Local e gráficos" closeLabel="Fechar painel" onClose={onClose} />
 
       {place ? (
         <PlaceCard place={place} raster={raster} />

@@ -7,6 +7,7 @@ import { LESSONS, REFERENCES, type MapTarget } from "#lib/learn";
 import type { RasterInfo } from "#lib/raster";
 import { CompareCard, type ComparePin, type PinId } from "#components/cards/compare-card";
 import { PlaceCard, type Place } from "#components/cards/place-card";
+import { PanelHeader } from "./panel-header";
 import { SheetPanel } from "./sheet-panel";
 
 const HINT_DELAY_MS = 8000;
@@ -67,13 +68,7 @@ export function LearnPanel(props: LearnPanelProps) {
   return (
     <SheetPanel side="right" id="learn-panel" label="Trilha de aprendizado" open={open} onClose={onClose}>
       {/* Sticky and elevated so the title, progress and close button stay visible while the lesson scrolls. */}
-      <header className="sticky top-[-20px] mobile:top-0 z-3 -mx-5 -mt-5 flex flex-col gap-2 border-b border-border bg-surface px-5 pt-4 pb-3 shadow-[0_4px_12px_rgb(0_0_0/0.08)] mobile:mt-0">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-[1.15rem] leading-[1.3] font-bold">{lesson.title}</h2>
-          <button type="button" className="size-9 flex-none cursor-pointer rounded-[10px] border border-border bg-button text-[1.5rem] leading-none text-foreground transition-[background-color,scale] duration-[180ms] ease-[ease] hover:bg-button-hover active:scale-[0.92] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" onClick={onClose} aria-label="Fechar a trilha">
-            ×
-          </button>
-        </div>
+      <PanelHeader title={lesson.title} closeLabel="Fechar a trilha" onClose={onClose}>
         <div className="flex items-center gap-3">
           <p className="flex-none text-[0.75rem] font-bold tracking-[0.04em] text-muted uppercase">
             Passo {step + 1} de {LESSONS.length}
@@ -89,7 +84,7 @@ export function LearnPanel(props: LearnPanelProps) {
             <span className="block h-full bg-accent transition-[width] duration-300 ease-[ease]" style={{ width: `${((step + 1) / LESSONS.length) * 100}%` }} />
           </div>
         </div>
-      </header>
+      </PanelHeader>
 
       <section className="flex flex-col gap-2.5 text-[0.92rem] leading-[1.55]">
         {lesson.body.map((p) => (
