@@ -9,6 +9,7 @@ interface TopBarProps {
   rightOpen: boolean;
   onToggleLeft: () => void;
   onToggleRight: () => void;
+  learnOpen: boolean;
   onOpenLearn: () => void;
   onOpenAbout: () => void;
   onSearchSelect: (result: SearchResult) => void;
@@ -50,16 +51,17 @@ export function TopBar(props: TopBarProps) {
       <div className={styles.group}>
         <button
           type="button"
-          className={`${styles.button} ${styles.soon}`}
-          aria-label="Trilha de aprendizado (em breve)"
-          title="Trilha de aprendizado (em breve)"
+          className={props.learnOpen ? styles.buttonActive : styles.button}
+          aria-expanded={props.learnOpen}
+          aria-controls="learn-panel"
+          aria-label="Trilha de aprendizado"
+          title="Trilha de aprendizado"
           onClick={props.onOpenLearn}
         >
           <svg {...iconProps}>
             <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5z" />
             <path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20" />
           </svg>
-          <span className={styles.dot} aria-hidden />
         </button>
         <button
           type="button"

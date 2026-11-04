@@ -1,0 +1,99 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+}
+
+.chip,
+.chipActive {
+  font: inherit;
+  font-size: 0.85rem;
+  flex: 1;
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--button);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.chipActive {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.chip:focus-visible,
+.chipActive:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.badgeA,
+.badgeB {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  color: #fff;
+}
+
+.badgeA {
+  background: #b91c1c;
+}
+
+.badgeB {
+  background: #15803d;
+}
+
+.big {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.caption {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.diff {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}

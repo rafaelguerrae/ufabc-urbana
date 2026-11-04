@@ -251,3 +251,74 @@
 .touring .details {
   display: none;
 }
+
+/* Guided-task target: a pulsing ring over the place the learner should tap. */
+.target {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid #111;
+  background: rgb(255 255 255 / 0.5);
+  cursor: pointer;
+}
+
+.target::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  animation: target-pulse 1.6s ease-out infinite;
+}
+
+.target:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@keyframes target-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .target::after {
+    animation: none;
+  }
+}
+
+/* Compare-step pins A and B; the active one (moved by the next tap) has a ring. */
+.comparePin {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: var(--shadow);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.comparePinA {
+  background: #b91c1c;
+}
+
+.comparePinB {
+  background: #15803d;
+}
+
+.comparePinActive {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
