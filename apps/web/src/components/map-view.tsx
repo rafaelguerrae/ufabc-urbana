@@ -13,9 +13,10 @@ import { Layer, Map, Marker, NavigationControl, Source, type MapRef } from "reac
 import { CAMPUSES } from "#lib/campuses";
 import { unitTitle } from "#lib/cities";
 import type { SearchResult } from "#lib/geocode";
-import { colorAt, getIndicator, type DistrictProperties, type IndicatorKey, type ViewMode } from "#lib/indicators";
+import { colorAt, getIndicator, VIEWS, type DistrictProperties, type IndicatorKey, type ViewMode } from "#lib/indicators";
 import { loadRaster, type RasterData } from "#lib/raster";
 import { buildTour } from "#lib/tour";
+import { useHotkeys } from "#lib/use-hotkeys";
 import { useUserLocation } from "#lib/use-user-location";
 import { ControlPanel } from "#components/panels/control-panel";
 import type { Place } from "#components/cards/place-card";
@@ -51,6 +52,7 @@ const INITIAL_VIEW = { longitude: -46.55, latitude: -23.68, zoom: 9.8, pitch: 0,
 
 export function MapView() {
   const mapRef = useRef<MapRef>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [districts, setDistricts] = useState<DistrictCollection | null>(null);
   const [raster, setRaster] = useState<RasterData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -340,6 +342,37 @@ export function MapView() {
     );
   }, []);
 
+  // Esc closes only the top-most thing: dialog, tour, learning path, panels, then the selected place.
+  const closeTopmost = () => {
+    if (aboutOpen) setAboutOpen(false);
+    else if (tourIndex !== null) setTourIndex(null);
+    else if (learnOpen) closeLearn();
+    else if (rightOpen) {
+      setRightOpen(false);
+      setPlace(null);
+    } else if (leftOpen) setLeftOpen(false);
+    else if (place) setPlace(null);
+  };
+
+  // Single-key shortcuts are off while the About dialog is open; Esc and Ctrl+P work everywhere.
+  const single = (handler: () => void) => () => {
+    if (!aboutOpen) handler();
+  };
+  useHotkeys([
+    { key: "p", ctrl: true, allowInInput: true, handler: () => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    } },
+    { key: "Escape", handler: closeTopmost },
+    { key: "s", handler: single(toggleLeft) },
+    { key: "g", handler: single(toggleRight) },
+    { key: "l", handler: single(openLearn) },
+    ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: single(() => tourIndex === null && setView(v)) })),
+    { key: "b", handler: single(() => view === "lst_c" && setBuildings3d((on) => !on)) },
+    { key: "r", handler: single(() => tourIndex === null && resetMap()) },
+    { key: "m", handler: single(() => tourIndex === null && locationStatus !== "asking" && onLocateClick()) },
+  ]);
+
   const isDefault =
     cameraDefault && !place && !leftOpen && !learnOpen && !rightOpen && view === "lst_c" && districtIndicator === "lst_c";
 
@@ -535,7 +568,8 @@ export function MapView() {
         className={tourIndex !== null ? "hidden" : RESET_BUTTON}
         onClick={resetMap}
         aria-label="Voltar à visão inicial do mapa"
-        title="Voltar à visão inicial"
+        aria-keyshortcuts="R"
+        title="Voltar à visão inicial (R)"
       >
         {/* Folded map: tinted in the default state, outlined otherwise (a solid fill would hide the fold lines). */}
         <svg
@@ -563,7 +597,8 @@ export function MapView() {
         onClick={onLocateClick}
         disabled={locationStatus === "asking"}
         aria-label="Ir para a minha localização"
-        title="Minha localização"
+        aria-keyshortcuts="M"
+        title="Minha localização (M)"
       >
         {/* Navigation arrow as in Apple Maps: filled blue while the location is being followed. */}
         <svg
@@ -604,6 +639,7 @@ export function MapView() {
       {tourIndex === null && <ViewSwitch view={view} onChange={setView} panelOpen={leftOpen || learnOpen || rightOpen} />}
 
       <TopBar
+        searchInputRef={searchInputRef}
         leftOpen={leftOpen}
         rightOpen={rightOpen && !learnOpen}
         onToggleLeft={toggleLeft}

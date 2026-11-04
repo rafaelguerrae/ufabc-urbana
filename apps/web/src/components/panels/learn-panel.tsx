@@ -46,15 +46,6 @@ export function LearnPanel(props: LearnPanelProps) {
   const pending = task.type !== "read" && !done;
   const [hintFor, setHintFor] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
   // After a few idle seconds on a pending task, show the extra tip. Any change on the map restarts the wait.
   useEffect(() => {
     setHintFor(null);

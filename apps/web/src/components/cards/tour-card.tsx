@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-
 import type { TourStep } from "#lib/tour";
 
 interface TourCardProps {
@@ -14,14 +12,6 @@ interface TourCardProps {
 export function TourCard({ steps, index, onIndexChange, onClose }: TourCardProps) {
   const step = steps[index]!;
   const last = index === steps.length - 1;
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
 
   return (
     <section className="absolute bottom-6 left-1/2 z-[9] flex w-[min(460px,calc(100%-24px))] -translate-x-1/2 flex-col gap-2 rounded-2xl border border-border bg-panel px-[18px] py-4 text-foreground shadow-panel backdrop-blur-sm mobile:bottom-[max(12px,env(safe-area-inset-bottom,0px))]" role="region" aria-label="Tour guiado" aria-live="polite">

@@ -1,21 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-
-
 interface AboutDialogProps {
   onClose: () => void;
 }
 
 export function AboutDialog({ onClose }: AboutDialogProps) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   return (
     <div className="absolute inset-0 z-20 flex animate-fade items-center justify-center bg-black/45 p-4 motion-reduce:animate-none" onClick={onClose}>
       <section
