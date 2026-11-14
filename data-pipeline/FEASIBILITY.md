@@ -46,6 +46,15 @@ Reproduce: `uv run python -m src.sources.osm` (Overpass rejects browser-like Use
 - **Consequence:** the 3D layer cannot show real heights everywhere. Buildings without a height must be left flat or drawn at one fixed height labelled as unknown; heights are never filled in silently. GeoSampa building data is not yet checked as an alternative.
 - **Not yet measured:** the full building count and file size for the municipality, which decides between full-municipality PMTiles and a smaller area.
 
+## Scenario model for the vegetation brush
+
+`uv run python -m src.fit_scenario` fits, per city, the mean land-surface temperature (LST) for each NDVI bin (0.05 wide, land pixels only, bins under 500 pixels dropped, forced non-increasing) from the committed `values.png`, and writes `scenario.json` next to `raster.json`. The web app moves a painted pixel's LST by `f(target NDVI) - f(its NDVI)` (never warmer, never on water), keeping the pixel's own residual.
+
+- **Water is excluded** (NDVI below 0, about 28 °C). With water in, São Bernardo do Campo had a pixel Pearson r of only -0.16; on land alone it is -0.77.
+- **Validation:** 5-fold spatial block hold-out (64 px blocks, about 2 km). Hold-out R² is 0.70 (São Paulo), 0.63 (São Bernardo do Campo) and 0.81 (Santo André), matching in-sample R², so the curve is not overfitted. Hold-out RMSE is 2.5 to 2.8 °C per pixel: a single pixel is not predictable to better than that, so the app reports area means only. A city is marked `usable: false` (and gets no number) if hold-out R² falls under 0.25 or the curve does not reach the target.
+- **Target NDVI 0.7 is a provisional assumption**, not a sourced threshold (USGS gives none). It was chosen to stay below the NDVI plateau of forest remnants (75th percentile of land pixels is about 0.85). `target_ndvi_land_share` records how much of each city already reaches it (37% São Paulo, 70% São Bernardo do Campo, 58% Santo André).
+- **What it is not:** an association inside one summer composite (2023-12-01 to 2024-03-31, 26 scenes, about 10:30 local), not the causal effect of planting trees. It ignores buildings, soil, relief and water proximity, the years trees need to grow, and the difference between surface and air temperature. The native thermal pixel is about 100 m, and the 8-bit `values.png` steps are 0.157 °C (LST) and 0.0047 (NDVI).
+
 ## Access notes
 
 - INMET rejects requests without a browser-like User-Agent (connection reset); the pipeline sets one in `src/common.py`. The 2023 zip is about 107 MB.

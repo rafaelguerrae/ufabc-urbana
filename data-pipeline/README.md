@@ -29,4 +29,5 @@ uv run python -m src.sources.inmet     # INMET stations and 2023 hourly data (ab
 uv run python -m src.sources.gee       # needs: uv run earthengine authenticate (free non-commercial project)
 uv run python -m src.export_web      # districts.geojson (São Paulo, São Bernardo do Campo, Santo André) for apps/web (needs the IBGE download and the gee sample)
 uv run python -m src.export_raster   # per-city 30 m LST/NDVI overlays and lookup image in public/data/raster/<city>/ (needs GEE)
+uv run python -m src.fit_scenario   # per-city NDVI-to-LST curve and hold-out validation for the vegetation brush (reads values.png, no GEE)
 ```

@@ -1,0 +1,131 @@
+{
+  "city": "sao-paulo",
+  "method": "Mean land-surface temperature per NDVI bin over all land pixels (NDVI >= 0, water excluded), forced non-increasing, linearly interpolated, never extrapolated. The web app moves a painted pixel's LST by f(target NDVI) - f(its NDVI), keeping the pixel's own residual.",
+  "target_ndvi": 0.7,
+  "target_ndvi_basis": "provisional assumption, no published threshold; see target_ndvi_land_share",
+  "target_ndvi_land_share": 0.3693,
+  "bin_width": 0.05,
+  "min_bin_pixels": 500,
+  "curve": [
+    {
+      "ndvi": 0.025,
+      "lst": 40.827,
+      "n": 14043
+    },
+    {
+      "ndvi": 0.075,
+      "lst": 40.827,
+      "n": 36742
+    },
+    {
+      "ndvi": 0.125,
+      "lst": 40.827,
+      "n": 156505
+    },
+    {
+      "ndvi": 0.175,
+      "lst": 40.827,
+      "n": 280561
+    },
+    {
+      "ndvi": 0.225,
+      "lst": 40.256,
+      "n": 178851
+    },
+    {
+      "ndvi": 0.275,
+      "lst": 39.597,
+      "n": 126402
+    },
+    {
+      "ndvi": 0.325,
+      "lst": 39.039,
+      "n": 83124
+    },
+    {
+      "ndvi": 0.375,
+      "lst": 38.541,
+      "n": 73310
+    },
+    {
+      "ndvi": 0.425,
+      "lst": 38.057,
+      "n": 60711
+    },
+    {
+      "ndvi": 0.475,
+      "lst": 37.563,
+      "n": 47782
+    },
+    {
+      "ndvi": 0.525,
+      "lst": 37.036,
+      "n": 47136
+    },
+    {
+      "ndvi": 0.575,
+      "lst": 36.293,
+      "n": 45791
+    },
+    {
+      "ndvi": 0.625,
+      "lst": 35.481,
+      "n": 43924
+    },
+    {
+      "ndvi": 0.675,
+      "lst": 34.707,
+      "n": 53804
+    },
+    {
+      "ndvi": 0.725,
+      "lst": 33.857,
+      "n": 59821
+    },
+    {
+      "ndvi": 0.775,
+      "lst": 32.915,
+      "n": 86046
+    },
+    {
+      "ndvi": 0.825,
+      "lst": 31.433,
+      "n": 177135
+    },
+    {
+      "ndvi": 0.875,
+      "lst": 30.458,
+      "n": 404961
+    },
+    {
+      "ndvi": 0.925,
+      "lst": 30.458,
+      "n": 3346
+    }
+  ],
+  "pixels": 1979995,
+  "pearson_r": -0.8249,
+  "r2": 0.701,
+  "rmse": 2.752,
+  "holdout_rmse": 2.755,
+  "holdout_r2": 0.7015,
+  "holdout_pixels": 1979995,
+  "block_px": 64,
+  "folds": 5,
+  "source_files": [
+    "raster/sao-paulo/values.png",
+    "raster/sao-paulo/raster.json"
+  ],
+  "period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "scenes": 26,
+  "notes": [
+    "Association between vegetation and surface temperature in one composite, not the causal effect of planting trees.",
+    "LST is the surface temperature at about 10:30 local time, not air temperature or a heat wave.",
+    "values.png is 8-bit: 0.157 °C per LST step and 0.0047 per NDVI step. Only use area means."
+  ],
+  "usable": true,
+  "reason": null
+}

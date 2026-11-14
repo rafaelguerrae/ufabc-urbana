@@ -1,0 +1,126 @@
+{
+  "city": "santo-andre",
+  "method": "Mean land-surface temperature per NDVI bin over all land pixels (NDVI >= 0, water excluded), forced non-increasing, linearly interpolated, never extrapolated. The web app moves a painted pixel's LST by f(target NDVI) - f(its NDVI), keeping the pixel's own residual.",
+  "target_ndvi": 0.7,
+  "target_ndvi_basis": "provisional assumption, no published threshold; see target_ndvi_land_share",
+  "target_ndvi_land_share": 0.583,
+  "bin_width": 0.05,
+  "min_bin_pixels": 500,
+  "curve": [
+    {
+      "ndvi": 0.025,
+      "lst": 40.942,
+      "n": 1677
+    },
+    {
+      "ndvi": 0.075,
+      "lst": 40.942,
+      "n": 2611
+    },
+    {
+      "ndvi": 0.125,
+      "lst": 40.942,
+      "n": 12293
+    },
+    {
+      "ndvi": 0.175,
+      "lst": 40.942,
+      "n": 24512
+    },
+    {
+      "ndvi": 0.225,
+      "lst": 40.934,
+      "n": 14556
+    },
+    {
+      "ndvi": 0.275,
+      "lst": 40.354,
+      "n": 9000
+    },
+    {
+      "ndvi": 0.325,
+      "lst": 39.668,
+      "n": 5624
+    },
+    {
+      "ndvi": 0.375,
+      "lst": 38.996,
+      "n": 4804
+    },
+    {
+      "ndvi": 0.425,
+      "lst": 38.285,
+      "n": 4146
+    },
+    {
+      "ndvi": 0.475,
+      "lst": 37.72,
+      "n": 3472
+    },
+    {
+      "ndvi": 0.525,
+      "lst": 36.974,
+      "n": 3403
+    },
+    {
+      "ndvi": 0.575,
+      "lst": 36.079,
+      "n": 3349
+    },
+    {
+      "ndvi": 0.625,
+      "lst": 34.986,
+      "n": 3217
+    },
+    {
+      "ndvi": 0.675,
+      "lst": 34.069,
+      "n": 4056
+    },
+    {
+      "ndvi": 0.725,
+      "lst": 32.781,
+      "n": 4633
+    },
+    {
+      "ndvi": 0.775,
+      "lst": 31.769,
+      "n": 7411
+    },
+    {
+      "ndvi": 0.825,
+      "lst": 29.853,
+      "n": 36642
+    },
+    {
+      "ndvi": 0.875,
+      "lst": 29.352,
+      "n": 86463
+    }
+  ],
+  "pixels": 231917,
+  "pearson_r": -0.884,
+  "r2": 0.805,
+  "rmse": 2.517,
+  "holdout_rmse": 2.549,
+  "holdout_r2": 0.813,
+  "holdout_pixels": 231917,
+  "block_px": 64,
+  "folds": 5,
+  "source_files": [
+    "raster/santo-andre/values.png",
+    "raster/santo-andre/raster.json"
+  ],
+  "period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "scenes": 26,
+  "notes": [
+    "Association between vegetation and surface temperature in one composite, not the causal effect of planting trees.",
+    "LST is the surface temperature at about 10:30 local time, not air temperature or a heat wave.",
+    "values.png is 8-bit: 0.157 °C per LST step and 0.0047 per NDVI step. Only use area means."
+  ],
+  "usable": true,
+  "reason": null
+}

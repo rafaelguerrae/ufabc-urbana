@@ -13,6 +13,7 @@ Verified on 2026-11-03 by reading each page (abstract or official page). Full te
 | `nasa-albedo` | NASA Earthdata, [Albedo](https://www.earthdata.nasa.gov/topics/land-surface/albedo) | Albedo is a measure of the percentage of sunlight a surface reflects. | Not specific to urban materials; "asphalt and concrete reflect less" rests on `epa`. |
 
 ## Open items
+- The brush's target NDVI (0.7, `data-pipeline/src/fit_scenario.py`) has no source either: it is a provisional modelling assumption, documented in `data-pipeline/FEASIBILITY.md`. The simulation reports an association measured in our own data, not a published cooling figure.
 - The NDVI 0.5 cut-off in the data (`ndvi_high_share`) has no source yet (see `tmp/IDEAS.md`); lessons say it is provisional.
 - The remaining paper in `tmp/general-plan.md` (WRF/LCZ, 2026) was not verified and is not cited.
 
