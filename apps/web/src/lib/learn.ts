@@ -136,7 +136,7 @@ export const LESSONS: Lesson[] = [
     title: "O papel da sombra",
     body: [
       "Árvores sombreiam ruas e calçadas, o que reduz o aquecimento das superfícies pelo sol. Um estudo sobre um bairro de São Paulo propõe aumentar a arborização e conclui que ela é uma estratégia funcional para melhorar o conforto térmico.",
-      "Atenção: esse estudo parte da cobertura vegetal e do sombreamento, e não mede uma queda de temperatura. Por isso este site não promete quantos graus uma árvore esfria.",
+      "Atenção: esse estudo parte da cobertura vegetal e do sombreamento, e não mede uma queda de temperatura. Por isso este site não promete quantos graus uma árvore esfria. A ferramenta “Simular vegetação” só mostra uma estimativa baseada no que os dados já mostram, e avisa disso.",
     ],
     task: { type: "read" },
     sources: ["epa", "souza2019"],

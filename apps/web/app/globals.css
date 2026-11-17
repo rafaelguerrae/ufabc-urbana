@@ -17,6 +17,8 @@
   --color-badge-observed-fg: #14532d;
   --color-badge-derived-bg: #dbeafe;
   --color-badge-derived-fg: #1e3a8a;
+  --color-badge-simulated-bg: #fef3c7;
+  --color-badge-simulated-fg: #78350f;
 
   --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.1);
 

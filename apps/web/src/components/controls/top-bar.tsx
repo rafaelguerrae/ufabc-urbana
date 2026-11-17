@@ -14,6 +14,10 @@ interface TopBarProps {
   learnOpen: boolean;
   onOpenLearn: () => void;
   onOpenAbout: () => void;
+  simOpen: boolean;
+  /** False until the rasters the brush paints on are loaded. */
+  simAvailable: boolean;
+  onToggleSim: () => void;
   onSearchSelect: (result: SearchResult) => void;
 }
 
@@ -27,6 +31,11 @@ const iconProps = {
   strokeLinejoin: "round",
   "aria-hidden": true,
 } as const;
+
+const TOGGLE_BUTTON =
+  "inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border text-[0.9rem] font-semibold shadow-panel active:scale-[0.94] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [transition:background-color_0.18s_ease,color_0.18s_ease,border-color_0.18s_ease,translate_0.18s_cubic-bezier(0.3,0.7,0.4,1.4),scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] motion-reduce:[transition:none] disabled:cursor-progress disabled:opacity-60";
+const TOGGLE_ON = "border-accent bg-accent text-accent-contrast";
+const TOGGLE_OFF = "border-border bg-button text-foreground hover:-translate-y-px hover:bg-button-hover";
 
 export function TopBar(props: TopBarProps) {
   return (
@@ -52,6 +61,25 @@ export function TopBar(props: TopBarProps) {
       </div>
 
       <div className="pointer-events-auto flex items-start gap-2 mobile:first:flex-[1_1_100%] mobile:last:ml-auto">
+        <button
+          type="button"
+          className={`${TOGGLE_BUTTON} ${props.simOpen ? TOGGLE_ON : TOGGLE_OFF}`}
+          aria-expanded={props.simOpen}
+          aria-controls="simulation-panel"
+          aria-label="Simular vegetação"
+          aria-keyshortcuts="V"
+          title="Simular vegetação (V)"
+          disabled={!props.simAvailable}
+          onClick={props.onToggleSim}
+        >
+          {/* Sprout */}
+          <svg {...iconProps}>
+            <path d="M7 20h10" />
+            <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+            <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+            <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+          </svg>
+        </button>
         <button
           type="button"
           className={props.learnOpen ? "inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border text-[0.9rem] font-semibold shadow-panel active:scale-[0.94] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [transition:background-color_0.18s_ease,color_0.18s_ease,border-color_0.18s_ease,translate_0.18s_cubic-bezier(0.3,0.7,0.4,1.4),scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] motion-reduce:[transition:none] border-accent bg-accent text-accent-contrast" : "inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border text-[0.9rem] font-semibold shadow-panel active:scale-[0.94] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent [transition:background-color_0.18s_ease,color_0.18s_ease,border-color_0.18s_ease,translate_0.18s_cubic-bezier(0.3,0.7,0.4,1.4),scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] motion-reduce:[transition:none] border-border bg-button text-foreground hover:-translate-y-px hover:bg-button-hover"}

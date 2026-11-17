@@ -24,7 +24,7 @@ export function AboutDialog({ onClose }: AboutDialogProps) {
         </div>
         <p>
           Este mapa mostra como a temperatura da superfície e a vegetação variam em São Paulo, São Bernardo do Campo e Santo André. Os valores vêm de imagens
-          de satélite e de dados oficiais; nada aqui é previsão ou simulação.
+          de satélite e de dados oficiais, e os mapas não são previsão. A ferramenta “Simular vegetação” faz uma estimativa a partir dessas mesmas imagens e sempre a identifica como simulada.
         </p>
         <ul className="list-disc pl-5 text-muted">
           <li>Temperatura e vegetação: satélites Landsat 8 e 9, processados no Google Earth Engine.</li>

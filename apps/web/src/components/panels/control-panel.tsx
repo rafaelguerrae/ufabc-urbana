@@ -185,7 +185,7 @@ export function ControlPanel(props: ControlPanelProps) {
         <p className="text-[0.85rem] leading-normal text-muted">
           Áreas mais verdes e menos construídas tendem a ser mais frescas nos dados, mas isso é uma associação: não prova
           que um único fator causa a diferença, e outros fatores também influenciam. A temperatura da superfície não é a
-          temperatura do ar. O mapa não mostra previsões nem simulações.
+          temperatura do ar. As camadas mostram dados de satélite e do Censo; as estimativas ficam na ferramenta “Simular vegetação”, sempre marcadas como simuladas.
         </p>
       </details>
     </SheetPanel>

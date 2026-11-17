@@ -17,6 +17,7 @@ import { colorAt, getIndicator, VIEWS, type DistrictProperties, type IndicatorKe
 import { loadRaster, type RasterData } from "#lib/raster";
 import { buildTour } from "#lib/tour";
 import { useHotkeys } from "#lib/use-hotkeys";
+import { useSimulation } from "#lib/use-simulation";
 import { useUserLocation } from "#lib/use-user-location";
 import { ControlPanel } from "#components/panels/control-panel";
 import type { Place } from "#components/cards/place-card";
@@ -25,6 +26,7 @@ import { LESSONS, pickExamples, pickTargets, type MapTarget } from "#lib/learn";
 import type { ComparePin, PinId } from "#components/cards/compare-card";
 import { LearnPanel, type CompareState } from "#components/panels/learn-panel";
 import { RightPanel } from "#components/panels/right-panel";
+import { SimulationPanel } from "#components/panels/simulation-panel";
 import { TopBar } from "#components/controls/top-bar";
 import { TourCard } from "#components/cards/tour-card";
 import { ViewSwitch } from "#components/controls/view-switch";
@@ -35,8 +37,8 @@ const SHEET_BOTTOM = "calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(sa
 // Map buttons, top right, left of the three TopBar buttons. On mobile they move to the bottom right and
 // hide while a bottom sheet is open (flagged on <html> by SheetPanel).
 const MAP_BUTTON = `absolute top-3 z-7 inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-button shadow-panel [transition:background-color_0.18s_ease,scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] hover:bg-hover active:scale-[0.94] motion-reduce:[transition:none] mobile:top-auto mobile:right-3 mobile:z-8 sheet-open:mobile:hidden ${FOCUS_RING}`;
-const RESET_BUTTON = `${MAP_BUTTON} right-[220px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
-const LOCATE_BUTTON = `${MAP_BUTTON} right-[168px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
+const RESET_BUTTON = `${MAP_BUTTON} right-[272px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
+const LOCATE_BUTTON = `${MAP_BUTTON} right-[220px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
 // "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly.
 const DETAILS_BUTTON = `hidden cursor-pointer items-center rounded-xl border-0 bg-accent px-[18px] text-[0.9rem] font-semibold text-accent-contrast shadow-panel transition-[scale] duration-[180ms] ease-[cubic-bezier(0.3,0.7,0.4,1.4)] mobile:absolute mobile:bottom-[min(${SHEET_BOTTOM})] mobile:left-3 mobile:z-8 mobile:inline-flex mobile:h-11 mobile:active:scale-[0.96] ${FOCUS_RING}`;
 
@@ -74,18 +76,49 @@ export function MapView() {
   const [tourIndex, setTourIndex] = useState<number | null>(null);
   const [buildings3d, setBuildings3d] = useState(false);
   const [buildings, setBuildings] = useState<BuildingCollection | null>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const simulation = useSimulation({ mapRef, raster, beforeId, mapReady });
+  const closeSim = simulation.closeTool;
 
   // On small screens the panels are bottom sheets, so only one can be open.
   const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
   const toggleLeft = () => {
-    if (!leftOpen && isMobile()) setRightOpen(false);
-    if (!leftOpen && isMobile()) closeLearn();
+    if (!leftOpen && isMobile()) {
+      setRightOpen(false);
+      closeLearn();
+      closeSim();
+    }
     setLeftOpen(!leftOpen);
   };
   const toggleRight = () => {
+    // The graphs share the right slot with the vegetation brush: asking for them always shows them.
+    if (simulation.open) {
+      closeSim();
+      setRightOpen(true);
+      return;
+    }
     if (!rightOpen && isMobile()) setLeftOpen(false);
     if (!rightOpen) closeLearn();
     setRightOpen(!rightOpen);
+  };
+
+  // The brush takes the right slot (a bottom sheet on mobile) and works on the heat layer only. Closing it
+  // keeps what was painted; it comes back when the tool is reopened.
+  const toggleSim = () => {
+    if (simulation.open) return closeSim();
+    if (tourIndex !== null || !simulation.available) return;
+    closeLearn();
+    if (isMobile()) {
+      setLeftOpen(false);
+      setRightOpen(false);
+    }
+    setView("lst_c");
+    simulation.openTool();
+  };
+  // Any other layer closes the brush, since the simulation only exists on the heat layer.
+  const changeView = (v: ViewMode) => {
+    if (v !== "lst_c") closeSim();
+    setView(v);
   };
 
   // On desktop the learning path takes the right slot from the details panel (which returns when it closes);
@@ -93,6 +126,7 @@ export function MapView() {
   const openLearn = () => {
     if (learnOpen) return closeLearn();
     beforeLearn.current = { view, districtIndicator, place };
+    closeSim();
     if (isMobile()) {
       setLeftOpen(false);
       setRightOpen(false);
@@ -141,13 +175,14 @@ export function MapView() {
   const tourFocus = tourIndex !== null ? tourSteps?.[tourIndex]?.focus : undefined;
 
   const startTour = useCallback(() => {
+    closeSim();
     setPlace(null);
     setLearnOpen(false);
     setLeftOpen(false);
     setRightOpen(false);
     setView("lst_c");
     setTourIndex(0);
-  }, []);
+  }, [closeSim]);
 
   // Each step flies the camera: to its district, or back to the initial view.
   useEffect(() => {
@@ -227,11 +262,12 @@ export function MapView() {
     (lng: number, lat: number, label: string) => {
       // On mobile the details open on demand ("Ver detalhes"), so the selected point stays visible on the map.
       // While the learning path is open it shows the place itself, so the details panel stays closed.
+      closeSim();
       if (window.matchMedia(MOBILE_QUERY).matches) setLeftOpen(false);
       else if (!learnOpen) setRightOpen(true);
       setPlace({ ...locate(lng, lat), label });
     },
-    [locate, learnOpen],
+    [locate, learnOpen, closeSim],
   );
 
   // Select a place and fly to it with the same camera move for search results and campus markers.
@@ -342,11 +378,13 @@ export function MapView() {
     );
   }, []);
 
-  // Esc closes only the top-most thing: dialog, tour, learning path, panels, then the selected place.
+  // Esc closes only the top-most thing: dialog, tour, learning path, brush (then its panel), panels, then the selected place.
   const closeTopmost = () => {
     if (aboutOpen) setAboutOpen(false);
     else if (tourIndex !== null) setTourIndex(null);
     else if (learnOpen) closeLearn();
+    else if (simulation.open && simulation.brush) simulation.setBrush(null);
+    else if (simulation.open) closeSim();
     else if (rightOpen) {
       setRightOpen(false);
       setPlace(null);
@@ -367,7 +405,14 @@ export function MapView() {
     { key: "s", handler: single(toggleLeft) },
     { key: "g", handler: single(toggleRight) },
     { key: "l", handler: single(openLearn) },
-    ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: single(() => tourIndex === null && setView(v)) })),
+    { key: "v", handler: single(toggleSim) },
+    { key: "e", handler: single(() => simulation.open && simulation.setBrush(simulation.brush === "erase" ? "paint" : "erase")) },
+    { key: "-", handler: single(() => simulation.open && simulation.stepRadius(-1)) },
+    { key: "=", handler: single(() => simulation.open && simulation.stepRadius(1)) },
+    { key: "+", handler: single(() => simulation.open && simulation.stepRadius(1)) },
+    { key: "z", ctrl: true, handler: (e) => !aboutOpen && simulation.open && (e.shiftKey ? simulation.redo() : simulation.undo()) },
+    { key: "y", ctrl: true, handler: () => !aboutOpen && simulation.open && simulation.redo() },
+    ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: single(() => tourIndex === null && changeView(v)) })),
     { key: "b", handler: single(() => view === "lst_c" && setBuildings3d((on) => !on)) },
     { key: "r", handler: single(() => tourIndex === null && resetMap()) },
     { key: "m", handler: single(() => tourIndex === null && locationStatus !== "asking" && onLocateClick()) },
@@ -381,6 +426,7 @@ export function MapView() {
     if (!map) return;
     // Draw data below roads, water and labels so streets stay readable.
     setBeforeId(map.getStyle().layers.find((l) => l.type === "line" || l.type === "symbol")?.id);
+    setMapReady(true);
     // Let the heat layer show through building footprints.
     for (const id of ["building", "building-top"]) {
       if (map.getLayer(id)) map.setPaintProperty(id, "fill-opacity", 0.3);
@@ -392,7 +438,7 @@ export function MapView() {
       className={[
         "relative h-dvh w-screen overflow-hidden mobile:[&_.maplibregl-ctrl-bottom-right]:hidden",
         // Keep the zoom controls clear of the right panel.
-        (rightOpen || learnOpen) && "[&_.maplibregl-ctrl-bottom-right]:right-[432px]",
+        (rightOpen || learnOpen || simulation.open) && "[&_.maplibregl-ctrl-bottom-right]:right-[432px]",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -403,12 +449,14 @@ export function MapView() {
         mapStyle={BASEMAP}
         onLoad={onLoad}
         onMoveEnd={onMoveEnd}
+        {...simulation.handlers}
         onClick={(e) => {
-          if (tourIndex !== null) return;
+          // Painting must not also pick a place, and the brush panel owns the right slot.
+          if (tourIndex !== null || simulation.open) return;
           if (learnOpen && task.type === "compare") movePin(e.lngLat.lng, e.lngLat.lat);
           else choosePlace(e.lngLat.lng, e.lngLat.lat, "Ponto selecionado");
         }}
-        cursor="crosshair"
+        cursor={simulation.open && simulation.brush === null ? "grab" : "crosshair"}
         maxPitch={70}
         attributionControl={{ compact: true }}
       >
@@ -434,6 +482,7 @@ export function MapView() {
                   id={`heat-layer-${slug}`}
                   type="raster"
                   beforeId={beforeId}
+                  layout={{ visibility: simulation.overlayActive ? "none" : "visible" }}
                   paint={{ "raster-opacity": 0.78, "raster-resampling": "linear", "raster-fade-duration": 300 }}
                 />
               </Source>
@@ -462,7 +511,7 @@ export function MapView() {
           </Source>
         )}
 
-        {view === "lst_c" && buildings3d && buildings && (
+        {view === "lst_c" && buildings3d && buildings && !simulation.open && (
           <Source id="buildings" type="geojson" data={buildings}>
             <Layer
               id="buildings-3d"
@@ -623,7 +672,7 @@ export function MapView() {
         </p>
       )}
 
-      {place && !rightOpen && (
+      {place && !rightOpen && !simulation.open && (
         <button
           type="button"
           className={tourIndex !== null ? "hidden" : DETAILS_BUTTON}
@@ -636,17 +685,20 @@ export function MapView() {
         </button>
       )}
 
-      {tourIndex === null && <ViewSwitch view={view} onChange={setView} panelOpen={leftOpen || learnOpen || rightOpen} />}
+      {tourIndex === null && <ViewSwitch view={view} onChange={changeView} panelOpen={leftOpen || learnOpen || rightOpen || simulation.open} />}
 
       <TopBar
         searchInputRef={searchInputRef}
         leftOpen={leftOpen}
-        rightOpen={rightOpen && !learnOpen}
+        rightOpen={rightOpen && !learnOpen && !simulation.open}
         onToggleLeft={toggleLeft}
         onToggleRight={toggleRight}
         learnOpen={learnOpen}
         onOpenLearn={openLearn}
         onOpenAbout={() => setAboutOpen(true)}
+        simOpen={simulation.open}
+        simAvailable={simulation.available}
+        onToggleSim={toggleSim}
         onSearchSelect={onSearchSelect}
       />
 
@@ -654,7 +706,7 @@ export function MapView() {
           open={leftOpen}
           onClose={() => setLeftOpen(false)}
           view={view}
-          onViewChange={setView}
+          onViewChange={changeView}
           districtIndicator={districtIndicator}
           onDistrictIndicatorChange={setDistrictIndicator}
           buildings3d={buildings3d}
@@ -667,7 +719,7 @@ export function MapView() {
           error={loadError}
         />
         <RightPanel
-          open={rightOpen && !learnOpen}
+          open={rightOpen && !learnOpen && !simulation.open}
           place={place}
           raster={raster?.info ?? null}
           districts={districtList}
@@ -677,6 +729,18 @@ export function MapView() {
             setPlace(null);
           }}
         />
+      <SimulationPanel
+        open={simulation.open}
+        sim={simulation.sim}
+        brush={simulation.brush}
+        radiusM={simulation.radiusM}
+        onBrushChange={simulation.setBrush}
+        onRadiusChange={simulation.setRadiusM}
+        onUndo={simulation.undo}
+        onRedo={simulation.redo}
+        onClear={simulation.clear}
+        onClose={closeSim}
+      />
       {tourIndex !== null && tourSteps && (
         <TourCard steps={tourSteps} index={tourIndex} onIndexChange={setTourIndex} onClose={() => setTourIndex(null)} />
       )}
