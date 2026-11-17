@@ -21,7 +21,6 @@ import { useSimulation } from "#lib/use-simulation";
 import { useUserLocation } from "#lib/use-user-location";
 import { ControlPanel } from "#components/panels/control-panel";
 import type { Place } from "#components/cards/place-card";
-import { AboutDialog } from "#components/common/about-dialog";
 import { LESSONS, pickExamples, pickTargets, type MapTarget } from "#lib/learn";
 import type { ComparePin, PinId } from "#components/cards/compare-card";
 import { LearnPanel, type CompareState } from "#components/panels/learn-panel";
@@ -37,8 +36,8 @@ const SHEET_BOTTOM = "calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(sa
 // Map buttons, top right, left of the three TopBar buttons. On mobile they move to the bottom right and
 // hide while a bottom sheet is open (flagged on <html> by SheetPanel).
 const MAP_BUTTON = `absolute top-3 z-7 inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-button shadow-panel [transition:background-color_0.18s_ease,scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] hover:bg-hover active:scale-[0.94] motion-reduce:[transition:none] mobile:top-auto mobile:right-3 mobile:z-8 sheet-open:mobile:hidden ${FOCUS_RING}`;
-const RESET_BUTTON = `${MAP_BUTTON} right-[272px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
-const LOCATE_BUTTON = `${MAP_BUTTON} right-[220px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
+const RESET_BUTTON = `${MAP_BUTTON} right-[116px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
+const LOCATE_BUTTON = `${MAP_BUTTON} right-[64px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
 // "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly.
 const DETAILS_BUTTON = `hidden cursor-pointer items-center rounded-xl border-0 bg-accent px-[18px] text-[0.9rem] font-semibold text-accent-contrast shadow-panel transition-[scale] duration-[180ms] ease-[cubic-bezier(0.3,0.7,0.4,1.4)] mobile:absolute mobile:bottom-[min(${SHEET_BOTTOM})] mobile:left-3 mobile:z-8 mobile:inline-flex mobile:h-11 mobile:active:scale-[0.96] ${FOCUS_RING}`;
 
@@ -64,7 +63,6 @@ export function MapView() {
   const [beforeId, setBeforeId] = useState<string | undefined>();
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
   const [learnStep, setLearnStep] = useState(0);
   // Map state to restore when the learning path is closed.
@@ -378,10 +376,9 @@ export function MapView() {
     );
   }, []);
 
-  // Esc closes only the top-most thing: dialog, tour, learning path, brush (then its panel), panels, then the selected place.
+  // Esc closes only the top-most thing: tour, learning path, brush (then its panel), panels, then the selected place.
   const closeTopmost = () => {
-    if (aboutOpen) setAboutOpen(false);
-    else if (tourIndex !== null) setTourIndex(null);
+    if (tourIndex !== null) setTourIndex(null);
     else if (learnOpen) closeLearn();
     else if (simulation.open && simulation.brush) simulation.setBrush(null);
     else if (simulation.open) closeSim();
@@ -392,30 +389,26 @@ export function MapView() {
     else if (place) setPlace(null);
   };
 
-  // Single-key shortcuts are off while the About dialog is open; Esc and Ctrl+P work everywhere.
-  const single = (handler: () => void) => () => {
-    if (!aboutOpen) handler();
-  };
   useHotkeys([
     { key: "p", ctrl: true, allowInInput: true, handler: () => {
       searchInputRef.current?.focus();
       searchInputRef.current?.select();
     } },
     { key: "Escape", handler: closeTopmost },
-    { key: "s", handler: single(toggleLeft) },
-    { key: "g", handler: single(toggleRight) },
-    { key: "l", handler: single(openLearn) },
-    { key: "v", handler: single(toggleSim) },
-    { key: "e", handler: single(() => simulation.open && simulation.setBrush(simulation.brush === "erase" ? "paint" : "erase")) },
-    { key: "-", handler: single(() => simulation.open && simulation.stepRadius(-1)) },
-    { key: "=", handler: single(() => simulation.open && simulation.stepRadius(1)) },
-    { key: "+", handler: single(() => simulation.open && simulation.stepRadius(1)) },
-    { key: "z", ctrl: true, handler: (e) => !aboutOpen && simulation.open && (e.shiftKey ? simulation.redo() : simulation.undo()) },
-    { key: "y", ctrl: true, handler: () => !aboutOpen && simulation.open && simulation.redo() },
-    ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: single(() => tourIndex === null && changeView(v)) })),
-    { key: "b", handler: single(() => view === "lst_c" && setBuildings3d((on) => !on)) },
-    { key: "r", handler: single(() => tourIndex === null && resetMap()) },
-    { key: "m", handler: single(() => tourIndex === null && locationStatus !== "asking" && onLocateClick()) },
+    { key: "s", handler: toggleLeft },
+    { key: "g", handler: toggleRight },
+    { key: "l", handler: openLearn },
+    { key: "v", handler: toggleSim },
+    { key: "e", handler: () => simulation.open && simulation.setBrush(simulation.brush === "erase" ? "paint" : "erase") },
+    { key: "-", handler: () => simulation.open && simulation.stepRadius(-1) },
+    { key: "=", handler: () => simulation.open && simulation.stepRadius(1) },
+    { key: "+", handler: () => simulation.open && simulation.stepRadius(1) },
+    { key: "z", ctrl: true, handler: (e) => simulation.open && (e.shiftKey ? simulation.redo() : simulation.undo()) },
+    { key: "y", ctrl: true, handler: () => simulation.open && simulation.redo() },
+    ...VIEWS.map((v, i) => ({ key: String(i + 1), handler: () => tourIndex === null && changeView(v) })),
+    { key: "b", handler: () => view === "lst_c" && setBuildings3d((on) => !on) },
+    { key: "r", handler: () => tourIndex === null && resetMap() },
+    { key: "m", handler: () => tourIndex === null && locationStatus !== "asking" && onLocateClick() },
   ]);
 
   const isDefault =
@@ -695,7 +688,6 @@ export function MapView() {
         onToggleRight={toggleRight}
         learnOpen={learnOpen}
         onOpenLearn={openLearn}
-        onOpenAbout={() => setAboutOpen(true)}
         simOpen={simulation.open}
         simAvailable={simulation.available}
         onToggleSim={toggleSim}
@@ -757,7 +749,6 @@ export function MapView() {
         onShowMe={showMe}
         onClose={closeLearn}
       />
-      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }
