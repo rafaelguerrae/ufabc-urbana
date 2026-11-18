@@ -69,8 +69,9 @@
 /* Breakpoints used by the layout: phones (bottom sheet) and the mid range. */
 @custom-variant mobile (@media (max-width: 700px));
 @custom-variant midrange (@media (min-width: 701px) and (max-width: 1199px));
-/* Narrow desktop: the layer chips no longer fit between the search bar and the buttons on the right. */
-@custom-variant tight (@media (min-width: 701px) and (max-width: 805px));
+/* Narrow desktop: the layer chips no longer fit between the search bar and the right buttons, which grow leftward (up to
+   about 100 px) when one of them is expanded. */
+@custom-variant tight (@media (min-width: 701px) and (max-width: 930px));
 /* Set on <html> by SheetPanel while a bottom sheet is open. */
 @custom-variant sheet-open {
   html[data-sheet-open] & {

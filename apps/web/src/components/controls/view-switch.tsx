@@ -26,7 +26,7 @@ interface ViewSwitchProps {
 
 /**
  * Layer chips next to the search bar, like the category chips of Google Maps. Where the row would run into the
- * buttons on the right (701 to 805 px) it drops under the search; on phones it is icon-only in the bottom right.
+ * buttons on the right (701 to 930 px) it drops under the search; on phones it is icon-only in the bottom right.
  */
 export function ViewSwitch({ view, onChange, panelOpen }: ViewSwitchProps) {
   const refs = useRef<Partial<Record<ViewMode, HTMLButtonElement | null>>>({});

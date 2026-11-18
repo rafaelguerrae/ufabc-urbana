@@ -85,26 +85,26 @@ interface ExpandingButtonProps {
 function ExpandingButton({ label, shortcut, labelWidth, controls, open, disabled, onClick, children }: ExpandingButtonProps) {
   return (
     <button
-        type="button"
-        className={`group h-11 min-w-11 px-[11px] ${TOGGLE_BASE} ${open ? TOGGLE_ON : TOGGLE_OFF}`}
-        aria-expanded={open}
-        aria-controls={controls}
-        aria-label={label}
-        aria-keyshortcuts={shortcut}
-        disabled={disabled}
-        onClick={onClick}
+      type="button"
+      className={`group h-11 min-w-11 px-[11px] ${TOGGLE_BASE} ${open ? TOGGLE_ON : TOGGLE_OFF}`}
+      aria-expanded={open}
+      aria-controls={controls}
+      aria-label={label}
+      aria-keyshortcuts={shortcut}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {children}
+      {/* The label is clipped to 0 wide and opens up to its own width: the button, sized to its content, grows with it. */}
+      <span
+        style={{ "--label-width": labelWidth } as React.CSSProperties}
+        className="max-w-0 overflow-hidden transition-[max-width] duration-[600ms] ease-[cubic-bezier(0.4,0,0.2,1)] group-hover:max-w-(--label-width) group-focus-visible:max-w-(--label-width) motion-reduce:transition-none"
       >
-        {children}
-        {/* The label is clipped to 0 wide and opens up to its own width: the button, sized to its content, grows with it. */}
-        <span
-          style={{ "--label-width": labelWidth } as React.CSSProperties}
-          className="max-w-0 overflow-hidden transition-[max-width] duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:max-w-(--label-width) group-focus-visible:max-w-(--label-width) motion-reduce:transition-none"
-        >
-          <span aria-hidden className="flex items-center gap-2 pl-2 whitespace-nowrap">
-            {label}
-            <kbd className="rounded bg-current/15 px-1.5 font-sans text-[11px]">{shortcut}</kbd>
-          </span>
+        <span aria-hidden className="flex items-center gap-2 pl-2 whitespace-nowrap">
+          {label}
+          <kbd className="rounded bg-current/15 px-1.5 font-sans text-[11px]">{shortcut}</kbd>
         </span>
+      </span>
     </button>
   );
 }
@@ -135,7 +135,7 @@ export function TopBar(props: TopBarProps) {
 
       <div className="pointer-events-auto flex items-start gap-2 mobile:first:flex-[1_1_100%] mobile:last:ml-auto">
         {props.mapButtons}
-        <ExpandingButton label="Simular vegetação" shortcut="V" labelWidth="13rem" controls="simulation-panel" open={props.simOpen} disabled={!props.simAvailable} onClick={props.onToggleSim}>
+        <ExpandingButton label="Simular vegetação" shortcut="V" labelWidth="11rem" controls="simulation-panel" open={props.simOpen} disabled={!props.simAvailable} onClick={props.onToggleSim}>
           {/* Sprout */}
           <svg {...iconProps}>
             <path d="M7 20h10" />
