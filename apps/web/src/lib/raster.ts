@@ -64,7 +64,7 @@ export interface RasterData {
 const mercatorY = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
 
 /** Coordinate <-> pixel mapping of a raster whose rows are linear in Web Mercator Y. */
-export function gridMapping(info: Pick<RasterInfo, "bounds" | "width" | "height">): Pick<CityGrid, "toPixel" | "toLat"> {
+function gridMapping(info: Pick<RasterInfo, "bounds" | "width" | "height">): Pick<CityGrid, "toPixel" | "toLat"> {
   const { west, south, east, north } = info.bounds;
   const y0 = mercatorY(north);
   const y1 = mercatorY(south);

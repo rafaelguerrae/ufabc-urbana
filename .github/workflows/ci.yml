@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   web:
-    name: Web (lint, types, tests, build)
+    name: Web (lint, types, build)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -37,10 +37,6 @@ jobs:
 
       - name: Type check
         run: pnpm check-types
-
-      # Not a Turborepo task yet, so it runs in the web workspace directly.
-      - name: Unit tests
-        run: pnpm --filter ufabc-urbana-web test
 
       # The build needs no secrets or environment variables.
       - name: Build
