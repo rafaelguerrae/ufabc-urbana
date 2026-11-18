@@ -1,7 +1,7 @@
 """Shared helpers: paths, HTTP client and provenance records."""
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -34,7 +34,7 @@ def download(url: str, dest: Path) -> Path:
 def write_meta(name: str, meta: dict) -> Path:
     """Write a provenance record next to the samples."""
     SAMPLES.mkdir(parents=True, exist_ok=True)
-    meta = {"retrieved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), **meta}
+    meta = {"retrieved_at": datetime.now(UTC).isoformat(timespec="seconds"), **meta}
     path = SAMPLES / f"{name}.meta.json"
     path.write_text(json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path

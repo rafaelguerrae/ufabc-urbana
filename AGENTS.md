@@ -57,6 +57,8 @@ pnpm format
 
 Data pipeline commands are listed in `data-pipeline/README.md`.
 
+CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests: `pnpm lint`, `pnpm check-types`, the web unit tests (`pnpm --filter ufabc-urbana-web test`) and `pnpm build`, plus `ruff check` on `data-pipeline/src`. Run the same commands before opening a PR.
+
 ## References
 
 - `tmp/general-plan.md` (local, git-ignored): product and research reference. Treat it as context, not verified fact.
