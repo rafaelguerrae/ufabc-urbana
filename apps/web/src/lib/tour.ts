@@ -91,7 +91,7 @@ export function buildTour(districts: District[] | null): TourStep[] | null {
     {
       id: "end",
       title: "Agora é com você",
-      body: "Busque a sua rua, toque no mapa e compare com o distrito. Mude a camada para ver a vegetação ou os distritos.",
+      body: "Busque a sua rua, toque no mapa e compare com o distrito. Mude a camada para ver a vegetação.",
     },
   ];
 }

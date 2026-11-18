@@ -24,6 +24,12 @@ interface PhotonFeature {
   };
 }
 
+function describe(p: PhotonFeature["properties"]) {
+  const main = p.name ?? [p.street, p.housenumber].filter(Boolean).join(", ");
+  const detail = [p.street && p.name ? p.street : null, p.district ?? p.locality, p.city].filter(Boolean).join(" · ");
+  return { main, detail };
+}
+
 /** Address and place search using Photon (OpenStreetMap data). */
 export async function searchPlaces(query: string, signal: AbortSignal): Promise<SearchResult[]> {
   const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=6&lang=default&bbox=${BBOX}`;
@@ -32,8 +38,7 @@ export async function searchPlaces(query: string, signal: AbortSignal): Promise<
   const data = (await res.json()) as { features: PhotonFeature[] };
   return data.features.map((f, n) => {
     const p = f.properties;
-    const main = p.name ?? [p.street, p.housenumber].filter(Boolean).join(", ");
-    const detail = [p.street && p.name ? p.street : null, p.district ?? p.locality, p.city].filter(Boolean).join(" · ");
+    const { main, detail } = describe(p);
     return {
       id: `${p.osm_type ?? "x"}${p.osm_id ?? n}-${n}`,
       label: main || "Local sem nome",
@@ -42,4 +47,23 @@ export async function searchPlaces(query: string, signal: AbortSignal): Promise<
       lat: f.geometry.coordinates[1],
     };
   });
+}
+
+/** Closest search radius (km) for a reverse lookup: farther than this the address would not describe the clicked point. */
+const REVERSE_RADIUS_KM = 0.3;
+
+/**
+ * Name or street address of a point, written like a search result ("Rua X, 10 · Bairro · Cidade"), from Photon's
+ * reverse lookup. Null when nothing is near enough. The clicked coordinates are sent to photon.komoot.io.
+ */
+export async function reversePlace(lng: number, lat: number, signal: AbortSignal): Promise<string | null> {
+  const url = `https://photon.komoot.io/reverse?lon=${lng}&lat=${lat}&limit=1&radius=${REVERSE_RADIUS_KM}&lang=default`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) throw new Error(`Falha na busca do endereço (${res.status})`);
+  const data = (await res.json()) as { features: PhotonFeature[] };
+  const feature = data.features[0];
+  if (!feature) return null;
+  const { main, detail } = describe(feature.properties);
+  if (!main) return null;
+  return detail ? `${main} · ${detail}` : main;
 }

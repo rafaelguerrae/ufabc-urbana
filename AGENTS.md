@@ -15,12 +15,12 @@ Guidance for AI agents working in this repository.
 - Turborepo + pnpm monorepo. `apps/web` is Next.js (App Router, strict TypeScript) styled with Tailwind CSS v4 (theme tokens, breakpoint and animation variants live in `apps/web/app/globals.css`; no CSS Modules). Shared code lives in `packages/*`.
 - `data-pipeline/` holds Python scripts (managed with uv) that turn public datasets into static GeoJSON/JSON consumed by `apps/web` (for example from `apps/web/public/data/`).
 - No database or API server for now. Add one only if the feasibility work shows static files are insufficient.
-- Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay and a district GeoJSON choropleth), CARTO Positron basemap, Photon geocoding. `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
+- Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay; district GeoJSON feeds the details panel, charts and tour, but is no longer drawn as a choropleth), CARTO Positron basemap, Photon geocoding (search and the reverse lookup of clicked points). `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
 - Data flow: `data-pipeline` (Earth Engine + IBGE) writes `apps/web/public/data/districts.geojson` and `public/data/raster/*` (`uv run python -m src.export_web`, `uv run python -m src.export_raster`). The web app only reads these static files.
 
 ## Code conventions (`apps/web`)
 
-- Group components by role under `apps/web/src/components/`: `panels/` (side panels and the bottom-sheet shell), `cards/` (info and guide cards), `controls/` (top bar, search, layer switch), `charts/`, and `common/` for anything that fits no group or is shared across groups (for example `about-dialog`, `layer-icon`). `map-view.tsx` stays at the top level as the composition root. Create a new group only when two or more components share a role; otherwise use `common/`.
+- Group components by role under `apps/web/src/components/`: `panels/` (side panels and the bottom-sheet shell), `cards/` (info and guide cards), `controls/` (top bar, search, layer switch), `charts/`, and `common/` for anything that fits no group or is shared across groups (for example `layer-icon`). `map-view.tsx` stays at the top level as the composition root. Create a new group only when two or more components share a role; otherwise use `common/`.
 - File and folder names are **kebab-case** (`place-card.tsx`, `use-user-location.ts`). Component, hook and type names inside the files keep their usual casing (`PlaceCard`, `useUserLocation`). Python files in `data-pipeline/` stay snake_case because they are import names.
 - The Next.js `app/` directory stays at the `apps/web` root; shared source lives in `apps/web/src/` (`components/`, `lib/`). Imports across directories use `#` as the alias for `src/` (declared in `apps/web/tsconfig.json` `paths`): `#components/cards/place-card`, `#lib/cities`. Do not use `@/` or `../`. Files in the same directory still import each other with `./`.
 - Styling is Tailwind only; see Architecture.
@@ -56,6 +56,8 @@ pnpm format
 ```
 
 Data pipeline commands are listed in `data-pipeline/README.md`.
+
+CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests: `pnpm lint`, `pnpm check-types` and `pnpm build`, plus `ruff check` on `data-pipeline/src`. Run the same commands before opening a PR.
 
 ## References
 

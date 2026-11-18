@@ -9,6 +9,9 @@
   --color-accent: #2563eb;
   --color-accent-contrast: #ffffff;
   --color-accent-soft: rgb(37 99 235 / 0.12);
+  /* Selected map chips take the color of their layer; both keep white text above 4.5:1. */
+  --color-layer-heat: #c2410c;
+  --color-layer-vegetation: #15803d;
   --color-hover: #e8eaee;
   --color-button: #eef0f3;
   --color-button-hover: #e1e4e9;
@@ -17,6 +20,8 @@
   --color-badge-observed-fg: #14532d;
   --color-badge-derived-bg: #dbeafe;
   --color-badge-derived-fg: #1e3a8a;
+  --color-badge-simulated-bg: #fef3c7;
+  --color-badge-simulated-fg: #78350f;
 
   --shadow-panel: 0 4px 16px rgb(0 0 0 / 0.1);
 
@@ -64,6 +69,9 @@
 /* Breakpoints used by the layout: phones (bottom sheet) and the mid range. */
 @custom-variant mobile (@media (max-width: 700px));
 @custom-variant midrange (@media (min-width: 701px) and (max-width: 1199px));
+/* Narrow desktop: the layer chips no longer fit between the search bar and the right buttons, which grow leftward (up to
+   about 100 px) when one of them is expanded. */
+@custom-variant tight (@media (min-width: 701px) and (max-width: 930px));
 /* Set on <html> by SheetPanel while a bottom sheet is open. */
 @custom-variant sheet-open {
   html[data-sheet-open] & {
@@ -85,4 +93,13 @@ body {
   color: var(--color-foreground);
   background: var(--color-background);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* MapLibre shows an open hand when hovering the map; use the regular arrow, and a closed hand only while dragging. */
+.maplibregl-map .maplibregl-canvas-container.maplibregl-interactive {
+  cursor: default;
+}
+
+.maplibregl-map .maplibregl-canvas-container.maplibregl-interactive:active {
+  cursor: grabbing;
 }

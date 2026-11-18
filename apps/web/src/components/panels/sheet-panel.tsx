@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 
-type Snap = "peek" | "half" | "full";
+export type Snap = "peek" | "half" | "full";
 
 const ORDER: Snap[] = ["peek", "half", "full"];
 const SNAP_CLASS: Record<Snap, string> = {
@@ -70,6 +70,8 @@ interface SheetPanelProps {
   open: boolean;
   /** Called when the sheet is swiped down past its smallest height (mobile only). */
   onClose: () => void;
+  /** Height the mobile bottom sheet opens at. Defaults to half the screen. */
+  initialSnap?: Snap;
   children: ReactNode;
 }
 
@@ -77,8 +79,8 @@ interface SheetPanelProps {
  * Side panel on desktop; on mobile a bottom sheet with a drag handle that snaps between a
  * peek, half-screen and full-screen height, and closes when swiped down far enough.
  */
-export function SheetPanel({ side, id, label, open, onClose, children }: SheetPanelProps) {
-  const [snap, setSnap] = useState<Snap>("half");
+export function SheetPanel({ side, id, label, open, onClose, initialSnap = "half", children }: SheetPanelProps) {
+  const [snap, setSnap] = useState<Snap>(initialSnap);
   const [dragHeight, setDragHeight] = useState<number | null>(null);
   const ref = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -91,8 +93,8 @@ export function SheetPanel({ side, id, label, open, onClose, children }: SheetPa
   });
 
   useEffect(() => {
-    if (open) setSnap("half");
-  }, [open]);
+    if (open) setSnap(initialSnap);
+  }, [open, initialSnap]);
 
   // Publish the open sheet's height (used by the floating map buttons in MapView) and flag an open
   // sheet on mobile so those buttons can hide instead of floating over its content.

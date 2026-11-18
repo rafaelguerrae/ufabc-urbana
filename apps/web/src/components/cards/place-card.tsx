@@ -2,10 +2,15 @@ import { CITY_LIST_TEXT, unitOf, unitTitle } from "#lib/cities";
 import { formatValue, getIndicator, type DistrictProperties } from "#lib/indicators";
 import type { RasterInfo, RasterSample } from "#lib/raster";
 
+/** Label of a point picked by clicking the map (as opposed to a search result or a campus). */
+export const PIN_LABEL = "Ponto selecionado";
+
 export interface Place {
   lng: number;
   lat: number;
   label: string;
+  /** Street address from a reverse lookup: undefined until looked up, null when none was found. */
+  address?: string | null;
   sample: RasterSample | null;
   district: DistrictProperties | null;
 }
@@ -13,24 +18,32 @@ export interface Place {
 interface PlaceCardProps {
   place: Place;
   raster: RasterInfo | null;
+  /** Draws its own box. Off inside the place panel, which is already a box. */
+  framed?: boolean;
+}
+
+/** "-23,5499, -46,692": latitude and longitude as shown for a point with no address. */
+export function formatCoords(lat: number, lng: number) {
+  const f = (v: number) => v.toLocaleString("pt-BR", { maximumFractionDigits: 4 });
+  return `${f(lat)}, ${f(lng)}`;
 }
 
 const monthYear = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" });
 
-export function PlaceCard({ place, raster }: PlaceCardProps) {
+export function PlaceCard({ place, raster, framed = true }: PlaceCardProps) {
   const { sample, district } = place;
   const lst = getIndicator("lst_c");
   const ndvi = getIndicator("ndvi");
   const density = getIndicator("population_density");
   const diff = sample && district ? sample.lst - district.lst_c : null;
   const period = raster ? `${monthYear.format(new Date(raster.period[0]))} a ${monthYear.format(new Date(raster.period[1]))}` : "";
-  const coords = `${place.lat.toLocaleString("pt-BR", { maximumFractionDigits: 4 })}, ${place.lng.toLocaleString("pt-BR", { maximumFractionDigits: 4 })}`;
+  const coords = formatCoords(place.lat, place.lng);
 
   return (
-    <section className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4" aria-label="Local selecionado">
+    <section className={`flex flex-col gap-3 ${framed ? "rounded-xl border border-border bg-surface p-4" : ""}`} aria-label="Local selecionado">
       <div className="flex justify-between gap-2">
         <div>
-          <h2 className="text-[1rem] leading-[1.3] font-semibold">{place.label}</h2>
+          <h2 className="text-[1rem] leading-[1.3] font-semibold">{place.address ?? place.label}</h2>
           <p className="mt-0.5 text-[0.75rem] text-muted">
             {district ? unitTitle(district) : `Fora da área do mapa (${CITY_LIST_TEXT})`} · {coords}
           </p>

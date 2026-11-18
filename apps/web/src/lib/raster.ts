@@ -8,6 +8,38 @@ export interface RasterInfo {
   ndvi: { encoding: [number, number]; scale: [number, number]; unit: string };
   period: [string, string];
   scenes: number;
+  /** Ground size of one pixel at the equator (EPSG:3857 metres); real size shrinks by cos(latitude). */
+  pixel_size_m_projected?: [number, number];
+}
+
+/** NDVI-to-LST curve and validation written by data-pipeline/src/fit_scenario.py. */
+export interface ScenarioModel {
+  target_ndvi: number;
+  target_ndvi_land_share: number;
+  /** Mean land-surface temperature (°C) per NDVI bin, non-increasing. */
+  curve: { ndvi: number; lst: number; n: number }[];
+  pixels: number;
+  pearson_r: number;
+  r2: number;
+  rmse: number;
+  holdout_r2: number;
+  holdout_rmse: number;
+  /** False when the curve does not support a number for this city; the brush then skips it. */
+  usable: boolean;
+  reason: string | null;
+}
+
+/** Decoded values.png of one city plus the helpers needed to map between coordinates and pixels. */
+export interface CityGrid {
+  slug: CitySlug;
+  info: RasterInfo;
+  scenario: ScenarioModel | null;
+  /** RGBA bytes of values.png: R = LST, G = NDVI (see info encodings), A > 0 where there is data. */
+  data: Uint8ClampedArray;
+  /** Continuous pixel coordinates (x right, y down) of a point. Not clamped to the grid. */
+  toPixel: (lng: number, lat: number) => [number, number];
+  /** Latitude of a continuous pixel row. */
+  toLat: (y: number) => number;
 }
 
 export interface RasterSample {
@@ -20,6 +52,8 @@ export interface RasterSample {
 export interface RasterData {
   /** Per-city rasters, each with its own bounds. */
   cities: { slug: CitySlug; info: RasterInfo }[];
+  /** Per-city pixel grids, for the vegetation brush. */
+  grids: CityGrid[];
   /** Shared fields (color scale, period): the same for every city. */
   info: RasterInfo;
   /** Number of satellite scenes, as text ("26" or "26 a 28" if cities differ). */
@@ -28,6 +62,17 @@ export interface RasterData {
 }
 
 const mercatorY = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+
+/** Coordinate <-> pixel mapping of a raster whose rows are linear in Web Mercator Y. */
+function gridMapping(info: Pick<RasterInfo, "bounds" | "width" | "height">): Pick<CityGrid, "toPixel" | "toLat"> {
+  const { west, south, east, north } = info.bounds;
+  const y0 = mercatorY(north);
+  const y1 = mercatorY(south);
+  return {
+    toPixel: (lng, lat) => [((lng - west) / (east - west)) * info.width, ((y0 - mercatorY(lat)) / (y0 - y1)) * info.height],
+    toLat: (y) => ((2 * Math.atan(Math.exp(y0 - (y / info.height) * (y0 - y1))) - Math.PI / 2) * 180) / Math.PI,
+  };
+}
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -41,12 +86,19 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 interface CityRaster {
   slug: CitySlug;
   info: RasterInfo;
+  grid: CityGrid;
   sample: (lng: number, lat: number) => RasterSample | null;
 }
 
 async function loadCityRaster(slug: CitySlug): Promise<CityRaster> {
   const dir = `/data/raster/${slug}`;
-  const info = (await (await fetch(`${dir}/raster.json`)).json()) as RasterInfo;
+  const [info, scenario] = await Promise.all([
+    fetch(`${dir}/raster.json`).then((r) => r.json() as Promise<RasterInfo>),
+    // Optional: without it the brush skips this city.
+    fetch(`${dir}/scenario.json`)
+      .then((r) => (r.ok ? (r.json() as Promise<ScenarioModel>) : null))
+      .catch(() => null),
+  ]);
   const img = await loadImage(`${dir}/values.png`);
   const canvas = document.createElement("canvas");
   canvas.width = img.width;
@@ -85,7 +137,7 @@ async function loadCityRaster(slug: CitySlug): Promise<CityRaster> {
     return pixels === 0 ? null : { lst: lst / pixels, ndvi: ndvi / pixels, pixels };
   };
 
-  return { slug, info, sample };
+  return { slug, info, grid: { slug, info, scenario, data, ...gridMapping(info) }, sample };
 }
 
 /** Loads every city's raster.json and value image, and returns one point-sampling function. */
@@ -101,6 +153,7 @@ export async function loadRaster(): Promise<RasterData> {
   const hi = Math.max(...scenes);
   return {
     cities: rasters.map(({ slug, info }) => ({ slug, info })),
+    grids: rasters.map((r) => r.grid),
     info: first,
     scenesLabel: lo === hi ? `${lo}` : `${lo} a ${hi}`,
     // City boxes overlap; the first raster with a valid pixel at the point wins.

@@ -1,0 +1,126 @@
+{
+  "city": "sao-bernardo-do-campo",
+  "method": "Mean land-surface temperature per NDVI bin over all land pixels (NDVI >= 0, water excluded), forced non-increasing, linearly interpolated, never extrapolated. The web app moves a painted pixel's LST by f(target NDVI) - f(its NDVI), keeping the pixel's own residual.",
+  "target_ndvi": 0.7,
+  "target_ndvi_basis": "provisional assumption, no published threshold; see target_ndvi_land_share",
+  "target_ndvi_land_share": 0.6974,
+  "bin_width": 0.05,
+  "min_bin_pixels": 500,
+  "curve": [
+    {
+      "ndvi": 0.025,
+      "lst": 39.641,
+      "n": 4413
+    },
+    {
+      "ndvi": 0.075,
+      "lst": 39.641,
+      "n": 5060
+    },
+    {
+      "ndvi": 0.125,
+      "lst": 39.641,
+      "n": 11796
+    },
+    {
+      "ndvi": 0.175,
+      "lst": 39.641,
+      "n": 22856
+    },
+    {
+      "ndvi": 0.225,
+      "lst": 39.641,
+      "n": 16404
+    },
+    {
+      "ndvi": 0.275,
+      "lst": 39.29,
+      "n": 12429
+    },
+    {
+      "ndvi": 0.325,
+      "lst": 38.582,
+      "n": 9034
+    },
+    {
+      "ndvi": 0.375,
+      "lst": 37.796,
+      "n": 8952
+    },
+    {
+      "ndvi": 0.425,
+      "lst": 36.999,
+      "n": 8092
+    },
+    {
+      "ndvi": 0.475,
+      "lst": 36.261,
+      "n": 7213
+    },
+    {
+      "ndvi": 0.525,
+      "lst": 35.573,
+      "n": 7733
+    },
+    {
+      "ndvi": 0.575,
+      "lst": 34.544,
+      "n": 8484
+    },
+    {
+      "ndvi": 0.625,
+      "lst": 33.694,
+      "n": 8723
+    },
+    {
+      "ndvi": 0.675,
+      "lst": 32.827,
+      "n": 12288
+    },
+    {
+      "ndvi": 0.725,
+      "lst": 32.053,
+      "n": 16384
+    },
+    {
+      "ndvi": 0.775,
+      "lst": 31.317,
+      "n": 29703
+    },
+    {
+      "ndvi": 0.825,
+      "lst": 30.22,
+      "n": 141307
+    },
+    {
+      "ndvi": 0.875,
+      "lst": 30.161,
+      "n": 143327
+    }
+  ],
+  "pixels": 474202,
+  "pearson_r": -0.7736,
+  "r2": 0.6244,
+  "rmse": 2.806,
+  "holdout_rmse": 2.818,
+  "holdout_r2": 0.6261,
+  "holdout_pixels": 474202,
+  "block_px": 64,
+  "folds": 5,
+  "source_files": [
+    "raster/sao-bernardo-do-campo/values.png",
+    "raster/sao-bernardo-do-campo/raster.json"
+  ],
+  "period": [
+    "2023-12-01",
+    "2024-03-31"
+  ],
+  "scenes": 26,
+  "notes": [
+    "Association between vegetation and surface temperature in one composite, not the causal effect of planting trees.",
+    "LST is the surface temperature at about 10:30 local time, not air temperature or a heat wave.",
+    "values.png is 8-bit: 0.157 °C per LST step and 0.0047 per NDVI step. Only use area means."
+  ],
+  "usable": true,
+  "reason": null
+}

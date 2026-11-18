@@ -1,6 +1,6 @@
 import type { CitySlug } from "./cities";
 
-export type DataType = "observed" | "derived";
+export type DataType = "observed" | "derived" | "simulated";
 
 export interface DistrictProperties {
   city: CitySlug;
@@ -110,6 +110,7 @@ export const INDICATORS: Indicator[] = [
 export const DATA_TYPE_LABEL: Record<DataType, string> = {
   observed: "Dado observado (contagem do Censo)",
   derived: "Estimado a partir de imagens de satélite",
+  simulated: "Simulado: estimativa a partir de uma associação observada nos dados",
 };
 
 export function getIndicator(key: IndicatorKey): Indicator {
@@ -138,12 +139,11 @@ export function colorAt(indicator: Indicator, t: number): [number, number, numbe
   ];
 }
 
-export type ViewMode = "lst_c" | "ndvi" | "districts";
+export type ViewMode = "lst_c" | "ndvi";
 
-export const VIEWS: ViewMode[] = ["lst_c", "ndvi", "districts"];
+export const VIEWS: ViewMode[] = ["lst_c", "ndvi"];
 
 export const VIEW_LABEL: Record<ViewMode, string> = {
   lst_c: "Calor",
   ndvi: "Vegetação",
-  districts: "Médias por distrito ou bairro",
 };
