@@ -3,26 +3,20 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { CITIES, getCity, type CitySlug } from "#lib/cities";
-import type { DistrictProperties, IndicatorKey } from "#lib/indicators";
-import type { RasterInfo } from "#lib/raster";
-import { DistrictRanking } from "#components/charts/district-ranking";
-import { DistrictScatter } from "#components/charts/district-scatter";
-import { PlaceCard, type Place } from "#components/cards/place-card";
-import { PanelHeader } from "./panel-header";
-import { SheetPanel } from "./sheet-panel";
+import type { DistrictProperties } from "#lib/indicators";
+import type { Place } from "#components/cards/place-card";
+import { DistrictRanking } from "./district-ranking";
+import { DistrictScatter } from "./district-scatter";
 
-interface RightPanelProps {
-  open: boolean;
-  place: Place | null;
-  raster: RasterInfo | null;
+interface PlaceChartsProps {
+  place: Place;
   districts: DistrictProperties[] | null;
-  districtIndicator: IndicatorKey;
-  onClose: () => void;
 }
 
-export function RightPanel({ open, place, raster, districts, districtIndicator, onClose }: RightPanelProps) {
-  const selectedCode = place?.district?.code ?? null;
-  const placeCity = place?.district?.city ?? null;
+/** Comparison charts of the municipality of the selected place, with the place's district or bairro highlighted. */
+export function PlaceCharts({ place, districts }: PlaceChartsProps) {
+  const selectedCode = place.district?.code ?? null;
+  const placeCity = place.district?.city ?? null;
   const [picked, setPicked] = useState<CitySlug | null>(null);
   // Following a new place in another city resets a manual choice.
   useEffect(() => setPicked(null), [placeCity]);
@@ -35,15 +29,7 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
   );
 
   return (
-    <SheetPanel side="right" id="right-panel" label="Local selecionado e gráficos" open={open} onClose={onClose}>
-      <PanelHeader title="Local e gráficos" closeLabel="Fechar painel" onClose={onClose} />
-
-      {place ? (
-        <PlaceCard place={place} raster={raster} />
-      ) : (
-        <p className="text-[0.85rem] leading-normal text-muted">Clique no mapa ou busque um endereço para ver a temperatura e a vegetação do local.</p>
-      )}
-
+    <section className="flex flex-col gap-3 border-t border-border pt-4" aria-label="Gráficos">
       <h2 className="text-[0.75rem] font-bold tracking-[0.04em] text-muted uppercase">Gráficos</h2>
       <label className="text-[0.85rem] leading-normal text-muted">
         Comparar{" "}
@@ -58,16 +44,11 @@ export function RightPanel({ open, place, raster, districts, districtIndicator, 
       {cityUnits ? (
         <>
           <DistrictScatter districts={cityUnits} selectedCode={selectedCode} unitPlural={city.unitPlural} cityName={city.name} />
-          <DistrictRanking
-            districts={cityUnits}
-            indicatorKey={districtIndicator}
-            selectedCode={selectedCode}
-            unitPlural={city.unitPlural}
-          />
+          <DistrictRanking districts={cityUnits} indicatorKey="lst_c" selectedCode={selectedCode} unitPlural={city.unitPlural} />
         </>
       ) : (
         <p className="text-[0.85rem] leading-normal text-muted">Carregando dados…</p>
       )}
-    </SheetPanel>
+    </section>
   );
 }

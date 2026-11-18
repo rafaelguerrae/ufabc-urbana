@@ -1,24 +1,50 @@
 "use client";
 
-import { useEffect, useId, useState, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 
 import { searchPlaces, type SearchResult } from "#lib/geocode";
 
 interface SearchBarProps {
   onSelect: (result: SearchResult) => void;
   inputRef?: RefObject<HTMLInputElement | null>;
+  /** Text of the place selected on the map (a clicked point, a campus, a result): shown in the field, like Google Maps. */
+  selectedText?: string | null;
+  /** The clear button was pressed: drop the selected place. */
+  onClear?: () => void;
 }
 
-export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
+export function SearchBar({ onSelect, inputRef, selectedText, onClear }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "empty">("idle");
   const [active, setActive] = useState(-1);
   const listId = useId();
+  // Last text put in the field by the app (not typed by the user): it must not trigger a search.
+  const synced = useRef<string | null>(null);
+
+  // Mirror the selected place in the field. When the place goes away the field empties, unless the user has typed something else.
+  useEffect(() => {
+    if (selectedText) {
+      synced.current = selectedText;
+      setQuery(selectedText);
+      setOpen(false);
+      setResults([]);
+      setStatus("idle");
+    } else if (synced.current !== null) {
+      const previous = synced.current;
+      synced.current = null;
+      setQuery((q) => (q === previous ? "" : q));
+    }
+  }, [selectedText]);
 
   useEffect(() => {
     const q = query.trim();
+    if (q === synced.current) {
+      setResults([]);
+      setStatus("idle");
+      return;
+    }
     if (q.length < 3) {
       setResults([]);
       setStatus("idle");
@@ -44,8 +70,19 @@ export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
     };
   }, [query]);
 
+  function clear() {
+    setQuery("");
+    setResults([]);
+    setStatus("idle");
+    setOpen(false);
+    onClear?.();
+    inputRef?.current?.focus();
+  }
+
   function choose(r: SearchResult) {
-    setQuery(r.detail ? `${r.label}, ${r.detail}` : r.label);
+    const text = r.detail ? `${r.label}, ${r.detail}` : r.label;
+    synced.current = text;
+    setQuery(text);
     setOpen(false);
     onSelect(r);
   }
@@ -61,6 +98,8 @@ export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
       e.preventDefault();
       choose(results[active >= 0 ? active : 0]!);
     } else if (e.key === "Escape") {
+      // type="search" would also empty the field, leaving the selected place without its text.
+      e.preventDefault();
       setOpen(false);
       e.currentTarget.blur();
     }
@@ -75,7 +114,7 @@ export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
       <input
         ref={inputRef}
         aria-keyshortcuts="Control+P"
-        className="h-11 w-full rounded-xl border border-border bg-panel pr-3.5 pl-[42px] text-[0.95rem] text-foreground shadow-panel backdrop-blur-sm transition-[border-color,box-shadow] duration-[180ms] ease-[ease] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+        className={`h-11 w-full rounded-xl border border-border bg-panel pl-[42px] text-[0.95rem] text-foreground shadow-panel backdrop-blur-sm transition-[border-color,box-shadow] duration-[180ms] ease-[ease] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent [&::-webkit-search-cancel-button]:appearance-none ${query ? "pr-11" : "pr-3.5"}`}
         type="search"
         role="combobox"
         aria-expanded={open && results.length > 0}
@@ -91,6 +130,19 @@ export function SearchBar({ onSelect, inputRef }: SearchBarProps) {
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
       />
+      {/* Our own clear button (the browser's is hidden): it also drops the place selected on the map. */}
+      {query && (
+        <button
+          type="button"
+          className="absolute top-1/2 right-1.5 z-[2] grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-lg border-0 bg-transparent text-muted hover:bg-hover hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
+          aria-label="Limpar a busca e o local selecionado"
+          onClick={clear}
+        >
+          <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      )}
       {/* Shortcut hint, like docs search bars: hidden while focused, once there is text, and on touch layouts. */}
       {!query && (
         <kbd className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 rounded-md border border-border bg-button px-1.5 py-0.5 font-sans text-[0.7rem] font-semibold text-muted group-focus-within:hidden mobile:hidden" aria-hidden>

@@ -15,20 +15,13 @@ const PATHS: Record<ViewMode, React.ReactNode> = {
       <path d="M12 3a5 5 0 0 0-4.2 7.7A4.5 4.5 0 0 0 8.5 19h7a4.5 4.5 0 0 0 .7-8.3A5 5 0 0 0 12 3Z" />
     </>
   ),
-  // Map divided into areas
-  districts: (
-    <>
-      <path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20V6.5Z" />
-      <path d="M9 4v13.5M15 6.5V20" />
-    </>
-  ),
 };
 
-export function LayerIcon({ view }: { view: ViewMode }) {
+export function LayerIcon({ view, size = 24 }: { view: ViewMode; size?: number }) {
   return (
     <svg
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

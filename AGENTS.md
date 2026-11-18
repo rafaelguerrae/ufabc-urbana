@@ -15,7 +15,7 @@ Guidance for AI agents working in this repository.
 - Turborepo + pnpm monorepo. `apps/web` is Next.js (App Router, strict TypeScript) styled with Tailwind CSS v4 (theme tokens, breakpoint and animation variants live in `apps/web/app/globals.css`; no CSS Modules). Shared code lives in `packages/*`.
 - `data-pipeline/` holds Python scripts (managed with uv) that turn public datasets into static GeoJSON/JSON consumed by `apps/web` (for example from `apps/web/public/data/`).
 - No database or API server for now. Add one only if the feasibility work shows static files are insufficient.
-- Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay and a district GeoJSON choropleth), CARTO Positron basemap, Photon geocoding. `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
+- Map stack: `react-map-gl` + MapLibre GL JS with native layers (a 30 m heat raster image overlay; district GeoJSON feeds the details panel, charts and tour, but is no longer drawn as a choropleth), CARTO Positron basemap, Photon geocoding (search and the reverse lookup of clicked points). `deck.gl` and Tremor from `temp-plan.md` are not used yet; MapLibre layers are needed to draw data under roads and labels.
 - Data flow: `data-pipeline` (Earth Engine + IBGE) writes `apps/web/public/data/districts.geojson` and `public/data/raster/*` (`uv run python -m src.export_web`, `uv run python -m src.export_raster`). The web app only reads these static files.
 
 ## Code conventions (`apps/web`)

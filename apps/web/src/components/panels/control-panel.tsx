@@ -2,17 +2,7 @@
 
 import Image from "next/image";
 
-import {
-  DATA_TYPE_LABEL,
-  INDICATORS,
-  VIEWS,
-  VIEW_LABEL,
-  colorAt,
-  formatValue,
-  getIndicator,
-  type IndicatorKey,
-  type ViewMode,
-} from "#lib/indicators";
+import { DATA_TYPE_LABEL, VIEWS, VIEW_LABEL, colorAt, formatValue, getIndicator, type ViewMode } from "#lib/indicators";
 import type { RasterInfo } from "#lib/raster";
 import { LayerIcon } from "#components/common/layer-icon";
 import { SheetPanel } from "./sheet-panel";
@@ -20,9 +10,6 @@ import { SheetPanel } from "./sheet-panel";
 interface ControlPanelProps {
   view: ViewMode;
   onViewChange: (view: ViewMode) => void;
-  districtIndicator: IndicatorKey;
-  onDistrictIndicatorChange: (key: IndicatorKey) => void;
-  districtRange: { min: number; max: number };
   buildings3d: boolean;
   onBuildings3dChange: (on: boolean) => void;
   /** Undefined until the district data needed to build the tour has loaded. */
@@ -38,15 +25,13 @@ interface ControlPanelProps {
 const VIEW_HINT: Record<ViewMode, string> = {
   lst_c: "Onde a superfície esquenta mais · cada quadrado ≈ 30 m",
   ndvi: "Onde há mais plantas · cada quadrado ≈ 30 m",
-  districts: "Compare os distritos e bairros",
 };
 
 export function ControlPanel(props: ControlPanelProps) {
-  const { view, districtIndicator, districtRange, raster } = props;
-  const indicator = getIndicator(view === "districts" ? districtIndicator : view);
+  const { view, raster } = props;
+  const indicator = getIndicator(view);
   const rasterScale = raster ? raster[view === "ndvi" ? "ndvi" : "lst"].scale : null;
-  const range =
-    view === "districts" ? districtRange : rasterScale ? { min: rasterScale[0], max: rasterScale[1] } : null;
+  const range = rasterScale ? { min: rasterScale[0], max: rasterScale[1] } : null;
   const gradient = `linear-gradient(to right, ${[0, 0.25, 0.5, 0.75, 1]
     .map((t) => `rgb(${colorAt(indicator, t).join(",")})`)
     .join(",")})`;
@@ -89,23 +74,6 @@ export function ControlPanel(props: ControlPanelProps) {
             </button>
           ))}
         </div>
-
-        {view === "districts" && (
-          <label className="flex flex-col gap-1 text-[0.8rem] text-muted">
-            <span>Indicador</span>
-            <select
-              className="rounded-lg border border-border bg-surface px-2.5 py-2 text-foreground"
-              value={districtIndicator}
-              onChange={(e) => props.onDistrictIndicatorChange(e.target.value as IndicatorKey)}
-            >
-              {INDICATORS.map((i) => (
-                <option key={i.key} value={i.key}>
-                  {i.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
       </section>
 
       {view === "lst_c" && (
@@ -173,14 +141,10 @@ export function ControlPanel(props: ControlPanelProps) {
           <dt>Período</dt>
           <dd>
             {indicator.period}
-            {view !== "districts" && props.scenesLabel ? ` · ${props.scenesLabel} imagens` : ""}
+            {props.scenesLabel ? ` · ${props.scenesLabel} imagens` : ""}
           </dd>
           <dt>Resolução</dt>
-          <dd>
-            {view === "districts"
-              ? "Distritos do IBGE de 2022 em São Paulo (96) e bairros do IBGE de 2022 em São Bernardo do Campo (34) e Santo André (113). Os tamanhos não são comparáveis."
-              : "Grade de 30 m; o sensor térmico mede cerca de 100 m e a imagem é reamostrada"}
-          </dd>
+          <dd>Grade de 30 m; o sensor térmico mede cerca de 100 m e a imagem é reamostrada</dd>
         </dl>
         <p className="text-[0.85rem] leading-normal text-muted">
           Áreas mais verdes e menos construídas tendem a ser mais frescas nos dados, mas isso é uma associação: não prova

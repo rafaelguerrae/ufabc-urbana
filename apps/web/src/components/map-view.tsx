@@ -12,19 +12,19 @@ import { Layer, Map, Marker, NavigationControl, Source, type MapRef } from "reac
 
 import { CAMPUSES } from "#lib/campuses";
 import { unitTitle } from "#lib/cities";
-import type { SearchResult } from "#lib/geocode";
-import { colorAt, getIndicator, VIEWS, type DistrictProperties, type IndicatorKey, type ViewMode } from "#lib/indicators";
+import { reversePlace, type SearchResult } from "#lib/geocode";
+import { colorAt, getIndicator, VIEWS, type DistrictProperties, type ViewMode } from "#lib/indicators";
 import { loadRaster, type RasterData } from "#lib/raster";
 import { buildTour } from "#lib/tour";
 import { useHotkeys } from "#lib/use-hotkeys";
 import { useSimulation } from "#lib/use-simulation";
 import { useUserLocation } from "#lib/use-user-location";
 import { ControlPanel } from "#components/panels/control-panel";
-import type { Place } from "#components/cards/place-card";
+import { formatCoords, PIN_LABEL, type Place } from "#components/cards/place-card";
 import { LESSONS, pickExamples, pickTargets, type MapTarget } from "#lib/learn";
 import type { ComparePin, PinId } from "#components/cards/compare-card";
 import { LearnPanel, type CompareState } from "#components/panels/learn-panel";
-import { RightPanel } from "#components/panels/right-panel";
+import { PlacePanel } from "#components/panels/place-panel";
 import { SimulationPanel } from "#components/panels/simulation-panel";
 import { TopBar } from "#components/controls/top-bar";
 import { TourCard } from "#components/cards/tour-card";
@@ -33,11 +33,11 @@ import { ViewSwitch } from "#components/controls/view-switch";
 const FOCUS_RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 // Floating bottom buttons ride on top of the open sheet (--sheet-height is set by SheetPanel).
 const SHEET_BOTTOM = "calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(safe-area-inset-top,0px))";
-// Map buttons, top right, left of the three TopBar buttons. On mobile they move to the bottom right and
-// hide while a bottom sheet is open (flagged on <html> by SheetPanel).
-const MAP_BUTTON = `absolute top-3 z-7 inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-button shadow-panel [transition:background-color_0.18s_ease,scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] hover:bg-hover active:scale-[0.94] motion-reduce:[transition:none] mobile:top-auto mobile:right-3 mobile:z-8 sheet-open:mobile:hidden ${FOCUS_RING}`;
-const RESET_BUTTON = `${MAP_BUTTON} right-[116px] text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
-const LOCATE_BUTTON = `${MAP_BUTTON} right-[64px] mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
+// Map buttons: laid out by the TopBar, in its right group, so the buttons that expand there push them aside. On mobile they
+// are fixed to the bottom right and hide while a bottom sheet is open (flagged on <html> by SheetPanel).
+const MAP_BUTTON = `relative inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-button shadow-panel [transition:background-color_0.18s_ease,scale_0.18s_cubic-bezier(0.3,0.7,0.4,1.4)] hover:bg-hover active:scale-[0.94] motion-reduce:[transition:none] mobile:fixed mobile:right-3 mobile:z-8 sheet-open:mobile:hidden ${FOCUS_RING}`;
+const RESET_BUTTON = `${MAP_BUTTON} text-foreground mobile:bottom-[min(calc(var(--sheet-height,0px)+76px),calc(100dvh-108px-env(safe-area-inset-top,0px)))]`;
+const LOCATE_BUTTON = `${MAP_BUTTON} mobile:bottom-[min(${SHEET_BOTTOM})] disabled:cursor-progress disabled:opacity-60`;
 // "Ver detalhes": mobile only, on the same line as the reset button. On desktop the panel opens directly.
 const DETAILS_BUTTON = `hidden cursor-pointer items-center rounded-xl border-0 bg-accent px-[18px] text-[0.9rem] font-semibold text-accent-contrast shadow-panel transition-[scale] duration-[180ms] ease-[cubic-bezier(0.3,0.7,0.4,1.4)] mobile:absolute mobile:bottom-[min(${SHEET_BOTTOM})] mobile:left-3 mobile:z-8 mobile:inline-flex mobile:h-11 mobile:active:scale-[0.96] ${FOCUS_RING}`;
 
@@ -58,15 +58,14 @@ export function MapView() {
   const [raster, setRaster] = useState<RasterData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [view, setView] = useState<ViewMode>("lst_c");
-  const [districtIndicator, setDistrictIndicator] = useState<IndicatorKey>("lst_c");
   const [place, setPlace] = useState<Place | null>(null);
   const [beforeId, setBeforeId] = useState<string | undefined>();
-  const [leftOpen, setLeftOpen] = useState(false);
-  const [rightOpen, setRightOpen] = useState(false);
+  // One panel at a time in the left slot, under the search bar: the layers or the details of the clicked point.
+  const [leftPanel, setLeftPanel] = useState<"layers" | "place" | null>(null);
   const [learnOpen, setLearnOpen] = useState(false);
   const [learnStep, setLearnStep] = useState(0);
   // Map state to restore when the learning path is closed.
-  const beforeLearn = useRef<{ view: ViewMode; districtIndicator: IndicatorKey; place: Place | null } | null>(null);
+  const beforeLearn = useRef<{ view: ViewMode; place: Place | null } | null>(null);
   const [compare, setCompare] = useState<CompareState | null>(null);
   const [cameraDefault, setCameraDefault] = useState(true);
   const { position: userPosition, status: locationStatus, start: startLocation } = useUserLocation();
@@ -77,39 +76,26 @@ export function MapView() {
   const [mapReady, setMapReady] = useState(false);
   const simulation = useSimulation({ mapRef, raster, beforeId, mapReady });
   const closeSim = simulation.closeTool;
+  const leftOpen = leftPanel === "layers";
+  // The learning path shows the place itself, so the details panel steps aside while it is open.
+  const placeOpen = leftPanel === "place" && !!place && !learnOpen;
 
   // On small screens the panels are bottom sheets, so only one can be open.
   const isMobile = () => window.matchMedia(MOBILE_QUERY).matches;
   const toggleLeft = () => {
     if (!leftOpen && isMobile()) {
-      setRightOpen(false);
       closeLearn();
       closeSim();
     }
-    setLeftOpen(!leftOpen);
+    setLeftPanel(leftOpen ? null : "layers");
   };
-  const toggleRight = () => {
-    // The graphs share the right slot with the vegetation brush: asking for them always shows them.
-    if (simulation.open) {
-      closeSim();
-      setRightOpen(true);
-      return;
-    }
-    if (!rightOpen && isMobile()) setLeftOpen(false);
-    if (!rightOpen) closeLearn();
-    setRightOpen(!rightOpen);
-  };
-
   // The brush takes the right slot (a bottom sheet on mobile) and works on the heat layer only. Closing it
   // keeps what was painted; it comes back when the tool is reopened.
   const toggleSim = () => {
     if (simulation.open) return closeSim();
     if (tourIndex !== null || !simulation.available) return;
     closeLearn();
-    if (isMobile()) {
-      setLeftOpen(false);
-      setRightOpen(false);
-    }
+    if (isMobile()) setLeftPanel(null);
     setView("lst_c");
     simulation.openTool();
   };
@@ -119,16 +105,12 @@ export function MapView() {
     setView(v);
   };
 
-  // On desktop the learning path takes the right slot from the details panel (which returns when it closes);
-  // on mobile it is a bottom sheet like the others.
+  // On desktop the learning path takes the right slot from the brush; on mobile it is a bottom sheet like the others.
   const openLearn = () => {
     if (learnOpen) return closeLearn();
-    beforeLearn.current = { view, districtIndicator, place };
+    beforeLearn.current = { view, place };
     closeSim();
-    if (isMobile()) {
-      setLeftOpen(false);
-      setRightOpen(false);
-    }
+    if (isMobile()) setLeftPanel(null);
     setLearnOpen(true);
   };
   function closeLearn() {
@@ -136,7 +118,6 @@ export function MapView() {
     setLearnOpen(false);
     if (beforeLearn.current) {
       setView(beforeLearn.current.view);
-      setDistrictIndicator(beforeLearn.current.districtIndicator);
       setPlace(beforeLearn.current.place);
       beforeLearn.current = null;
     }
@@ -176,8 +157,7 @@ export function MapView() {
     closeSim();
     setPlace(null);
     setLearnOpen(false);
-    setLeftOpen(false);
-    setRightOpen(false);
+    setLeftPanel(null);
     setView("lst_c");
     setTourIndex(0);
   }, [closeSim]);
@@ -214,24 +194,6 @@ export function MapView() {
     return pickTargets(all);
   }, [districts, districtList]);
 
-  const districtIndicatorDef = getIndicator(districtIndicator);
-
-  const districtRange = useMemo(() => {
-    if (!districts) return { min: 0, max: 1 };
-    const values = districts.features.map((f) => f.properties[districtIndicator]);
-    return { min: Math.min(...values), max: Math.max(...values) };
-  }, [districts, districtIndicator]);
-
-  const fillColor = useMemo(() => {
-    const { min, max } = districtRange;
-    const span = max - min || 1;
-    const stops = [0, 0.25, 0.5, 0.75, 1].flatMap((t) => [
-      min + t * span,
-      `rgb(${colorAt(districtIndicatorDef, t).join(",")})`,
-    ]);
-    return ["interpolate", ["linear"], ["get", districtIndicator], ...stops] as unknown as string;
-  }, [districtRange, districtIndicatorDef, districtIndicator]);
-
   // Building color: ground temperature under the footprint on the same scale as the heat layer.
   const buildingColor = useMemo(() => {
     if (!raster) return "#9ca3af";
@@ -258,15 +220,38 @@ export function MapView() {
 
   const choosePlace = useCallback(
     (lng: number, lat: number, label: string) => {
-      // On mobile the details open on demand ("Ver detalhes"), so the selected point stays visible on the map.
-      // While the learning path is open it shows the place itself, so the details panel stays closed.
+      // On mobile the details open on demand ("Ver detalhes"), so the selected point stays visible on the map;
+      // an already open sheet just updates. While the learning path is open it shows the place itself.
       closeSim();
-      if (window.matchMedia(MOBILE_QUERY).matches) setLeftOpen(false);
-      else if (!learnOpen) setRightOpen(true);
+      if (window.matchMedia(MOBILE_QUERY).matches) setLeftPanel((p) => (p === "place" ? p : null));
+      else if (!learnOpen) setLeftPanel("place");
       setPlace({ ...locate(lng, lat), label });
     },
     [locate, learnOpen, closeSim],
   );
+
+  // A clicked point has no name, so look its address up (skipped in the learning path, which shows the point itself).
+  // Without an address the search field shows the coordinates, like a dropped pin in Google Maps.
+  const pinToLookUp = place && place.label === PIN_LABEL && place.address === undefined && !learnOpen ? place : null;
+  const pinLng = pinToLookUp?.lng;
+  const pinLat = pinToLookUp?.lat;
+  useEffect(() => {
+    if (pinLng === undefined || pinLat === undefined) return;
+    const controller = new AbortController();
+    reversePlace(pinLng, pinLat, controller.signal)
+      .then((address) => ({ address }))
+      .catch((e: unknown) => (e instanceof DOMException && e.name === "AbortError" ? null : { address: null }))
+      .then((found) => {
+        if (!found) return;
+        setPlace((p) => (p && p.lng === pinLng && p.lat === pinLat && p.address === undefined ? { ...p, address: found.address } : p));
+      });
+    return () => controller.abort();
+  }, [pinLng, pinLat]);
+  const searchText = place ? (place.address ?? (place.label === PIN_LABEL ? formatCoords(place.lat, place.lng) : place.label)) : null;
+  const clearPlace = () => {
+    setLeftPanel((p) => (p === "place" ? null : p));
+    setPlace(null);
+  };
 
   // Select a place and fly to it with the same camera move for search results and campus markers.
   const focusPlace = useCallback(
@@ -348,10 +333,8 @@ export function MapView() {
   // Back to what a freshly loaded page shows: initial camera, heat layer, nothing selected, panels closed.
   const resetMap = useCallback(() => {
     setPlace(null);
-    setLeftOpen(false);
-    setRightOpen(false);
+    setLeftPanel(null);
     setView("lst_c");
-    setDistrictIndicator("lst_c");
     mapRef.current?.flyTo({
       center: [INITIAL_VIEW.longitude, INITIAL_VIEW.latitude],
       zoom: INITIAL_VIEW.zoom,
@@ -376,16 +359,17 @@ export function MapView() {
     );
   }, []);
 
-  // Esc closes only the top-most thing: tour, learning path, brush (then its panel), panels, then the selected place.
+  // Esc closes only the top-most thing: tour, learning path, brush (then its panel), the place details (which also
+  // clears the place), the other panels, then the selected place.
   const closeTopmost = () => {
     if (tourIndex !== null) setTourIndex(null);
     else if (learnOpen) closeLearn();
     else if (simulation.open && simulation.brush) simulation.setBrush(null);
     else if (simulation.open) closeSim();
-    else if (rightOpen) {
-      setRightOpen(false);
+    else if (placeOpen) {
+      setLeftPanel(null);
       setPlace(null);
-    } else if (leftOpen) setLeftOpen(false);
+    } else if (leftOpen) setLeftPanel(null);
     else if (place) setPlace(null);
   };
 
@@ -396,7 +380,6 @@ export function MapView() {
     } },
     { key: "Escape", handler: closeTopmost },
     { key: "s", handler: toggleLeft },
-    { key: "g", handler: toggleRight },
     { key: "l", handler: openLearn },
     { key: "v", handler: toggleSim },
     { key: "e", handler: () => simulation.open && simulation.setBrush(simulation.brush === "erase" ? "paint" : "erase") },
@@ -412,7 +395,7 @@ export function MapView() {
   ]);
 
   const isDefault =
-    cameraDefault && !place && !leftOpen && !learnOpen && !rightOpen && view === "lst_c" && districtIndicator === "lst_c";
+    cameraDefault && !place && leftPanel === null && !learnOpen && view === "lst_c";
 
   const onLoad = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -431,7 +414,7 @@ export function MapView() {
       className={[
         "relative h-dvh w-screen overflow-hidden mobile:[&_.maplibregl-ctrl-bottom-right]:hidden",
         // Keep the zoom controls clear of the right panel.
-        (rightOpen || learnOpen || simulation.open) && "[&_.maplibregl-ctrl-bottom-right]:right-[432px]",
+        (learnOpen || simulation.open) && "[&_.maplibregl-ctrl-bottom-right]:right-[432px]",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -447,62 +430,40 @@ export function MapView() {
           // Painting must not also pick a place, and the brush panel owns the right slot.
           if (tourIndex !== null || simulation.open) return;
           if (learnOpen && task.type === "compare") movePin(e.lngLat.lng, e.lngLat.lat);
-          else choosePlace(e.lngLat.lng, e.lngLat.lat, "Ponto selecionado");
+          else choosePlace(e.lngLat.lng, e.lngLat.lat, PIN_LABEL);
         }}
-        cursor={simulation.open && simulation.brush === null ? "grab" : "crosshair"}
+        // Left unset, MapLibre shows an open hand (a closed one while dragging); only the brush needs a crosshair.
+        cursor={simulation.open && simulation.brush ? "crosshair" : undefined}
         maxPitch={70}
         attributionControl={{ compact: true }}
       >
         <NavigationControl position="bottom-right" visualizePitch />
 
-        {view !== "districts" &&
-          raster?.cities.map(({ slug, info }) => {
-            const b = info.bounds;
-            return (
-              <Source
-                key={`${slug}-${view}`}
-                id={`heat-${slug}`}
-                type="image"
-                url={`/data/raster/${slug}/${view === "lst_c" ? "lst" : "ndvi"}.png`}
-                coordinates={[
-                  [b.west, b.north],
-                  [b.east, b.north],
-                  [b.east, b.south],
-                  [b.west, b.south],
-                ]}
-              >
-                <Layer
-                  id={`heat-layer-${slug}`}
-                  type="raster"
-                  beforeId={beforeId}
-                  layout={{ visibility: simulation.overlayActive ? "none" : "visible" }}
-                  paint={{ "raster-opacity": 0.78, "raster-resampling": "linear", "raster-fade-duration": 300 }}
-                />
-              </Source>
-            );
-          })}
-
-        {view === "districts" && districts && (
-          <Source id="districts" type="geojson" data={districts}>
-            <Layer
-              id="districts-fill"
-              type="fill"
-              beforeId={beforeId}
-              paint={{ "fill-color": fillColor, "fill-opacity": 0.78 }}
-            />
-            <Layer
-              id="districts-line"
-              type="line"
-              paint={{ "line-color": "#ffffff", "line-width": 1, "line-opacity": 0.8 }}
-            />
-            <Layer
-              id="districts-selected"
-              type="line"
-              filter={["==", ["get", "code"], place?.district?.code ?? ""]}
-              paint={{ "line-color": "#111111", "line-width": 3 }}
-            />
-          </Source>
-        )}
+        {raster?.cities.map(({ slug, info }) => {
+          const b = info.bounds;
+          return (
+            <Source
+              key={`${slug}-${view}`}
+              id={`heat-${slug}`}
+              type="image"
+              url={`/data/raster/${slug}/${view === "lst_c" ? "lst" : "ndvi"}.png`}
+              coordinates={[
+                [b.west, b.north],
+                [b.east, b.north],
+                [b.east, b.south],
+                [b.west, b.south],
+              ]}
+            >
+              <Layer
+                id={`heat-layer-${slug}`}
+                type="raster"
+                beforeId={beforeId}
+                layout={{ visibility: simulation.overlayActive ? "none" : "visible" }}
+                paint={{ "raster-opacity": 0.78, "raster-resampling": "linear", "raster-fade-duration": 300 }}
+              />
+            </Source>
+          );
+        })}
 
         {view === "lst_c" && buildings3d && buildings && !simulation.open && (
           <Source id="buildings" type="geojson" data={buildings}>
@@ -519,7 +480,7 @@ export function MapView() {
           </Source>
         )}
 
-        {tourFocus && districts && view !== "districts" && (
+        {tourFocus && districts && (
           <Source id="tour-district" type="geojson" data={districts}>
             <Layer
               id="tour-district-line"
@@ -605,121 +566,114 @@ export function MapView() {
         )}
       </Map>
 
-      <button
-        type="button"
-        className={tourIndex !== null ? "hidden" : RESET_BUTTON}
-        onClick={resetMap}
-        aria-label="Voltar à visão inicial do mapa"
-        aria-keyshortcuts="R"
-        title="Voltar à visão inicial (R)"
-      >
-        {/* Folded map: tinted in the default state, outlined otherwise (a solid fill would hide the fold lines). */}
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill={isDefault ? "currentColor" : "none"}
-          fillOpacity={0.25}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-          focusable="false"
-        >
-          <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" />
-          <path d="M15 5.764v15" />
-          <path d="M9 3.236v15" />
-        </svg>
-      </button>
-
-      <button
-        type="button"
-        className={tourIndex !== null ? "hidden" : `${LOCATE_BUTTON} ${locationStatus === "active" ? "text-[#2563eb]" : "text-foreground"}`}
-        onClick={onLocateClick}
-        disabled={locationStatus === "asking"}
-        aria-label="Ir para a minha localização"
-        aria-keyshortcuts="M"
-        title="Minha localização (M)"
-      >
-        {/* Navigation arrow as in Apple Maps: filled blue while the location is being followed. */}
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill={locationStatus === "active" ? "currentColor" : "none"}
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-          focusable="false"
-        >
-          <polygon points="3 11 22 2 13 21 11 13 3 11" />
-        </svg>
-      </button>
-
       {locationNote && (
         <p className="absolute bottom-6 left-1/2 z-9 w-max max-w-[calc(100%-24px)] -translate-x-1/2 rounded-xl border border-border bg-panel px-3.5 py-2.5 text-[0.85rem] text-foreground shadow-panel mobile:bottom-[min(calc(var(--sheet-height,0px)+84px),calc(100dvh-120px-env(safe-area-inset-top,0px)))] sheet-open:mobile:hidden" role="status">
           {locationNote}
         </p>
       )}
 
-      {place && !rightOpen && !simulation.open && (
+      {place && !placeOpen && !learnOpen && !simulation.open && (
         <button
           type="button"
           className={tourIndex !== null ? "hidden" : DETAILS_BUTTON}
-          onClick={() => {
-            setLeftOpen(false);
-            setRightOpen(true);
-          }}
+          onClick={() => setLeftPanel("place")}
         >
           Ver detalhes
         </button>
       )}
 
-      {tourIndex === null && <ViewSwitch view={view} onChange={changeView} panelOpen={leftOpen || learnOpen || rightOpen || simulation.open} />}
+      {tourIndex === null && <ViewSwitch view={view} onChange={changeView} panelOpen={leftPanel !== null || learnOpen || simulation.open} />}
 
       <TopBar
         searchInputRef={searchInputRef}
         leftOpen={leftOpen}
-        rightOpen={rightOpen && !learnOpen && !simulation.open}
         onToggleLeft={toggleLeft}
-        onToggleRight={toggleRight}
         learnOpen={learnOpen}
         onOpenLearn={openLearn}
         simOpen={simulation.open}
         simAvailable={simulation.available}
         onToggleSim={toggleSim}
         onSearchSelect={onSearchSelect}
+        searchText={searchText}
+        onSearchClear={clearPlace}
+        mapButtons={
+          <>
+          <button
+            type="button"
+            className={tourIndex !== null ? "hidden" : RESET_BUTTON}
+            onClick={resetMap}
+            aria-label="Voltar à visão inicial do mapa"
+            aria-keyshortcuts="R"
+            title="Voltar à visão inicial (R)"
+          >
+            {/* Folded map: tinted in the default state, outlined otherwise (a solid fill would hide the fold lines). */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill={isDefault ? "currentColor" : "none"}
+              fillOpacity={0.25}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              focusable="false"
+            >
+              <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" />
+              <path d="M15 5.764v15" />
+              <path d="M9 3.236v15" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className={tourIndex !== null ? "hidden" : `${LOCATE_BUTTON} ${locationStatus === "active" ? "text-[#2563eb]" : "text-foreground"}`}
+            onClick={onLocateClick}
+            disabled={locationStatus === "asking"}
+            aria-label="Ir para a minha localização"
+            aria-keyshortcuts="M"
+            title="Minha localização (M)"
+          >
+            {/* Navigation arrow as in Apple Maps: filled blue while the location is being followed. */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill={locationStatus === "active" ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              focusable="false"
+            >
+              <polygon points="3 11 22 2 13 21 11 13 3 11" />
+            </svg>
+          </button>
+          </>
+        }
       />
 
       <ControlPanel
           open={leftOpen}
-          onClose={() => setLeftOpen(false)}
+          onClose={() => setLeftPanel(null)}
           view={view}
           onViewChange={changeView}
-          districtIndicator={districtIndicator}
-          onDistrictIndicatorChange={setDistrictIndicator}
           buildings3d={buildings3d}
           onBuildings3dChange={setBuildings3d}
           onStartTour={tourSteps ? startTour : undefined}
-          districtRange={districtRange}
           raster={raster?.info ?? null}
           scenesLabel={raster?.scenesLabel ?? null}
           loading={!loadError && (!districts || !raster)}
           error={loadError}
         />
-        <RightPanel
-          open={rightOpen && !learnOpen && !simulation.open}
+        <PlacePanel
+          open={placeOpen}
           place={place}
           raster={raster?.info ?? null}
           districts={districtList}
-          districtIndicator={districtIndicator}
-          onClose={() => {
-            setRightOpen(false);
-            setPlace(null);
-          }}
+          onClose={clearPlace}
         />
       <SimulationPanel
         open={simulation.open}

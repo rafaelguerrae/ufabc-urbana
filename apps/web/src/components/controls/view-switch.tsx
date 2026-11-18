@@ -9,16 +9,25 @@ import { LayerIcon } from "#components/common/layer-icon";
 const LABEL: Record<ViewMode, string> = {
   lst_c: "Calor",
   ndvi: "Vegetação",
-  districts: "Distritos",
+};
+
+// Full class names, so Tailwind can see them.
+const SELECTED: Record<ViewMode, string> = {
+  lst_c: "border-layer-heat bg-layer-heat text-white",
+  ndvi: "border-layer-vegetation bg-layer-vegetation text-white",
 };
 
 interface ViewSwitchProps {
   view: ViewMode;
   onChange: (view: ViewMode) => void;
-  /** Hides the switch on mid-size screens, where an open side panel would cover it. */
+  /** Hides the chips on narrow desktop widths, where an open side panel would cover them. */
   panelOpen: boolean;
 }
 
+/**
+ * Layer chips next to the search bar, like the category chips of Google Maps. Where the row would run into the
+ * buttons on the right (701 to 805 px) it drops under the search; on phones it is icon-only in the bottom right.
+ */
 export function ViewSwitch({ view, onChange, panelOpen }: ViewSwitchProps) {
   const refs = useRef<Partial<Record<ViewMode, HTMLButtonElement | null>>>({});
 
@@ -34,7 +43,7 @@ export function ViewSwitch({ view, onChange, panelOpen }: ViewSwitchProps) {
 
   return (
     <div
-      className={`absolute top-3 left-1/2 z-4 flex h-11 -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-button shadow-panel midrange:top-[68px] mobile:top-auto mobile:right-16 mobile:bottom-[min(calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(safe-area-inset-top,0px)))] mobile:left-auto mobile:z-8 mobile:translate-x-0 sheet-open:mobile:hidden ${panelOpen ? "midrange:hidden" : ""}`}
+      className={`absolute top-4 left-[416px] z-4 flex gap-2 tight:top-[72px] tight:left-3 mobile:top-auto mobile:right-16 mobile:bottom-[min(calc(var(--sheet-height,0px)+24px),calc(100dvh-56px-env(safe-area-inset-top,0px)))] mobile:left-auto mobile:z-8 sheet-open:mobile:hidden ${panelOpen ? "tight:hidden" : ""}`}
       role="radiogroup"
       aria-label="Camada do mapa"
       onKeyDown={onKeyDown}
@@ -51,10 +60,10 @@ export function ViewSwitch({ view, onChange, panelOpen }: ViewSwitchProps) {
           aria-label={LABEL[v]}
           title={LABEL[v]}
           tabIndex={v === view ? 0 : -1}
-          className={`inline-flex min-w-[42px] cursor-pointer items-center justify-center gap-2 rounded-none border-0 px-3.5 text-[0.9rem] font-semibold transition-colors duration-[180ms] ease-[ease] not-first:border-l not-first:border-border focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none mobile:w-[42px] mobile:p-0 ${v === view ? "bg-accent text-accent-contrast" : "bg-transparent text-foreground hover:bg-button-hover"}`}
+          className={`inline-flex h-9 min-w-9 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 text-[0.8rem] font-semibold shadow-panel transition-colors duration-[180ms] ease-[ease] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none mobile:w-9 mobile:px-0 ${v === view ? SELECTED[v] : "border-border bg-surface text-foreground hover:bg-hover"}`}
           onClick={() => onChange(v)}
         >
-          <LayerIcon view={v} />
+          <LayerIcon view={v} size={16} />
           <span className="mobile:hidden">{LABEL[v]}</span>
         </button>
       ))}
